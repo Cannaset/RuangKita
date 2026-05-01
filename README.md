@@ -22,9 +22,9 @@ Issues with higher vote support are automatically prioritized for follow-up.
 - Student
   Submit and support aspirations through posts and votes.
 - Admin / Student Association
-  Moderate content and update the status of each submission.
-- Department (Optional Role)
-  Provide direct progress updates on reported issues.
+  Moderate content, monitoring reports, and forwarding complaints.
+- Department
+  Reviewing and handling reports based on their respective areas of responsibility.
 
 # Objective
 RuangKita aims to create an aspiration management system that is:
