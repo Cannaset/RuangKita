@@ -84,6 +84,27 @@ html, body {
     background-color: #14b8a6;
 }
 
+.profile-image {
+    object-fit: cover;
+}
+
+.auth-links {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.auth-links a {
+    color: white;
+    text-decoration: none;
+}
+
+.auth-links a:hover {
+    text-decoration: underline;
+}
+
 /* CONTAINER - Feed Page */
 .container {
     max-width: 900px;
