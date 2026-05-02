@@ -47,7 +47,7 @@ const postsData = [
         upvotes: 42,
         comments: 12,
         hasImage: true,
-        imageUrl: '/ruangkita/image/wimaw.jpeg',
+        imageUrl: '/App/image/wimaw.jpeg',
         category: 'Facilities'
     },
     {
