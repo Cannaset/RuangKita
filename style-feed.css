@@ -1,0 +1,36 @@
+body {
+    background: var(--gray-100);
+}
+
+/* Additional styling specific to feed page */
+.filter-nav::-webkit-scrollbar {
+    height: 4px;
+}
+
+.filter-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.filter-nav::-webkit-scrollbar-thumb {
+    background: var(--gray-300);
+    border-radius: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 0.75rem;
+    }
+
+    .header {
+        padding: 1rem;
+    }
+
+    .post-card {
+        border-radius: 0.375rem;
+    }
+
+    .post-interactions {
+        gap: 1rem;
+    }
+}
