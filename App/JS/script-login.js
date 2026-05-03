@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const password = document.querySelector("#password");
     const errorMessage = document.querySelector("#error-message");
 
+    // Demo credentials - nanti diganti dengan backend API call
     const correctNim = "2310110001";
     const correctPassword = "123456";
 
@@ -40,6 +41,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         showMessage("Login berhasil");
         errorMessage.style.color = "green";
+
+        // Store session (demo - nanti dari backend)
+        localStorage.setItem('user_nim', userNim);
+        localStorage.setItem('user_name', 'John Doe');
 
         setTimeout(function () {
             window.location.href = "feed.html";

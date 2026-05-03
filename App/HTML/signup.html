@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campus Voice - Login</title>
+    <title>Campus Voice - Sign Up</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/style-login.css">
 </head>
@@ -16,10 +16,20 @@
             Suara didengar, perubahan dimulai.
         </p>
 
-        <form id="loginForm">
+        <form id="signupForm">
+            <div class="input-group">
+                <label for="fullname">Nama Lengkap</label>
+                <input type="text" id="fullname" placeholder="Masukkan Nama Lengkap">
+            </div>
+
             <div class="input-group">
                 <label for="nim">NIM</label>
                 <input type="text" id="nim" placeholder="Masukkan NIM">
+            </div>
+
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="Masukkan Email">
             </div>
 
             <div class="input-group">
@@ -27,16 +37,21 @@
                 <input type="password" id="password" placeholder="Masukkan Password">
             </div>
 
+            <div class="input-group">
+                <label for="confirmPassword">Konfirmasi Password</label>
+                <input type="password" id="confirmPassword" placeholder="Konfirmasi Password">
+            </div>
+
             <p class="message" id="error-message"></p>
 
-            <button type="submit">Login</button>
+            <button type="submit">Daftar</button>
         </form>
 
-        <p class="footer-text">Belum punya akun?</p>
+        <p class="footer-text">Sudah punya akun?</p>
 
-        <a href="signup.html" class="skip-link">Daftar di sini →</a>
+        <a href="index.html" class="skip-link">Login di sini →</a>
     </div>
 
-    <script src="../js/script-login.js"></script>
+    <script src="../js/script-signup.js"></script>
 </body>
 </html>

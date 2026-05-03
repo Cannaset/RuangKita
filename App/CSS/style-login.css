@@ -3,7 +3,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-image:url('image/bg.png');
+    background-image: url('../image/bg.png');
     background-color: #F1F6F9;
     background-size: cover;
     background-position: center;
@@ -27,7 +27,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-image: url('image/RuangKita_Logo1.png');
+    background-image: url('../image/RuangKita_Logo1.png');
     overflow: hidden;
     background-size: 70%;
     background-position: center;

@@ -66,6 +66,33 @@ const postsData = [
 let currentCategory = 'All';
 let currentSort = 'Newest';
 
+// Check if user is logged in
+document.addEventListener("DOMContentLoaded", function () {
+    const userName = localStorage.getItem('user_name');
+    const userNim = localStorage.getItem('user_nim');
+
+    if (!userNim) {
+        window.location.href = "index.html";
+        return;
+    }
+
+    // Display user initial in profile avatar
+    if (userName) {
+        const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+        document.getElementById('profileAvatar').textContent = initials;
+    }
+
+    // Logout button
+    document.getElementById('logoutBtn').addEventListener('click', function () {
+        localStorage.removeItem('user_nim');
+        localStorage.removeItem('user_name');
+        window.location.href = "index.html";
+    });
+
+    initializeModalListeners();
+    filterAndSortPosts();
+});
+
 // MODAL FUNCTIONS
 const openImageModal = (imageUrl) => {
     const modal = document.getElementById('imageModal');
@@ -81,24 +108,20 @@ const closeImageModal = () => {
     document.body.style.overflow = 'auto';
 };
 
-// Initialize Modal Event Listeners
 const initializeModalListeners = () => {
     const modal = document.getElementById('imageModal');
     
-    // Close modal when clicking outside image
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
             closeImageModal();
         }
     });
 
-    // Close modal when clicking X button
     const closeBtn = document.querySelector('.modal-close');
     if (closeBtn) {
         closeBtn.addEventListener('click', closeImageModal);
     }
 
-    // Close modal with Escape key
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeImageModal();
@@ -134,9 +157,8 @@ const updateVoteCountUI = (postId, voteType) => {
     }
 };
 
-// Attach Vote & Image Click Listeners
+// Attach Event Listeners
 const attachEventListeners = () => {
-    // Vote up listeners
     document.querySelectorAll('.vote-up').forEach(btn => {
         btn.addEventListener('click', () => {
             const postId = btn.dataset.postId;
@@ -144,7 +166,6 @@ const attachEventListeners = () => {
         });
     });
 
-    // Vote down listeners
     document.querySelectorAll('.vote-down').forEach(btn => {
         btn.addEventListener('click', () => {
             const postId = btn.dataset.postId;
@@ -152,7 +173,6 @@ const attachEventListeners = () => {
         });
     });
 
-    // Image click listeners
     document.querySelectorAll('.post-image-clickable').forEach(img => {
         img.addEventListener('click', () => {
             const imageUrl = img.dataset.imageUrl;
@@ -209,12 +229,10 @@ const createPostHTML = (post) => {
 const filterAndSortPosts = () => {
     let filtered = [...postsData];
 
-    // Filter by category
     if (currentCategory !== 'All') {
         filtered = filtered.filter(post => post.category === currentCategory);
     }
 
-    // Filter by search
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
     if (searchTerm) {
         filtered = filtered.filter(post =>
@@ -223,7 +241,6 @@ const filterAndSortPosts = () => {
         );
     }
 
-    // Sort
     if (currentSort === 'Popular') {
         filtered.sort((a, b) => b.upvotes - a.upvotes);
     } else if (currentSort === 'Newest') {
@@ -236,13 +253,11 @@ const filterAndSortPosts = () => {
         });
     }
 
-    // Render
     const container = document.getElementById('feedContainer');
     container.innerHTML = filtered.length > 0
         ? filtered.map(post => createPostHTML(post)).join('')
         : '<p style="text-align: center; color: #999; padding: 2rem;">No posts found</p>';
 
-    // Attach event listeners after render
     attachEventListeners();
 };
 
@@ -268,9 +283,3 @@ document.getElementById('sortNav').addEventListener('click', (e) => {
 
 // Event Listeners - Search Input
 document.getElementById('searchInput').addEventListener('input', filterAndSortPosts);
-
-// Initial Setup on Page Load
-document.addEventListener('DOMContentLoaded', () => {
-    initializeModalListeners();
-    filterAndSortPosts();
-});
