@@ -1,6 +1,6 @@
 <?php
 $host = 'localhost';
-$dbName = 'pemweb_project';
+$dbName = 'RuangKita';
 $username = 'root';
 $password = '';
 
