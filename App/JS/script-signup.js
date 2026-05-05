@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-<<<<<<< HEAD
     const form = document.querySelector("#signupForm");
     const fullname = document.querySelector("#fullname");
     const nim = document.querySelector("#nim");
@@ -54,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
         errorMessage.style.color = "green";
 
         setTimeout(function () {
-            window.location.href = "index.html";
+            window.location.href = "index.php";
         }, 2000);
     });
 
@@ -63,7 +62,6 @@ document.addEventListener("DOMContentLoaded", function () {
         errorMessage.style.color = "#ef4444";
     }
 });
-=======
     const themeToggle = document.querySelector("#themeToggle");
     const themeIcon = document.querySelector("#themeIcon");
 
@@ -86,6 +84,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function updateThemeIcon(isDark) {
         themeIcon.textContent = isDark ? "Light" : "Dark";
-    }
-});
->>>>>>> Tes
+    };

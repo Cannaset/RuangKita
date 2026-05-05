@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const themeToggle = document.querySelector("#themeToggle");
     const themeIcon = document.querySelector("#themeIcon");
 
-<<<<<<< HEAD
     // Demo credentials - nanti diganti dengan backend API call
     const correctNim = "2310110001";
     const correctPassword = "123456";
@@ -46,9 +45,8 @@ document.addEventListener("DOMContentLoaded", function () {
         localStorage.setItem('user_name', 'John Doe');
 
         setTimeout(function () {
-            window.location.href = "feed.html";
+            window.location.href = "feed.php";
         }, 1000);
-=======
     applySavedTheme();
 
     themeToggle.addEventListener("click", function () {
@@ -56,7 +54,6 @@ document.addEventListener("DOMContentLoaded", function () {
         document.documentElement.classList.toggle("dark-theme", isDark);
         localStorage.setItem("ruangkita-theme", isDark ? "dark" : "light");
         updateThemeIcon(isDark);
->>>>>>> Tes
     });
 
     function applySavedTheme() {
@@ -70,4 +67,4 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateThemeIcon(isDark) {
         themeIcon.textContent = isDark ? "Light" : "Dark";
     }
-});
+})});

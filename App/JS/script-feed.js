@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const userNim = localStorage.getItem('user_nim');
 
     if (!userNim) {
-        window.location.href = "index.html";
+        window.location.href = "index.php";
         return;
     }
 
@@ -150,7 +150,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('logoutBtn').addEventListener('click', function () {
         localStorage.removeItem('user_nim');
         localStorage.removeItem('user_name');
-        window.location.href = "index.html";
+        window.location.href = "index.php";
     });
 
     initializeModalListeners();
@@ -346,9 +346,7 @@ document.getElementById('sortNav').addEventListener('click', (e) => {
 });
 
 // Event Listeners - Search Input
-<<<<<<< HEAD
 document.getElementById('searchInput').addEventListener('input', filterAndSortPosts);
-=======
 document.getElementById('searchInput').addEventListener('input', filterAndSortPosts);
 
 // Initial Setup on Page Load
@@ -359,4 +357,3 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeModalListeners();
     filterAndSortPosts();
 });
->>>>>>> Tes
