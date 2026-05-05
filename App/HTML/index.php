@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RuangKita - Login</title>
     <link rel="stylesheet" href="../CSS/style.css">
-    <link rel="stylesheet" href="../CSS/style-login.css">
+    <link rel="stylesheet" href="../CSS/style-login.css?v=20260504-2">
 </head>
 
 <body class="auth-page">
@@ -93,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <a href="feed.php" class="skip-link">Lanjut ke Feed -></a>
     </main>
 
-    <script src="../JS/script-login.js"></script>
+    <script src="../JS/script-login.js?v=20260504-2"></script>
 </body>
 
 </html>

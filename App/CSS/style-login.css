@@ -1,17 +1,45 @@
+html {
+    min-height: 100%;
+    background-color: #07101e;
+}
+
+html.dark-theme {
+    background-color: #07101e;
+}
+
 body.auth-page {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-image: linear-gradient(rgba(241, 246, 249, 0.78), rgba(241, 246, 249, 0.88)), url('../image/bg.png');
-    background-color: #F1F6F9;
-    background-size: cover;
-    background-position: center;
-    padding: 1.5rem;
+    min-height: 100dvh;
+    position: relative;
+    isolation: isolate;
+    overflow-x: hidden;
+    overscroll-behavior-y: none;
+    background: #07101e;
+    padding: clamp(1rem, 4vh, 2rem) 1.5rem;
     transition: background-color 0.25s, color 0.25s;
 }
 
+body.auth-page::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-color: #F1F6F9;
+    background-image: linear-gradient(rgba(241, 246, 249, 0.78), rgba(241, 246, 249, 0.88)), url('../image/bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: background-color 0.25s;
+}
+
 .login-box {
+    position: relative;
+    z-index: 1;
     width: 100%;
     max-width: 400px;
     background: rgba(255, 255, 255, 0.94);
@@ -21,11 +49,42 @@ body.auth-page {
     text-align: center;
     border: 1px solid rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(10px);
+    margin: auto 0;
 }
 
 .signup-card {
     max-width: 440px;
-    padding-top: 2rem;
+    padding: 1.5rem 1.75rem;
+}
+
+.signup-card .logo {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 0.8rem;
+}
+
+.signup-card .tagline {
+    margin-bottom: 1rem;
+}
+
+.signup-card .input-group {
+    margin-bottom: 0.8rem;
+}
+
+.signup-card .input-group input {
+    padding: 0.65rem 0.85rem;
+}
+
+.signup-card .message {
+    margin-top: 0.75rem;
+}
+
+.signup-card .auth-switch {
+    margin-top: 1rem;
+}
+
+.signup-card .skip-link {
+    margin-top: 1rem;
 }
 
 .login-box .logo {
@@ -154,6 +213,7 @@ body.auth-page {
 
 .theme-toggle {
     position: fixed;
+    z-index: 2;
     top: 1rem;
     right: 1rem;
     min-width: 4.25rem;
@@ -175,9 +235,13 @@ body.auth-page {
 }
 
 body.dark-theme {
-    background-image: linear-gradient(rgba(7, 16, 30, 0.84), rgba(7, 16, 30, 0.9)), url('../image/bg.png');
     background-color: #07101e;
     color: #f8fafc;
+}
+
+body.dark-theme::before {
+    background-color: #07101e;
+    background-image: linear-gradient(rgba(7, 16, 30, 0.84), rgba(7, 16, 30, 0.9)), url('../image/bg.png');
 }
 
 body.dark-theme .login-box {
@@ -215,16 +279,24 @@ body.dark-theme .theme-toggle {
 @media (max-width: 480px) {
     body.auth-page {
         padding: 1rem;
-        align-items: flex-start;
     }
 
     .login-box {
-        margin-top: 3.5rem;
+        margin: auto 0;
         padding: 2rem 1.25rem;
     }
 
     .login-box .logo {
         width: 130px;
         height: 130px;
+    }
+
+    .signup-card {
+        padding: 1.5rem 1.1rem;
+    }
+
+    .signup-card .logo {
+        width: 104px;
+        height: 104px;
     }
 }

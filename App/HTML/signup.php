@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RuangKita - Signup</title>
     <link rel="stylesheet" href="../CSS/style.css">
-    <link rel="stylesheet" href="../CSS/style-login.css">
+    <link rel="stylesheet" href="../CSS/style-login.css?v=20260504-2">
 </head>
 
 <body class="auth-page">
@@ -90,8 +90,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div class="input-group">
-                <label for="email">Email Kampus</label>
-                <input type="email" id="email" name="email" placeholder="nama@kampus.ac.id" autocomplete="email" value="<?= htmlspecialchars($_POST['email'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="emailkamu@gmail.com" autocomplete="email" value="<?= htmlspecialchars($_POST['email'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
             </div>
 
             <div class="input-group">
@@ -116,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <a href="feed.php" class="skip-link">Lanjut ke Feed -></a>
     </main>
 
-    <script src="../JS/script-signup.js"></script>
+    <script src="../JS/script-signup.js?v=20260504-2"></script>
 </body>
 
 </html>
