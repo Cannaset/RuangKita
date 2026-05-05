@@ -10,7 +10,7 @@ const postsData = [
         upvotes: 42,
         comments: 12,
         hasImage: true,
-        imageUrl: '/ruangkita/image/wimaw.jpeg',
+        imageUrl: '../image/wimaw.jpeg',
         category: 'Facilities'
     },
     {
@@ -65,6 +65,70 @@ const postsData = [
 
 let currentCategory = 'All';
 let currentSort = 'Newest';
+
+const applySavedTheme = () => {
+    const savedTheme = localStorage.getItem('ruangkita-theme');
+    const isDark = savedTheme === 'dark';
+    const themeIcon = document.getElementById('themeIcon');
+    const notificationIcon = document.getElementById('notificationIcon');
+
+    document.body.classList.toggle('dark-theme', isDark);
+
+    if (themeIcon) {
+        themeIcon.textContent = isDark ? 'Light' : 'Dark';
+    }
+
+    updateNotificationIcon(notificationIcon, isDark);
+};
+
+const initializeThemeToggle = () => {
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const notificationIcon = document.getElementById('notificationIcon');
+
+    if (!themeToggle || !themeIcon) {
+        return;
+    }
+
+    themeToggle.addEventListener('click', () => {
+        const isDark = document.body.classList.toggle('dark-theme');
+        localStorage.setItem('ruangkita-theme', isDark ? 'dark' : 'light');
+        themeIcon.textContent = isDark ? 'Light' : 'Dark';
+        updateNotificationIcon(notificationIcon, isDark);
+    });
+};
+
+const updateNotificationIcon = (notificationIcon, isDark) => {
+    if (!notificationIcon) {
+        return;
+    }
+
+    notificationIcon.src = isDark
+        ? notificationIcon.dataset.darkSrc
+        : notificationIcon.dataset.lightSrc;
+};
+
+const initializeProfileDropdown = () => {
+    const profileMenu = document.querySelector('.profile-menu');
+    const profileTrigger = document.getElementById('profileTrigger');
+
+    if (!profileMenu || !profileTrigger) {
+        return;
+    }
+
+    profileTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = profileMenu.classList.toggle('open');
+        profileTrigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!profileMenu.contains(e.target)) {
+            profileMenu.classList.remove('open');
+            profileTrigger.setAttribute('aria-expanded', 'false');
+        }
+    });
+};
 
 // Check if user is logged in
 document.addEventListener("DOMContentLoaded", function () {
@@ -282,4 +346,17 @@ document.getElementById('sortNav').addEventListener('click', (e) => {
 });
 
 // Event Listeners - Search Input
+<<<<<<< HEAD
 document.getElementById('searchInput').addEventListener('input', filterAndSortPosts);
+=======
+document.getElementById('searchInput').addEventListener('input', filterAndSortPosts);
+
+// Initial Setup on Page Load
+document.addEventListener('DOMContentLoaded', () => {
+    applySavedTheme();
+    initializeThemeToggle();
+    initializeProfileDropdown();
+    initializeModalListeners();
+    filterAndSortPosts();
+});
+>>>>>>> Tes

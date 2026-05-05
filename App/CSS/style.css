@@ -20,7 +20,7 @@
 }
 
 html, body {
-    height: 100%;
+    min-height: 100%;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     background-color: var(--gray-100);
     color: var(--gray-900);
@@ -82,6 +82,27 @@ html, body {
 
 .profile-avatar:hover {
     background-color: #14b8a6;
+}
+
+.profile-image {
+    object-fit: cover;
+}
+
+.auth-links {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.auth-links a {
+    color: white;
+    text-decoration: none;
+}
+
+.auth-links a:hover {
+    text-decoration: underline;
 }
 
 /* CONTAINER - Feed Page */

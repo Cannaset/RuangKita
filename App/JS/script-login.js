@@ -1,9 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const form = document.querySelector("#loginForm");
-    const nim = document.querySelector("#nim");
-    const password = document.querySelector("#password");
-    const errorMessage = document.querySelector("#error-message");
+    const themeToggle = document.querySelector("#themeToggle");
+    const themeIcon = document.querySelector("#themeIcon");
 
+<<<<<<< HEAD
     // Demo credentials - nanti diganti dengan backend API call
     const correctNim = "2310110001";
     const correctPassword = "123456";
@@ -49,10 +48,26 @@ document.addEventListener("DOMContentLoaded", function () {
         setTimeout(function () {
             window.location.href = "feed.html";
         }, 1000);
+=======
+    applySavedTheme();
+
+    themeToggle.addEventListener("click", function () {
+        const isDark = document.body.classList.toggle("dark-theme");
+        document.documentElement.classList.toggle("dark-theme", isDark);
+        localStorage.setItem("ruangkita-theme", isDark ? "dark" : "light");
+        updateThemeIcon(isDark);
+>>>>>>> Tes
     });
 
-    function showMessage(text) {
-        errorMessage.innerHTML = text;
-        errorMessage.style.color = "#ef4444";
+    function applySavedTheme() {
+        const savedTheme = localStorage.getItem("ruangkita-theme");
+        const isDark = savedTheme === "dark";
+        document.body.classList.toggle("dark-theme", isDark);
+        document.documentElement.classList.toggle("dark-theme", isDark);
+        updateThemeIcon(isDark);
+    }
+
+    function updateThemeIcon(isDark) {
+        themeIcon.textContent = isDark ? "Light" : "Dark";
     }
 });
