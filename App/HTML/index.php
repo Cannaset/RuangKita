@@ -24,9 +24,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($password === '') {
         $message = 'Password tidak boleh kosong';
     } else {
-        $stmt = $pdo->prepare('SELECT id, username, nim, email, password, profile_picture FROM students WHERE nim = :nim LIMIT 1');
-        $stmt->execute(['nim' => $nim]);
-        $student = $stmt->fetch();
+        $stmt = mysqli_prepare($conn, 
+    "SELECT id, username, nim, email, password, profile_picture 
+        FROM students 
+        WHERE nim = ? 
+        LIMIT 1"
+    );
+
+    mysqli_stmt_bind_param($stmt, "s", $nim);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+    $student = mysqli_fetch_assoc($result);
 
         if (!$student || !password_verify($password, $student['password'])) {
             $message = 'NIM atau Password salah';
