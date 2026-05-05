@@ -28,25 +28,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($password !== $confirmPassword) {
         $message = 'Konfirmasi password tidak sama';
     } else {
-        $stmt = $pdo->prepare('SELECT id FROM students WHERE nim = :nim OR email = :email LIMIT 1');
-        $stmt->execute([
-            'nim' => $nim,
-            'email' => $email,
-        ]);
+        $stmt = mysqli_prepare($conn, 
+            "SELECT id FROM students WHERE nim = ? OR email = ? LIMIT 1"
+        );
 
-        if ($stmt->fetch()) {
+        mysqli_stmt_bind_param($stmt, "ss", $nim, $email);
+        mysqli_stmt_execute($stmt);
+
+        $result = mysqli_stmt_get_result($stmt);
+        $student = mysqli_fetch_assoc($result);
+
+        $stmt = mysqli_prepare($conn, "SELECT id FROM students WHERE nim = ? OR email = ? LIMIT 1");
+
+        mysqli_stmt_bind_param($stmt, "ss", $nim, $email);
+        mysqli_stmt_execute($stmt);
+
+        $result = mysqli_stmt_get_result($stmt);
+        $existing = mysqli_fetch_assoc($result);
+
+        if ($existing) {
             $message = 'NIM atau email sudah terdaftar';
         } else {
-            $stmt = $pdo->prepare(
-                'INSERT INTO students (username, nim, email, password, profile_picture) VALUES (:username, :nim, :email, :password, :profile_picture)'
+
+            // INSERT DATA
+            $stmt = mysqli_prepare($conn, 
+                "INSERT INTO students (username, nim, email, password, profile_picture) 
+                VALUES (?, ?, ?, ?, ?)"
             );
-            $stmt->execute([
-                'username' => $username,
-                'nim' => $nim,
-                'email' => $email,
-                'password' => password_hash($password, PASSWORD_DEFAULT),
-                'profile_picture' => null,
-            ]);
+
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $profile_picture = null;
+
+            mysqli_stmt_bind_param($stmt, "sssss", 
+                $username, 
+                $nim, 
+                $email, 
+                $hashedPassword, 
+                $profile_picture
+            );
+
+            mysqli_stmt_execute($stmt);
 
             $_SESSION['flash_message'] = 'Akun berhasil dibuat. Silahkan login.';
             header('Location: index.php');
