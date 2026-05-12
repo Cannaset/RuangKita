@@ -95,7 +95,6 @@ RuangKita aims to create an aspiration management system that is:
 | Component | Technology |
 |---|---|
 | Database Management System | MySQL |
-| DBMS Version | MySQL 8.0+ |
 | Backend Integration | PHP |
 | Query Language | SQL |
 | Database Access | MySQL Driver / ORM |
