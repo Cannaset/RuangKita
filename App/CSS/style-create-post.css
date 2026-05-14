@@ -1,0 +1,290 @@
+body.create-post-page {
+    background: var(--gray-100);
+    min-height: 100vh;
+}
+
+.create-post-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.back-button {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    color: var(--secondary);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+}
+
+.back-button:hover {
+    color: #0a6f75;
+}
+
+.post-form-card {
+    background: white;
+    border-radius: 0.75rem;
+    padding: 2.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.post-form-card h1 {
+    font-size: 1.75rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.post-form-card .subtitle {
+    color: var(--gray-500);
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+}
+
+/* FORM GROUPS */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    font-size: 0.95rem;
+}
+
+.required {
+    color: var(--danger);
+}
+
+.form-group input[type="text"],
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--gray-300);
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: all 0.2s;
+    background: white;
+    color: var(--gray-900);
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px rgba(0, 136, 145, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 150px;
+}
+
+.char-count {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.8rem;
+    color: var(--gray-500);
+}
+
+/* FILE UPLOAD */
+.file-upload-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 0.5rem;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--gray-50);
+}
+
+.file-upload-area:hover {
+    border-color: var(--secondary);
+    background: rgba(0, 136, 145, 0.05);
+}
+
+.file-upload-area.drag-over {
+    border-color: var(--secondary);
+    background: rgba(0, 136, 145, 0.1);
+}
+
+.upload-icon {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.upload-placeholder p {
+    margin: 0.5rem 0 0.25rem;
+    color: var(--gray-700);
+    font-weight: 500;
+}
+
+.upload-placeholder small {
+    color: var(--gray-500);
+    font-size: 0.8rem;
+}
+
+/* CHECKBOX GROUP */
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 1.2rem;
+    height: 1.2rem;
+    cursor: pointer;
+    accent-color: var(--secondary);
+}
+
+.checkbox-label {
+    margin: 0;
+    cursor: pointer;
+    font-weight: normal;
+    font-size: 0.95rem;
+    color: var(--gray-700);
+}
+
+/* MESSAGES */
+.success-message {
+    padding: 1rem;
+    background: rgba(22, 163, 74, 0.1);
+    border: 1px solid rgba(22, 163, 74, 0.3);
+    border-radius: 0.5rem;
+    color: #15803d;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+}
+
+.error-message {
+    padding: 1rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 0.5rem;
+    color: var(--danger);
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+}
+
+/* BUTTONS */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--gray-200);
+}
+
+.btn {
+    flex: 1;
+    padding: 0.85rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    text-align: center;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0F3057 0%, #008891 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 136, 145, 0.28);
+}
+
+.btn-secondary {
+    background: var(--gray-200);
+    color: var(--gray-700);
+}
+
+.btn-secondary:hover {
+    background: var(--gray-300);
+}
+
+/* DARK THEME */
+body.create-post-page.dark-theme {
+    background: #07101e;
+}
+
+body.create-post-page.dark-theme .post-form-card {
+    background: #0f172a;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+body.create-post-page.dark-theme .post-form-card h1 {
+    color: #7fd1b9;
+}
+
+body.create-post-page.dark-theme .form-group label,
+body.create-post-page.dark-theme .checkbox-label {
+    color: #e2e8f0;
+}
+
+body.create-post-page.dark-theme .form-group input,
+body.create-post-page.dark-theme .form-group textarea,
+body.create-post-page.dark-theme .form-group select {
+    background: #0f172a;
+    border-color: #334155;
+    color: #f8fafc;
+}
+
+body.create-post-page.dark-theme .form-group input::placeholder,
+body.create-post-page.dark-theme .form-group textarea::placeholder {
+    color: #94a3b8;
+}
+
+body.create-post-page.dark-theme .file-upload-area {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+body.create-post-page.dark-theme .file-upload-area:hover {
+    background: rgba(0, 136, 145, 0.1);
+    border-color: #7fd1b9;
+}
+
+body.create-post-page.dark-theme .upload-placeholder p {
+    color: #e2e8f0;
+}
+
+body.create-post-page.dark-theme .upload-placeholder small {
+    color: #cbd5e1;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .create-post-wrapper {
+        padding: 1rem;
+    }
+
+    .post-form-card {
+        padding: 1.5rem;
+    }
+
+    .post-form-card h1 {
+        font-size: 1.5rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
