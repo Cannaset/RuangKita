@@ -84,8 +84,8 @@ RuangKita aims to create an aspiration management system that is:
 - Accountable
 
 # Tech Stack
-- Frontend: HTML, CSS, JavaScript / React 
-- Backend: Node.js + Express/php
+- Frontend: HTML, CSS, JavaScript
+- Backend: PHP
 - Database: MySQL
 - Design: Figma
 - API Testing: Postman
