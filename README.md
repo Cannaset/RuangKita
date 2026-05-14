@@ -8,13 +8,13 @@ The system is designed not merely as a complaint board, but as a traceable workf
 # Role Division
 - Kanaya Salsabila Humaira (F1D02410061) (Project Manager)
 
-  Responsible for Database integration and Documentation (Database schema, table relation, FE-BE integration, testing, documentation)
+  Responsible for project planning and team coordination, Database integration, and Documentation (Database schema, table relation, FE-BE integration, testing, documentation). Also responsible for task distribution, project timeline management, progress monitoring, team communication, feature validation, and ensuring the overall development process runs efficiently and according to project objectives.
 - Abdurrahman Karim (F1D02410031)
   
-  Responsible for Frontend and UI (figma slicing, login page, feed page, create post page, responsive layout)
+  Responsible for Frontend and UI development (Figma slicing, login page, feed page, create post page, responsive layout), including implementing user interfaces, maintaining design consistency, optimizing user experience, handling frontend integration with backend services, and ensuring cross-device compatibility.
 - Septania Sybil Shofiyah (F1D02410094)
 
-  Responsible for Backend and API (Authentication, CRUD post, vote system, status update API)
+  Responsible for Backend and API development (Authentication, CRUD post, vote system, status update API), including database connectivity, endpoint development, business logic implementation, API testing, server-side validation, and ensuring secure and efficient data communication between frontend and backend systems.
 
 # Key Features
 - User Authentication (Student Login)
