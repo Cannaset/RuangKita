@@ -24,8 +24,8 @@ function getInitials(string $name): string
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RuangKita - Feed</title>
-    <link rel="stylesheet" href="../CSS/style.css?v=7">
-    <link rel="stylesheet" href="../CSS/style-feed.css?v=7">
+    <link rel="stylesheet" href="../CSS/style.css?v=8">
+    <link rel="stylesheet" href="../CSS/style-feed.css?v=8">
 </head>
 
 <body class="feed-page">
@@ -51,6 +51,10 @@ function getInitials(string $name): string
             </button>
 
             <?php if ($student): ?>
+                <a href="create-post.php" class="create-post-btn" title="Buat Aspirasi Baru">
+                    <span>+</span>
+                </a>
+                
                 <div class="profile-menu">
                     <button class="profile-trigger" id="profileTrigger" type="button" aria-label="Menu profil" aria-expanded="false">
                         <?php if (!empty($student['profile_picture'])): ?>
@@ -113,7 +117,7 @@ function getInitials(string $name): string
         </div>
     </div>
 
-    <script src="../JS/script-feed.js?v=7"></script>
+    <script src="../JS/script-feed.js?v=8"></script>
 </body>
 
 </html>

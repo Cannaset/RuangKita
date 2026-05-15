@@ -20,6 +20,42 @@ body.feed-page::before {
     transition: background-color 0.25s;
 }
 
+/* ============================================
+   CREATE POST BUTTON
+   ============================================ */
+.create-post-btn {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid rgba(127, 209, 185, 0.38);
+    border-radius: 50%;
+    background: rgba(0, 136, 145, 0.2);
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    line-height: 1;
+}
+
+.create-post-btn:hover {
+    background: rgba(0, 136, 145, 0.4);
+    border-color: rgba(127, 209, 185, 0.8);
+    transform: translateY(-2px);
+}
+
+.create-post-btn:focus-visible {
+    outline: 3px solid rgba(127, 209, 185, 0.45);
+    outline-offset: 2px;
+}
+
+/* ============================================
+   THEME TOGGLE
+   ============================================ */
 .feed-theme-toggle {
     appearance: none;
     display: inline-flex;
@@ -52,6 +88,9 @@ body.feed-page::before {
     outline-offset: 2px;
 }
 
+/* ============================================
+   NOTIFICATION BUTTON
+   ============================================ */
 .notification-btn {
     appearance: none;
     display: inline-flex;
@@ -86,6 +125,9 @@ body.feed-page::before {
     pointer-events: none;
 }
 
+/* ============================================
+   PROFILE MENU
+   ============================================ */
 .profile-menu {
     position: relative;
 }
@@ -141,6 +183,9 @@ body.feed-page::before {
     color: var(--secondary);
 }
 
+/* ============================================
+   AUTH LINKS
+   ============================================ */
 .auth-links {
     display: inline-flex;
     align-items: center;
@@ -178,6 +223,9 @@ body.feed-page::before {
     color: rgba(255, 255, 255, 0.58);
 }
 
+/* ============================================
+   DARK THEME - COMPREHENSIVE
+   ============================================ */
 body.feed-page.dark-theme {
     background: #07101e;
     color: #f8fafc;
@@ -192,16 +240,44 @@ body.feed-page.dark-theme .header {
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.34);
 }
 
-body.feed-page.dark-theme .feed-theme-toggle,
-body.feed-page.dark-theme .auth-links,
+body.feed-page.dark-theme .feed-theme-toggle {
+    background: rgba(15, 23, 42, 0.72);
+    border-color: rgba(148, 163, 184, 0.34);
+    color: #f8fafc;
+}
+
+body.feed-page.dark-theme .feed-theme-toggle:hover {
+    background: rgba(0, 136, 145, 0.32);
+    border-color: rgba(127, 209, 185, 0.8);
+}
+
 body.feed-page.dark-theme .notification-btn {
     background: rgba(15, 23, 42, 0.72);
     border-color: rgba(148, 163, 184, 0.34);
 }
 
-body.feed-page.dark-theme .feed-theme-toggle:hover,
-body.feed-page.dark-theme .auth-links a:hover,
 body.feed-page.dark-theme .notification-btn:hover {
+    background: rgba(0, 136, 145, 0.32);
+    border-color: rgba(127, 209, 185, 0.8);
+}
+
+body.feed-page.dark-theme .create-post-btn {
+    background: rgba(0, 136, 145, 0.25);
+    border-color: rgba(127, 209, 185, 0.4);
+    color: #7fd1b9;
+}
+
+body.feed-page.dark-theme .create-post-btn:hover {
+    background: rgba(0, 136, 145, 0.45);
+    border-color: rgba(127, 209, 185, 0.8);
+}
+
+body.feed-page.dark-theme .auth-links {
+    background: rgba(15, 23, 42, 0.72);
+    border-color: rgba(148, 163, 184, 0.34);
+}
+
+body.feed-page.dark-theme .auth-links a:hover {
     background: rgba(0, 136, 145, 0.32);
 }
 
@@ -224,10 +300,7 @@ body.feed-page.dark-theme .profile-dropdown a:hover {
     color: #7fd1b9;
 }
 
-body.feed-page.dark-theme .search-bar input,
-body.feed-page.dark-theme .filter-btn,
-body.feed-page.dark-theme .post-card,
-body.feed-page.dark-theme .modal-content {
+body.feed-page.dark-theme .search-bar input {
     background: #0f172a;
     border-color: #334155;
     color: #f8fafc;
@@ -237,23 +310,61 @@ body.feed-page.dark-theme .search-bar input::placeholder {
     color: #94a3b8;
 }
 
-body.feed-page.dark-theme .filter-btn:hover,
-body.feed-page.dark-theme .sort-btn:hover {
+body.feed-page.dark-theme .filter-btn {
+    background: #0f172a;
+    border-color: #334155;
+    color: #cbd5e1;
+}
+
+body.feed-page.dark-theme .filter-btn:hover {
     background: #1e293b;
 }
 
-body.feed-page.dark-theme .sort-nav,
-body.feed-page.dark-theme .post-footer {
+body.feed-page.dark-theme .filter-btn.active {
+    background: #008891;
+    border-color: #008891;
+    color: #f8fafc;
+}
+
+body.feed-page.dark-theme .sort-nav {
     border-color: #1e293b;
 }
 
-body.feed-page.dark-theme .post-user-details h4,
-body.feed-page.dark-theme .post-content {
+body.feed-page.dark-theme .sort-btn {
+    color: #cbd5e1;
+}
+
+body.feed-page.dark-theme .sort-btn:hover {
     color: #e2e8f0;
 }
 
-body.feed-page.dark-theme .post-user-details small,
-body.feed-page.dark-theme .interaction-item {
+body.feed-page.dark-theme .sort-btn.active {
+    color: #7fd1b9;
+}
+
+body.feed-page.dark-theme .sort-btn.active::after {
+    background: #7fd1b9;
+}
+
+body.feed-page.dark-theme .post-card {
+    background: #0f172a;
+    border-color: #334155;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+body.feed-page.dark-theme .post-card:hover {
+    box-shadow: 0 8px 20px rgba(0, 136, 145, 0.2);
+}
+
+body.feed-page.dark-theme .post-user-details h4 {
+    color: #e2e8f0;
+}
+
+body.feed-page.dark-theme .post-user-details small {
+    color: #cbd5e1;
+}
+
+body.feed-page.dark-theme .post-content {
     color: #cbd5e1;
 }
 
@@ -262,7 +373,37 @@ body.feed-page.dark-theme .post-image {
     color: #cbd5e1;
 }
 
-/* Additional styling specific to feed page */
+body.feed-page.dark-theme .post-footer {
+    border-color: #1e293b;
+}
+
+body.feed-page.dark-theme .interaction-item {
+    color: #cbd5e1;
+}
+
+body.feed-page.dark-theme .interaction-item:hover {
+    color: #7fd1b9;
+}
+
+body.feed-page.dark-theme .share-btn {
+    color: #7fd1b9;
+}
+
+body.feed-page.dark-theme .share-btn:hover {
+    color: #5fc9b8;
+}
+
+body.feed-page.dark-theme .modal-content {
+    background: #0f172a;
+}
+
+body.feed-page.dark-theme .status-badge {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
 .filter-nav::-webkit-scrollbar {
     height: 4px;
 }
@@ -276,7 +417,13 @@ body.feed-page.dark-theme .post-image {
     border-radius: 2px;
 }
 
-/* Responsive adjustments */
+body.feed-page.dark-theme .filter-nav::-webkit-scrollbar-thumb {
+    background: #334155;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 @media (max-width: 768px) {
     .container {
         padding: 0.75rem;
@@ -286,11 +433,76 @@ body.feed-page.dark-theme .post-image {
         padding: 1rem;
     }
 
+    .header-right {
+        gap: 0.5rem;
+    }
+
     .post-card {
         border-radius: 0.375rem;
     }
 
     .post-interactions {
         gap: 1rem;
+    }
+
+    .filter-nav {
+        gap: 0.5rem;
+    }
+
+    .filter-btn,
+    .sort-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        padding: 0.75rem;
+    }
+
+    .header-right {
+        gap: 0.25rem;
+    }
+
+    .feed-theme-toggle {
+        min-width: 3.5rem;
+        font-size: 0.75rem;
+    }
+
+    .create-post-btn,
+    .notification-btn {
+        width: 2rem;
+        height: 2rem;
+    }
+
+    .container {
+        padding: 0.5rem;
+    }
+
+    .search-bar {
+        margin-bottom: 1rem;
+    }
+
+    .search-bar input {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .post-card {
+        margin-bottom: 0.75rem;
+    }
+
+    .post-header-container {
+        padding: 1rem;
+        padding-bottom: 0.75rem;
+    }
+
+    .post-content {
+        font-size: 0.9rem;
+    }
+
+    .post-image {
+        height: 10rem;
     }
 }

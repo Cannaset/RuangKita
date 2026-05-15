@@ -1,4 +1,6 @@
-// Data
+// ============================================
+// DATA & STATE
+// ============================================
 const postsData = [
     {
         id: 1,
@@ -66,55 +68,68 @@ const postsData = [
 let currentCategory = 'All';
 let currentSort = 'Newest';
 
-const applySavedTheme = () => {
+// ============================================
+// THEME MANAGEMENT
+// ============================================
+function applySavedTheme() {
     const savedTheme = localStorage.getItem('ruangkita-theme');
     const isDark = savedTheme === 'dark';
+    applyTheme(isDark);
+}
+
+function applyTheme(isDark) {
+    const body = document.body;
     const themeIcon = document.getElementById('themeIcon');
     const notificationIcon = document.getElementById('notificationIcon');
 
-    document.body.classList.toggle('dark-theme', isDark);
+    if (isDark) {
+        body.classList.add('dark-theme');
+    } else {
+        body.classList.remove('dark-theme');
+    }
 
     if (themeIcon) {
         themeIcon.textContent = isDark ? 'Light' : 'Dark';
     }
 
-    updateNotificationIcon(notificationIcon, isDark);
-};
-
-const initializeThemeToggle = () => {
-    const themeToggle = document.getElementById('themeToggle');
-    const themeIcon = document.getElementById('themeIcon');
-    const notificationIcon = document.getElementById('notificationIcon');
-
-    if (!themeToggle || !themeIcon) {
-        return;
+    if (notificationIcon) {
+        notificationIcon.src = isDark
+            ? notificationIcon.dataset.darkSrc
+            : notificationIcon.dataset.lightSrc;
     }
+}
+
+function initializeThemeToggle() {
+    const themeToggle = document.getElementById('themeToggle');
+
+    if (!themeToggle) return;
 
     themeToggle.addEventListener('click', () => {
         const isDark = document.body.classList.toggle('dark-theme');
         localStorage.setItem('ruangkita-theme', isDark ? 'dark' : 'light');
-        themeIcon.textContent = isDark ? 'Light' : 'Dark';
-        updateNotificationIcon(notificationIcon, isDark);
+        
+        const themeIcon = document.getElementById('themeIcon');
+        if (themeIcon) {
+            themeIcon.textContent = isDark ? 'Light' : 'Dark';
+        }
+
+        const notificationIcon = document.getElementById('notificationIcon');
+        if (notificationIcon) {
+            notificationIcon.src = isDark
+                ? notificationIcon.dataset.darkSrc
+                : notificationIcon.dataset.lightSrc;
+        }
     });
-};
+}
 
-const updateNotificationIcon = (notificationIcon, isDark) => {
-    if (!notificationIcon) {
-        return;
-    }
-
-    notificationIcon.src = isDark
-        ? notificationIcon.dataset.darkSrc
-        : notificationIcon.dataset.lightSrc;
-};
-
-const initializeProfileDropdown = () => {
+// ============================================
+// PROFILE DROPDOWN
+// ============================================
+function initializeProfileDropdown() {
     const profileMenu = document.querySelector('.profile-menu');
     const profileTrigger = document.getElementById('profileTrigger');
 
-    if (!profileMenu || !profileTrigger) {
-        return;
-    }
+    if (!profileMenu || !profileTrigger) return;
 
     profileTrigger.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -128,53 +143,36 @@ const initializeProfileDropdown = () => {
             profileTrigger.setAttribute('aria-expanded', 'false');
         }
     });
-};
+}
 
-// Check if user is logged in
-document.addEventListener("DOMContentLoaded", function () {
-    const userName = localStorage.getItem('user_name');
-    const userNim = localStorage.getItem('user_nim');
-
-    if (!userNim) {
-        window.location.href = "index.php";
-        return;
-    }
-
-    // Display user initial in profile avatar
-    if (userName) {
-        const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
-        document.getElementById('profileAvatar').textContent = initials;
-    }
-
-    // Logout button
-    document.getElementById('logoutBtn').addEventListener('click', function () {
-        localStorage.removeItem('user_nim');
-        localStorage.removeItem('user_name');
-        window.location.href = "index.php";
-    });
-
-    initializeModalListeners();
-    filterAndSortPosts();
-});
-
+// ============================================
 // MODAL FUNCTIONS
-const openImageModal = (imageUrl) => {
+// ============================================
+function openImageModal(imageUrl) {
     const modal = document.getElementById('imageModal');
     const modalImage = document.getElementById('modalImage');
+    
+    if (!modal || !modalImage) return;
+    
     modalImage.src = imageUrl;
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
-};
+}
 
-const closeImageModal = () => {
-    const modal = document.getElementById('imageModal');
-    modal.style.display = 'none';
-    document.body.style.overflow = 'auto';
-};
-
-const initializeModalListeners = () => {
+function closeImageModal() {
     const modal = document.getElementById('imageModal');
     
+    if (!modal) return;
+    
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+function initializeModalListeners() {
+    const modal = document.getElementById('imageModal');
+    
+    if (!modal) return;
+
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
             closeImageModal();
@@ -187,29 +185,33 @@ const initializeModalListeners = () => {
     }
 
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
             closeImageModal();
         }
     });
-};
+}
 
-// Utility Functions
-const getAvatarColor = (initials) => {
+// ============================================
+// UTILITY FUNCTIONS
+// ============================================
+function getAvatarColor(initials) {
     const colors = ['color1', 'color2', 'color3', 'color4'];
     return colors[initials.charCodeAt(0) % colors.length];
-};
+}
 
-const getStatusClass = (status) => {
+function getStatusClass(status) {
     return status === 'Completed' ? 'status-completed' : 'status-unresolved';
-};
+}
 
+// ============================================
 // VOTE HANDLING
-const handleVote = (postId, voteType) => {
+// ============================================
+function handleVote(postId, voteType) {
     console.log(`Vote ${voteType} untuk post ${postId}`);
     updateVoteCountUI(postId, voteType);
-};
+}
 
-const updateVoteCountUI = (postId, voteType) => {
+function updateVoteCountUI(postId, voteType) {
     const voteCountEl = document.querySelector(`.vote-count-${postId}`);
     if (voteCountEl) {
         let currentCount = parseInt(voteCountEl.textContent);
@@ -219,10 +221,13 @@ const updateVoteCountUI = (postId, voteType) => {
             voteCountEl.textContent = Math.max(0, currentCount - 1);
         }
     }
-};
+}
 
-// Attach Event Listeners
-const attachEventListeners = () => {
+// ============================================
+// EVENT LISTENERS - VOTES & MODAL
+// ============================================
+function attachEventListeners() {
+    // Vote buttons
     document.querySelectorAll('.vote-up').forEach(btn => {
         btn.addEventListener('click', () => {
             const postId = btn.dataset.postId;
@@ -237,16 +242,19 @@ const attachEventListeners = () => {
         });
     });
 
+    // Image modal
     document.querySelectorAll('.post-image-clickable').forEach(img => {
         img.addEventListener('click', () => {
             const imageUrl = img.dataset.imageUrl;
             openImageModal(imageUrl);
         });
     });
-};
+}
 
-// Create Post HTML
-const createPostHTML = (post) => {
+// ============================================
+// POST RENDERING
+// ============================================
+function createPostHTML(post) {
     return `
         <div class="post-card">
             <div class="post-header-container">
@@ -268,7 +276,11 @@ const createPostHTML = (post) => {
                     </div>
                 </div>
                 <div class="post-content">${post.content}</div>
-                ${post.hasImage ? `<div class="post-image post-image-clickable" data-image-url="${post.imageUrl}"><img src="${post.imageUrl}" alt="Post image" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;"></div>` : ''}
+                ${post.hasImage ? `
+                    <div class="post-image post-image-clickable" data-image-url="${post.imageUrl}">
+                        <img src="${post.imageUrl}" alt="Post image" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;">
+                    </div>
+                ` : ''}
             </div>
 
             <div class="post-footer">
@@ -287,10 +299,12 @@ const createPostHTML = (post) => {
             </div>
         </div>
     `;
-};
+}
 
-// Filter & Sort Posts
-const filterAndSortPosts = () => {
+// ============================================
+// FILTER & SORT
+// ============================================
+function filterAndSortPosts() {
     let filtered = [...postsData];
 
     if (currentCategory !== 'All') {
@@ -318,42 +332,63 @@ const filterAndSortPosts = () => {
     }
 
     const container = document.getElementById('feedContainer');
+    if (!container) return;
+
     container.innerHTML = filtered.length > 0
         ? filtered.map(post => createPostHTML(post)).join('')
-        : '<p style="text-align: center; color: #999; padding: 2rem;">No posts found</p>';
+        : '<p style="text-align: center; color: var(--gray-500); padding: 2rem;">No posts found</p>';
 
     attachEventListeners();
-};
+}
 
-// Event Listeners - Filter Navigation
-document.getElementById('filterNav').addEventListener('click', (e) => {
-    if (e.target.classList.contains('filter-btn')) {
-        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-        e.target.classList.add('active');
-        currentCategory = e.target.dataset.category;
-        filterAndSortPosts();
+// ============================================
+// EVENT LISTENERS - FILTER & SORT
+// ============================================
+function initializeFiltersAndSort() {
+    const filterNav = document.getElementById('filterNav');
+    const sortNav = document.getElementById('sortNav');
+    const searchInput = document.getElementById('searchInput');
+
+    if (filterNav) {
+        filterNav.addEventListener('click', (e) => {
+            if (e.target.classList.contains('filter-btn')) {
+                document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                currentCategory = e.target.dataset.category;
+                filterAndSortPosts();
+            }
+        });
     }
-});
 
-// Event Listeners - Sort Navigation
-document.getElementById('sortNav').addEventListener('click', (e) => {
-    if (e.target.classList.contains('sort-btn')) {
-        document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
-        e.target.classList.add('active');
-        currentSort = e.target.dataset.sort;
-        filterAndSortPosts();
+    if (sortNav) {
+        sortNav.addEventListener('click', (e) => {
+            if (e.target.classList.contains('sort-btn')) {
+                document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                currentSort = e.target.dataset.sort;
+                filterAndSortPosts();
+            }
+        });
     }
-});
 
-// Event Listeners - Search Input
-document.getElementById('searchInput').addEventListener('input', filterAndSortPosts);
-document.getElementById('searchInput').addEventListener('input', filterAndSortPosts);
+    if (searchInput) {
+        searchInput.addEventListener('input', filterAndSortPosts);
+    }
+}
 
-// Initial Setup on Page Load
+// ============================================
+// INITIALIZE ON DOM READY
+// ============================================
 document.addEventListener('DOMContentLoaded', () => {
+    // Theme setup FIRST (before rendering)
     applySavedTheme();
     initializeThemeToggle();
+
+    // Then initialize other features
     initializeProfileDropdown();
     initializeModalListeners();
+    initializeFiltersAndSort();
+
+    // Finally render posts
     filterAndSortPosts();
 });
