@@ -1,0 +1,545 @@
+/* ============================================================
+ * RuangKita - Admin Components CSS
+ * File: App/admin/assets/css/admin-components.css
+ * ============================================================ */
+
+/* --- Statistics Summary Cards --- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-height: 7rem;
+    padding: 1rem;
+    border: 1px solid var(--gray-200);
+    border-radius: 0.75rem;
+    background: #ffffff;
+    box-shadow: 0 8px 22px rgba(15, 45, 82, 0.06);
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 34px rgba(15, 45, 82, 0.12);
+}
+
+.stat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 2.7rem;
+    width: 2.7rem;
+    height: 2.7rem;
+    border-radius: 0.7rem;
+    color: #ffffff;
+    font-weight: 900;
+}
+
+.stat-card p {
+    color: var(--gray-500);
+    font-size: 0.82rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.stat-card strong {
+    display: block;
+    margin-top: 0.25rem;
+    color: var(--gray-900);
+    font-size: 1.75rem;
+    line-height: 1;
+}
+
+.stat-total .stat-icon { background: #0f3057; }
+.stat-pending .stat-icon { background: #eab308; }
+.stat-progress .stat-icon { background: #008891; }
+.stat-completed .stat-icon { background: #16a34a; }
+.stat-rejected .stat-icon { background: #ef4444; }
+
+
+/* --- Admin Filters Bar --- */
+.admin-filters {
+    display: grid;
+    grid-template-columns: minmax(220px, 2fr) repeat(3, minmax(150px, 1fr)) auto;
+    align-items: end;
+    gap: 0.85rem;
+    margin-bottom: 1.25rem;
+    padding: 1rem;
+    border: 1px solid var(--gray-200);
+    border-radius: 0.75rem;
+    background: #ffffff;
+    box-shadow: 0 8px 22px rgba(15, 45, 82, 0.06);
+}
+
+.filter-field {
+    display: grid;
+    gap: 0.4rem;
+}
+
+.filter-field label,
+.status-form label,
+.response-form label {
+    color: var(--gray-700);
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.filter-field input,
+.filter-field select,
+.status-form select,
+.response-form textarea {
+    width: 100%;
+    border: 1px solid var(--gray-300);
+    border-radius: 0.5rem;
+    background: #ffffff;
+    color: var(--gray-900);
+    font: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.filter-field input,
+.filter-field select,
+.status-form select {
+    min-height: 2.65rem;
+    padding: 0 0.75rem;
+}
+
+.response-form textarea {
+    min-height: 5.25rem;
+    padding: 0.75rem;
+    resize: vertical;
+}
+
+.filter-field input:focus,
+.filter-field select:focus,
+.status-form select:focus,
+.response-form textarea:focus {
+    outline: none;
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px rgba(0, 136, 145, 0.12);
+}
+
+.filter-submit {
+    min-height: 2.65rem;
+    padding: 0 1rem;
+}
+
+
+/* --- Aspiration Post Card & Feed --- */
+.admin-feed {
+    display: grid;
+    gap: 1rem;
+}
+
+.admin-post-card {
+    position: relative;
+    display: grid;
+    gap: 1rem;
+    padding: 1.1rem;
+    border: 1px solid var(--gray-200);
+    border-radius: 0.75rem;
+    background: #ffffff;
+    box-shadow: 0 8px 22px rgba(15, 45, 82, 0.06);
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.admin-post-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(0, 136, 145, 0.34);
+    box-shadow: 0 16px 34px rgba(15, 45, 82, 0.12);
+}
+
+.card-open {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+.post-card-top,
+.post-meta-row,
+.admin-card-actions,
+.response-form,
+.latest-response,
+.attachment-preview {
+    position: relative;
+    z-index: 1;
+}
+
+.post-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.author-cluster {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+    min-width: 0;
+}
+
+.admin-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 2.75rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0f3057, #008891);
+    color: #ffffff;
+    font-size: 0.88rem;
+    font-weight: 900;
+}
+
+.author-cluster h2 {
+    margin: 0;
+    color: var(--gray-900);
+    font-size: 1.08rem;
+    line-height: 1.35;
+}
+
+.author-cluster p {
+    margin-top: 0.25rem;
+    color: var(--gray-500);
+    font-size: 0.86rem;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+.post-excerpt {
+    position: relative;
+    z-index: 1;
+    color: var(--gray-700);
+    line-height: 1.65;
+    margin: 0;
+}
+
+.post-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    align-items: center;
+    color: var(--gray-500);
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.admin-status-badge,
+.priority-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 1.75rem;
+    padding: 0 0.75rem;
+    border-radius: 999px;
+    color: #ffffff;
+    font-size: 0.76rem;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.status-pending { background: #eab308; }
+.status-in-progress { background: #008891; }
+.status-completed { background: #16a34a; }
+.status-rejected { background: #ef4444; }
+
+.priority-pill {
+    color: var(--gray-700);
+    background: var(--gray-100);
+}
+
+.priority-high {
+    color: #991b1b;
+    background: #fee2e2;
+}
+
+.priority-medium {
+    color: #0f766e;
+    background: #ccfbf1;
+}
+
+.attachment-preview {
+    width: 100%;
+    max-height: 13rem;
+    overflow: hidden;
+    border-radius: 0.65rem;
+    background: var(--gray-100);
+}
+
+.attachment-preview img,
+.attachment-preview video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-height: 13rem;
+    object-fit: cover;
+}
+
+.admin-card-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.85rem;
+    align-items: end;
+    padding-top: 0.25rem;
+}
+
+.status-form {
+    display: grid;
+    gap: 0.4rem;
+}
+
+.latest-response {
+    padding: 0.85rem;
+    border-left: 4px solid var(--secondary);
+    border-radius: 0.55rem;
+    background: rgba(0, 136, 145, 0.08);
+}
+
+.latest-response strong {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: var(--primary);
+    font-size: 0.82rem;
+}
+
+.latest-response p {
+    color: var(--gray-700);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.response-form {
+    display: grid;
+    gap: 0.55rem;
+}
+
+.response-form button {
+    justify-self: start;
+    min-height: 2.45rem;
+    padding: 0 0.95rem;
+}
+
+.empty-state {
+    padding: 2rem;
+    border: 1px dashed var(--gray-300);
+    border-radius: 0.75rem;
+    background: #ffffff;
+    text-align: center;
+}
+
+.empty-state h2 {
+    color: var(--primary);
+    font-size: 1.2rem;
+}
+
+.empty-state p {
+    margin-top: 0.5rem;
+    color: var(--gray-500);
+}
+
+
+/* --- Pagination --- */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.85rem;
+    margin-top: 1.5rem;
+}
+
+.pagination a,
+.pagination span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.35rem;
+    padding: 0 0.85rem;
+    border-radius: 0.5rem;
+    font-weight: 800;
+}
+
+.pagination a {
+    background: #ffffff;
+    color: var(--secondary);
+    text-decoration: none;
+    border: 1px solid var(--gray-200);
+}
+
+.pagination span {
+    color: var(--gray-500);
+}
+
+
+/* --- Toasts --- */
+.toast {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 1900;
+    display: none;
+    max-width: min(360px, calc(100% - 2rem));
+    padding: 0.85rem 1rem;
+    border-radius: 0.65rem;
+    background: #0f3057;
+    color: #ffffff;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
+    font-weight: 800;
+}
+
+.toast.show {
+    display: block;
+    animation: toast-in 0.22s ease-out;
+}
+
+.toast.error {
+    background: #991b1b;
+}
+
+@keyframes toast-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* ============================================================
+ * Dark Theme styling for components
+ * ============================================================ */
+
+body.admin-page.dark-theme .author-cluster h2,
+body.admin-page.dark-theme .empty-state h2,
+body.admin-page.dark-theme .latest-response strong {
+    color: #e2e8f0;
+}
+
+body.admin-page.dark-theme .stat-card p,
+body.admin-page.dark-theme .author-cluster p,
+body.admin-page.dark-theme .post-meta-row,
+body.admin-page.dark-theme .empty-state p,
+body.admin-page.dark-theme .pagination span {
+    color: #cbd5e1;
+}
+
+body.admin-page.dark-theme .stat-card,
+body.admin-page.dark-theme .admin-filters,
+body.admin-page.dark-theme .admin-post-card,
+body.admin-page.dark-theme .empty-state,
+body.admin-page.dark-theme .pagination a {
+    background: #0f172a;
+    border-color: #334155;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
+}
+
+body.admin-page.dark-theme .stat-card strong,
+body.admin-page.dark-theme .post-excerpt,
+body.admin-page.dark-theme .latest-response p {
+    color: #f8fafc;
+}
+
+body.admin-page.dark-theme .filter-field label,
+body.admin-page.dark-theme .status-form label,
+body.admin-page.dark-theme .response-form label {
+    color: #e2e8f0;
+}
+
+body.admin-page.dark-theme .filter-field input,
+body.admin-page.dark-theme .filter-field select,
+body.admin-page.dark-theme .status-form select,
+body.admin-page.dark-theme .response-form textarea {
+    background: #07101e;
+    border-color: #334155;
+    color: #f8fafc;
+}
+
+body.admin-page.dark-theme .filter-field input::placeholder,
+body.admin-page.dark-theme .response-form textarea::placeholder {
+    color: #94a3b8;
+}
+
+body.admin-page.dark-theme .latest-response {
+    background: rgba(0, 136, 145, 0.14);
+}
+
+body.admin-page.dark-theme .priority-pill,
+body.admin-page.dark-theme .attachment-preview {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+body.admin-page.dark-theme .priority-pill {
+    color: #e2e8f0;
+}
+
+body.admin-page.dark-theme .priority-high {
+    color: #fecaca;
+    background: rgba(239, 68, 68, 0.18);
+}
+
+body.admin-page.dark-theme .priority-medium {
+    color: #99f6e4;
+    background: rgba(20, 184, 166, 0.16);
+}
+
+
+/* ============================================================
+ * Responsive adjustments for components
+ * ============================================================ */
+
+@media (max-width: 980px) {
+    .stats-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .admin-filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .search-field,
+    .filter-submit {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 680px) {
+    .post-card-top,
+    .admin-card-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .stats-grid,
+    .admin-filters,
+    .admin-card-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-card {
+        min-height: 5.75rem;
+    }
+
+    .admin-post-card {
+        padding: 0.95rem;
+    }
+
+    .post-card-top {
+        display: grid;
+    }
+
+    .admin-status-badge {
+        justify-self: start;
+    }
+}

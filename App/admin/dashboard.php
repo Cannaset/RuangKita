@@ -121,9 +121,9 @@ if (($_GET['export'] ?? '') === 'csv') {
     <title>RuangKita - Admin Dashboard</title>
     <!-- Stylesheets -->
     <link rel="stylesheet" href="../assets/CSS/style.css">
-    <link rel="stylesheet" href="./assets/css/admin-dashboard.css">
-    <link rel="stylesheet" href="./assets/css/admin-components.css">
-    <link rel="stylesheet" href="./assets/css/admin-modal.css">
+    <link rel="stylesheet" href="../assets/admin/css/admin-dashboard.css">
+    <link rel="stylesheet" href="../assets/admin/css/admin-components.css">
+    <link rel="stylesheet" href="../assets/admin/css/admin-modal.css">
 </head>
 
 <body class="admin-page">
@@ -171,11 +171,11 @@ if (($_GET['export'] ?? '') === 'csv') {
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <!-- Scripts -->
-    <script src="./assets/js/admin-filter.js"></script>
-    <script src="./assets/js/admin-theme.js"></script>
-    <script src="./assets/js/admin-dropdown.js"></script>
-    <script src="./assets/js/admin-status.js"></script>
-    <script src="./assets/js/admin-modal.js"></script>
+    <script src="../assets/admin/js/admin-filter.js"></script>
+    <script src="../assets/admin/js/admin-theme.js"></script>
+    <script src="../assets/admin/js/admin-dropdown.js"></script>
+    <script src="../assets/admin/js/admin-status.js"></script>
+    <script src="../assets/admin/js/admin-modal.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,173 @@
+/* ============================================================
+ * RuangKita - Admin Modal CSS
+ * File: App/admin/assets/css/admin-modal.css
+ * ============================================================ */
+
+/* --- Modal detailed views --- */
+.admin-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(7, 16, 30, 0.72);
+}
+
+.admin-modal[hidden] {
+    display: none;
+}
+
+.admin-modal-panel {
+    position: relative;
+    width: min(820px, 100%);
+    max-height: min(86vh, 780px);
+    overflow: auto;
+    border-radius: 0.85rem;
+    background: #ffffff;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.34);
+}
+
+.modal-close {
+    position: sticky;
+    top: 0.75rem;
+    float: right;
+    width: 2.4rem;
+    height: 2.4rem;
+    margin: 0.75rem 0.75rem 0 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(15, 23, 42, 0.78);
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 1.4rem;
+    line-height: 1;
+    z-index: 2;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-title {
+    padding-right: 3rem;
+    color: var(--primary);
+    font-size: 1.55rem;
+    line-height: 1.25;
+    margin: 0;
+}
+
+.modal-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.85rem 0 1rem;
+    color: var(--gray-500);
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
+.modal-description {
+    color: var(--gray-700);
+    line-height: 1.75;
+    white-space: pre-wrap;
+    margin: 0;
+}
+
+.modal-media {
+    margin-top: 1rem;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    background: var(--gray-100);
+}
+
+.modal-media img,
+.modal-media video {
+    display: block;
+    width: 100%;
+    max-height: 420px;
+    object-fit: contain;
+}
+
+.modal-section-title {
+    margin-top: 1.3rem;
+    margin-bottom: 0.65rem;
+    color: var(--primary);
+    font-size: 1rem;
+}
+
+.response-list {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.response-item {
+    padding: 0.85rem;
+    border: 1px solid var(--gray-200);
+    border-radius: 0.65rem;
+    background: var(--gray-50);
+}
+
+.response-item strong {
+    display: block;
+    color: var(--primary);
+    font-size: 0.85rem;
+}
+
+.response-item small {
+    display: block;
+    margin-top: 0.15rem;
+    color: var(--gray-500);
+}
+
+.response-item p {
+    margin-top: 0.45rem;
+    color: var(--gray-700);
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+
+/* ============================================================
+ * Dark Theme styling for modals
+ * ============================================================ */
+
+body.admin-page.dark-theme .modal-title,
+body.admin-page.dark-theme .modal-section-title,
+body.admin-page.dark-theme .response-item strong {
+    color: #e2e8f0;
+}
+
+body.admin-page.dark-theme .modal-meta,
+body.admin-page.dark-theme .response-item small {
+    color: #cbd5e1;
+}
+
+body.admin-page.dark-theme .admin-modal-panel {
+    background: #0f172a;
+    border-color: #334155;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
+}
+
+body.admin-page.dark-theme .modal-description,
+body.admin-page.dark-theme .response-item p {
+    color: #f8fafc;
+}
+
+body.admin-page.dark-theme .response-item,
+body.admin-page.dark-theme .modal-media {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+
+/* ============================================================
+ * Responsive adjustments for modals
+ * ============================================================ */
+
+@media (max-width: 680px) {
+    .modal-body {
+        padding: 1rem;
+    }
+}
