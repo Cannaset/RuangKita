@@ -3,7 +3,7 @@ session_start();
 require_once __DIR__ . '/../config/database.php';
 
 if (isset($_SESSION['student'])) {
-    header('Location: feed.php');
+    header('Location: ../students/feed.php');
     exit;
 }
 
@@ -83,8 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RuangKita - Signup</title>
-    <link rel="stylesheet" href="../CSS/style.css">
-    <link rel="stylesheet" href="../CSS/style-login.css?v=20260504-2">
+    <link rel="stylesheet" href="../assets/CSS/style.css">
+    <link rel="stylesheet" href="../assets/CSS/style-login.css?v=20260504-2">
 </head>
 
 <body class="auth-page">
@@ -134,10 +134,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             Sudah punya akun? <a href="index.php">Login di sini</a>
         </p>
 
-        <a href="feed.php" class="skip-link">Lanjut ke Feed -></a>
+        <a href="../students/feed.php" class="skip-link">Lanjut ke Feed -></a>
     </main>
 
-    <script src="../JS/script-signup.js?v=20260504-2"></script>
+    <script src="../assets/JS/script-signup.js?v=20260504-2"></script>
 </body>
 
 </html>

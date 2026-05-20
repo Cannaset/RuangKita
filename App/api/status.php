@@ -43,7 +43,7 @@ if ($admin) {
 $method = $_SERVER['REQUEST_METHOD'];
 
 // Status yang valid
-$valid_statuses = ['not_reviewed', 'in_process', 'communicated', 'resolved'];
+$valid_statuses = ['not_reviewed', 'in_process', 'communicated', 'resolved', 'rejected'];
 
 // ============================================================
 // GET - Lihat riwayat status suatu post
@@ -115,7 +115,7 @@ if ($method === 'PATCH') {
     if (!in_array($new_status, $valid_statuses)) {
         respond(400, [
             'success' => false,
-            'message' => 'new_status tidak valid. Pilihan: not_reviewed, in_process, communicated, resolved.',
+            'message' => 'new_status tidak valid. Pilihan: not_reviewed, in_process, communicated, resolved, rejected.',
         ]);
     }
 

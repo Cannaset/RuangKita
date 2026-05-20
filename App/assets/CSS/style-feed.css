@@ -2,10 +2,16 @@ html {
     min-height: 100%;
 }
 
+.header {
+    position: sticky;  /* ✅ ini bener */
+    top: 0;
+    z-index: 999;
+}
+
 body.feed-page {
     height: auto;
     min-height: 100vh;
-    overflow-x: hidden;
+    overflow-x: clip;
     overflow-y: auto;
     background: var(--gray-100);
     transition: background-color 0.25s, color 0.25s;
@@ -229,6 +235,11 @@ body.feed-page::before {
 body.feed-page.dark-theme {
     background: #07101e;
     color: #f8fafc;
+}
+
+body.feed-page.dark-theme,
+body.feed-page.dark-theme .container {
+    background-color: #07101e;
 }
 
 body.feed-page.dark-theme::before {

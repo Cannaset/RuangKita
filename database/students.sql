@@ -55,7 +55,8 @@ CREATE TABLE IF NOT EXISTS posts (
         'not_reviewed',
         'in_process',
         'communicated',
-        'resolved'
+        'resolved',
+        'rejected'
     ) DEFAULT 'not_reviewed',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -109,16 +110,34 @@ CREATE TABLE IF NOT EXISTS post_status_logs (
         'not_reviewed',
         'in_process',
         'communicated',
-        'resolved'
+        'resolved',
+        'rejected'
     ) DEFAULT NULL,
     new_status ENUM(
         'not_reviewed',
         'in_process',
         'communicated',
-        'resolved'
+        'resolved',
+        'rejected'
     ) NOT NULL,
     note TEXT DEFAULT NULL,                                 -- catatan opsional dari admin
     changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
+    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+);
+
+-- ============================================================
+-- 7. ADMIN_RESPONSES
+--    Tanggapan resmi admin terhadap aspirasi mahasiswa
+-- ============================================================
+CREATE TABLE IF NOT EXISTS admin_responses (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    post_id INT UNSIGNED NOT NULL,
+    admin_id INT UNSIGNED NOT NULL,
+    response TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    INDEX idx_admin_responses_post_id (post_id),
     FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 );

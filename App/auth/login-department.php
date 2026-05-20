@@ -65,8 +65,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RuangKita - Login Department</title>
-    <link rel="stylesheet" href="../CSS/style.css">
-    <link rel="stylesheet" href="../CSS/style-login.css?v=20260504-2">
+    <link rel="stylesheet" href="../assets/CSS/style.css">
+    <link rel="stylesheet" href="../assets/CSS/style-login.css?v=20260504-2">
 </head>
 
 <body class="auth-page">
@@ -114,9 +114,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
 
         <p class="footer-text">Hanya untuk perwakilan departemen yang berwenang.</p>
+        <p class="auth-switch">
+            <a href="index.php"><- Kembali</a>
+        </p>
     </main>
 
-    <script src="../JS/script-login.js?v=20260504-2"></script>
+    <script src="../assets/JS/script-login.js?v=20260504-2"></script>
 </body>
 
 </html>

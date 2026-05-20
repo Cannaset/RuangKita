@@ -16,5 +16,5 @@ if (ini_get('session.use_cookies')) {
 }
 
 session_destroy();
-header('Location: feed.php');
+header('Location: ../students/feed.php');
 exit;

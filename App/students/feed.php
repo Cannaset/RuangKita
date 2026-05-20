@@ -24,8 +24,8 @@ function getInitials(string $name): string
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RuangKita - Feed</title>
-    <link rel="stylesheet" href="../CSS/style.css?v=8">
-    <link rel="stylesheet" href="../CSS/style-feed.css?v=8">
+    <link rel="stylesheet" href="../assets/CSS/style.css">
+    <link rel="stylesheet" href="../assets/CSS/style-feed.css">
 </head>
 
 <body class="feed-page">
@@ -68,14 +68,14 @@ function getInitials(string $name): string
 
                     <div class="profile-dropdown" id="profileDropdown">
                         <a href="#">Profil</a>
-                        <a href="logout.php">Log out</a>
+                        <a href="../auth/logout.php">Log out</a>
                     </div>
                 </div>
             <?php else: ?>
                 <div class="auth-links">
-                    <a href="index.php">Login</a>
+                    <a href="../auth/index.php">Login</a>
                     <span>||</span>
-                    <a href="signup.php">Signup</a>
+                    <a href="../auth/signup.php">Signup</a>
                 </div>
             <?php endif; ?>
         </div>
@@ -117,7 +117,7 @@ function getInitials(string $name): string
         </div>
     </div>
 
-    <script src="../JS/script-feed.js?v=8"></script>
+    <script src="../assets/JS/script-feed.js?v=8"></script>
 </body>
 
 </html>

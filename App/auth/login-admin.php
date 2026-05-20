@@ -7,9 +7,36 @@
 session_start();
 require_once __DIR__ . '/../config/database.php';
 
+function adminTableName(mysqli $conn): string
+{
+    foreach (['admin', 'admins'] as $table) {
+        $stmt = $conn->prepare("
+            SELECT TABLE_NAME
+            FROM INFORMATION_SCHEMA.TABLES
+            WHERE TABLE_SCHEMA = DATABASE()
+              AND TABLE_NAME = ?
+            LIMIT 1
+        ");
+        $stmt->bind_param('s', $table);
+        $stmt->execute();
+
+        if ($stmt->get_result()->num_rows > 0) {
+            return $table;
+        }
+    }
+
+    return 'admins';
+}
+
+function verifyAdminPassword(string $inputPassword, string $storedPassword): bool
+{
+    return password_verify($inputPassword, $storedPassword)
+        || hash_equals($storedPassword, $inputPassword);
+}
+
 // Kalau sudah login sebagai admin, langsung ke dashboard
 if (isset($_SESSION['admin'])) {
-    header('Location: dashboard-admin.php');
+    header('Location: ../admin/dashboard.php');
     exit;
 }
 
@@ -31,9 +58,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = 'Password tidak boleh kosong.';
     } else {
         // Cari admin berdasarkan email
+        $adminTable = adminTableName($conn);
         $stmt = $conn->prepare("
             SELECT id, username, email, password, profile_picture
-            FROM admins
+            FROM `$adminTable`
             WHERE email = ?
             LIMIT 1
         ");
@@ -41,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute();
         $admin = $stmt->get_result()->fetch_assoc();
 
-        if (!$admin || !password_verify($password, $admin['password'])) {
+        if (!$admin || !verifyAdminPassword($password, $admin['password'])) {
             $message = 'Email atau Password salah.';
         } else {
             // Set session admin — inilah yang dibaca oleh status.php
@@ -51,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'email'           => $admin['email'],
                 'profile_picture' => $admin['profile_picture'],
             ];
-            header('Location: dashboard-admin.php');
+            header('Location: ../admin/dashboard.php');
             exit;
         }
     }
@@ -64,8 +92,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RuangKita - Login Admin</title>
-    <link rel="stylesheet" href="../CSS/style.css">
-    <link rel="stylesheet" href="../CSS/style-login.css?v=20260504-2">
+    <link rel="stylesheet" href="../assets/CSS/style.css">
+    <link rel="stylesheet" href="../assets/CSS/style-login.css?v=20260504-2">
 </head>
 
 <body class="auth-page">
@@ -113,9 +141,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
 
         <p class="footer-text">Hanya untuk pengurus yang berwenang.</p>
+        <p class="auth-switch">
+            <a href="index.php"><- Kembali</a>
+        </p>
     </main>
 
-    <script src="../JS/script-login.js?v=20260504-2"></script>
+    <script src="../assets/JS/script-login.js?v=20260504-2"></script>
 </body>
 
 </html>

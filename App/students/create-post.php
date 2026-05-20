@@ -5,7 +5,7 @@ $student = $_SESSION['student'] ?? null;
 
 // Redirect if not logged in
 if (!$student) {
-    header('Location: index.php');
+    header('Location: ../auth/index.php');
     exit;
 }
 
@@ -60,8 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RuangKita - Create Post</title>
-    <link rel="stylesheet" href="../CSS/style.css?v=7">
-    <link rel="stylesheet" href="../CSS/style-create-post.css?v=7">
+    <link rel="stylesheet" href="../assets/CSS/style.css">
+    <link rel="stylesheet" href="../assets/CSS/style-create-post.css">
 </head>
 
 <body class="create-post-page">
@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <div class="profile-dropdown" id="profileDropdown">
                         <a href="#">Profil</a>
-                        <a href="logout.php">Log out</a>
+                        <a href="../auth/logout.php">Log out</a>
                     </div>
                 </div>
             <?php endif; ?>
@@ -205,7 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
-    <script src="../JS/script-create-post.js?v=7"></script>
+    <script src="../assets/JS/script-create-post.js?v=7"></script>
 </body>
 
 </html>

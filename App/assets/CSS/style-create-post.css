@@ -221,6 +221,17 @@ body.create-post-page.dark-theme {
     background: #07101e;
 }
 
+body.create-post-page.dark-theme,
+body.create-post-page.dark-theme .container,
+body.create-post-page.dark-theme .create-post-wrapper {
+    background-color: #07101e;
+}
+
+body.create-post-page.dark-theme .header {
+    background: linear-gradient(to right, #07101e, #0f3057);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.34);
+}
+
 body.create-post-page.dark-theme .post-form-card {
     background: #0f172a;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
@@ -288,3 +299,4 @@ body.create-post-page.dark-theme .upload-placeholder small {
         width: 100%;
     }
 }
+

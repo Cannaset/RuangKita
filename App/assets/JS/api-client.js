@@ -14,19 +14,19 @@
 class RuangKitaAPI {
     constructor() {
         // TODO: Update dengan production URL
-        this.baseURL = "http://localhost/ruangkita/api";
+        this.baseURL = "../api";
         
         this.endpoints = {
             posts: {
-                list: "/posts",
-                create: "/posts",
-                detail: "/posts/:id",
-                update: "/posts/:id",
-                delete: "/posts/:id"
+                list: "/posts.php",
+                create: "/posts.php",
+                detail: "/posts.php?id=:id",
+                update: "/posts.php?id=:id",
+                delete: "/posts.php?id=:id"
             },
             votes: {
-                create: "/posts/:postId/votes",
-                delete: "/posts/:postId/votes/:voteId"
+                create: "/votes.php",
+                delete: "/votes.php"
             },
             comments: {
                 list: "/posts/:postId/comments",
