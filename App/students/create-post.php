@@ -47,8 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (empty($category) || !array_key_exists($category, $categories)) {
         $errorMessage = 'Kategori tidak valid';
     } else {
-        // TODO: API call akan dilakukan di sini
-        // Placeholder untuk sekarang
+        header('Location: feed.php');
+        exit;
         $submitSuccess = true;
     }
 }

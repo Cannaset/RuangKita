@@ -1,72 +1,9 @@
 // ============================================
 // DATA & STATE
 // ============================================
-const postsData = [
-    {
-        id: 1,
-        author: 'Anonymous Student',
-        initials: 'AS',
-        timestamp: '2 hours ago',
-        status: 'Completed',
-        content: 'The library needs more charging stations for students. Many outlets are occupied and students struggle to find places to charge devices during study sessions.',
-        upvotes: 42,
-        comments: 12,
-        hasImage: true,
-        imageUrl: '../image/wimaw.jpeg',
-        category: 'Facilities'
-    },
-    {
-        id: 2,
-        author: 'John Doe',
-        initials: 'JD',
-        timestamp: '4 hours ago',
-        status: 'Unresolved',
-        content: 'The cafeteria food quality has been declining. Please consider improving the meal options and freshness of ingredients.',
-        upvotes: 28,
-        comments: 8,
-        hasImage: false,
-        category: 'Facilities'
-    },
-    {
-        id: 3,
-        author: 'Sarah Mitchell',
-        initials: 'SM',
-        timestamp: '6 hours ago',
-        status: 'Completed',
-        content: 'The new academic building needs better signage. Students are having difficulty finding classrooms and offices.',
-        upvotes: 35,
-        comments: 5,
-        hasImage: false,
-        category: 'Academic'
-    },
-    {
-        id: 4,
-        author: 'Mike Johnson',
-        initials: 'MJ',
-        timestamp: '8 hours ago',
-        status: 'Unresolved',
-        content: 'The bathroom facilities need better cleaning schedules. They are not being maintained properly throughout the day.',
-        upvotes: 19,
-        comments: 3,
-        hasImage: false,
-        category: 'Cleanliness'
-    },
-    {
-        id: 5,
-        author: 'Emma Wilson',
-        initials: 'EW',
-        timestamp: '10 hours ago',
-        status: 'Completed',
-        content: 'WiFi connectivity in the dormitory is very poor. Please improve the network coverage for students.',
-        upvotes: 56,
-        comments: 15,
-        hasImage: false,
-        category: 'Facilities'
-    }
-];
-
 let currentCategory = 'All';
 let currentSort = 'Newest';
+let cachedPosts = []; // menyimpan data dari API
 
 // ============================================
 // THEME MANAGEMENT
@@ -206,20 +143,39 @@ function getStatusClass(status) {
 // ============================================
 // VOTE HANDLING
 // ============================================
-function handleVote(postId, voteType) {
-    console.log(`Vote ${voteType} untuk post ${postId}`);
-    updateVoteCountUI(postId, voteType);
-}
+async function handleVote(postId, voteType) {
+    try {
+        const res = await fetch('../api/votes.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ post_id: parseInt(postId), vote_type: voteType })
+        });
+        const data = await res.json();
 
-function updateVoteCountUI(postId, voteType) {
-    const voteCountEl = document.querySelector(`.vote-count-${postId}`);
-    if (voteCountEl) {
-        let currentCount = parseInt(voteCountEl.textContent);
-        if (voteType === 'up') {
-            voteCountEl.textContent = currentCount + 1;
-        } else if (voteType === 'down') {
-            voteCountEl.textContent = Math.max(0, currentCount - 1);
+        if (!data.success) {
+            console.error('Vote gagal:', data.message);
+            return;
         }
+
+        // Ambil ulang data vote terbaru dari API lalu update UI
+        const voteRes = await fetch(`../api/votes.php?post_id=${postId}`);
+        const voteData = await voteRes.json();
+
+        if (voteData.success) {
+            const upEl   = document.querySelector(`.vote-count-up-${postId}`);
+            const downEl = document.querySelector(`.vote-count-down-${postId}`);
+            const upBtn  = document.querySelector(`.vote-up[data-post-id="${postId}"]`);
+            const downBtn = document.querySelector(`.vote-down[data-post-id="${postId}"]`);
+
+            if (upEl)   upEl.textContent   = voteData.upvotes;
+            if (downEl) downEl.textContent = voteData.downvotes;
+
+            // Highlight tombol yang aktif
+            if (upBtn)   upBtn.classList.toggle('active', voteData.my_vote === 'upvote');
+            if (downBtn) downBtn.classList.toggle('active', voteData.my_vote === 'downvote');
+        }
+    } catch (err) {
+        console.error('Error vote:', err);
     }
 }
 
@@ -286,9 +242,10 @@ function createPostHTML(post) {
             <div class="post-footer">
                 <div class="post-interactions">
                     <div class="interaction-item">
-                        <button class="interaction-btn vote-up" data-post-id="${post.id}">⬆</button>
-                        <span class="vote-count-${post.id}">${post.upvotes}</span>
-                        <button class="interaction-btn vote-down" data-post-id="${post.id}">⬇</button>
+                        <button class="interaction-btn vote-up ${post.my_vote === 'upvote' ? 'active' : ''}" data-post-id="${post.id}">⬆</button>
+                        <span class="vote-count-up-${post.id}">${post.upvotes}</span>
+                        <button class="interaction-btn vote-down ${post.my_vote === 'downvote' ? 'active' : ''}" data-post-id="${post.id}">⬇</button>
+                        <span class="vote-count-down-${post.id}">${post.downvotes}</span>
                     </div>
                     <div class="interaction-item">
                         <span>💬</span>
@@ -302,44 +259,100 @@ function createPostHTML(post) {
 }
 
 // ============================================
-// FILTER & SORT
+// FETCH POSTS DARI API
 // ============================================
-function filterAndSortPosts() {
-    let filtered = [...postsData];
-
-    if (currentCategory !== 'All') {
-        filtered = filtered.filter(post => post.category === currentCategory);
-    }
-
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    if (searchTerm) {
-        filtered = filtered.filter(post =>
-            post.content.toLowerCase().includes(searchTerm) ||
-            post.author.toLowerCase().includes(searchTerm)
-        );
-    }
-
-    if (currentSort === 'Popular') {
-        filtered.sort((a, b) => b.upvotes - a.upvotes);
-    } else if (currentSort === 'Newest') {
-        // Keep original order
-    } else if (currentSort === 'Unresolved') {
-        filtered.sort((a, b) => {
-            if (a.status === 'Unresolved' && b.status !== 'Unresolved') return -1;
-            if (a.status !== 'Unresolved' && b.status === 'Unresolved') return 1;
-            return 0;
-        });
-    }
-
+async function fetchAndRenderPosts() {
     const container = document.getElementById('feedContainer');
     if (!container) return;
 
-    container.innerHTML = filtered.length > 0
-        ? filtered.map(post => createPostHTML(post)).join('')
-        : '<p style="text-align: center; color: var(--gray-500); padding: 2rem;">No posts found</p>';
+    // Tampilkan loading dulu
+    container.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--gray-500)">Memuat...</p>';
 
-    attachEventListeners();
+    // Bangun query params
+    const params = new URLSearchParams();
+    if (currentCategory !== 'All') params.set('category', currentCategory);
+    if (currentSort === 'Popular')    params.set('sort', 'popular');
+    if (currentSort === 'Unresolved') params.set('sort', 'unresolved');
+
+    const searchTerm = document.getElementById('searchInput')?.value.trim();
+    if (searchTerm) params.set('search', searchTerm);
+
+    try {
+        const res  = await fetch(`../api/posts.php?${params.toString()}`);
+        const data = await res.json();
+
+        if (!data.success) {
+            container.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--gray-500)">Gagal memuat post.</p>';
+            return;
+        }
+
+        cachedPosts = data.data;
+
+        container.innerHTML = cachedPosts.length > 0
+            ? cachedPosts.map(post => createPostHTML(post)).join('')
+            : '<p style="text-align:center;padding:2rem;color:var(--gray-500)">Belum ada post.</p>';
+
+        attachEventListeners();
+
+    } catch (err) {
+        console.error('Fetch posts error:', err);
+        container.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--gray-500)">Terjadi kesalahan.</p>';
+    }
 }
+
+// ============================================
+// EVENT LISTENERS - FILTER & SORT
+// ============================================
+function initializeFiltersAndSort() {
+    const filterNav   = document.getElementById('filterNav');
+    const sortNav     = document.getElementById('sortNav');
+    const searchInput = document.getElementById('searchInput');
+
+    if (filterNav) {
+        filterNav.addEventListener('click', (e) => {
+            if (e.target.classList.contains('filter-btn')) {
+                document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                currentCategory = e.target.dataset.category;
+                fetchAndRenderPosts();
+            }
+        });
+    }
+
+    if (sortNav) {
+        sortNav.addEventListener('click', (e) => {
+            if (e.target.classList.contains('sort-btn')) {
+                document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                currentSort = e.target.dataset.sort;
+                fetchAndRenderPosts();
+            }
+        });
+    }
+
+    if (searchInput) {
+        // Pakai debounce supaya tidak fetch tiap ketik 1 huruf
+        let debounceTimer;
+        searchInput.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(fetchAndRenderPosts, 400);
+        });
+    }
+}
+
+// ============================================
+// INITIALIZE ON DOM READY
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+    applySavedTheme();
+    initializeThemeToggle();
+    initializeProfileDropdown();
+    initializeModalListeners();
+    initializeFiltersAndSort();
+
+    // Fetch dari API, bukan data dummy
+    fetchAndRenderPosts();
+});
 
 // ============================================
 // EVENT LISTENERS - FILTER & SORT
