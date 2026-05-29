@@ -37,8 +37,15 @@
     width: 2.7rem;
     height: 2.7rem;
     border-radius: 0.7rem;
-    color: #ffffff;
-    font-weight: 900;
+    overflow: hidden; /* penting */
+}
+
+.stat-icon-img {
+    width: 60px !important;
+    height: 60px !important;
+    object-fit: contain;
+    display: block;
+    flex-shrink: 0;
 }
 
 .stat-card p {
