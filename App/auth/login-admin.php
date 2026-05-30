@@ -1,8 +1,4 @@
 <?php
-// ============================================================
-// RuangKita - Login Admin
-// File: App/HTML/login-admin.php
-// ============================================================
 
 session_start();
 require_once __DIR__ . '/../config/database.php';

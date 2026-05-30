@@ -3,7 +3,7 @@
 // ============================================
 let currentCategory = 'All';
 let currentSort = 'Newest';
-let cachedPosts = []; // menyimpan data dari API
+let cachedPosts = [];
 
 // ============================================
 // THEME MANAGEMENT
@@ -38,17 +38,14 @@ function applyTheme(isDark) {
 
 function initializeThemeToggle() {
     const themeToggle = document.getElementById('themeToggle');
-
     if (!themeToggle) return;
 
     themeToggle.addEventListener('click', () => {
         const isDark = document.body.classList.toggle('dark-theme');
         localStorage.setItem('ruangkita-theme', isDark ? 'dark' : 'light');
-        
+
         const themeIcon = document.getElementById('themeIcon');
-        if (themeIcon) {
-            themeIcon.textContent = isDark ? 'Light' : 'Dark';
-        }
+        if (themeIcon) themeIcon.textContent = isDark ? 'Light' : 'Dark';
 
         const notificationIcon = document.getElementById('notificationIcon');
         if (notificationIcon) {
@@ -63,7 +60,7 @@ function initializeThemeToggle() {
 // PROFILE DROPDOWN
 // ============================================
 function initializeProfileDropdown() {
-    const profileMenu = document.querySelector('.profile-menu');
+    const profileMenu    = document.querySelector('.profile-menu');
     const profileTrigger = document.getElementById('profileTrigger');
 
     if (!profileMenu || !profileTrigger) return;
@@ -86,11 +83,9 @@ function initializeProfileDropdown() {
 // MODAL FUNCTIONS
 // ============================================
 function openImageModal(imageUrl) {
-    const modal = document.getElementById('imageModal');
+    const modal      = document.getElementById('imageModal');
     const modalImage = document.getElementById('modalImage');
-    
     if (!modal || !modalImage) return;
-    
     modalImage.src = imageUrl;
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
@@ -98,33 +93,24 @@ function openImageModal(imageUrl) {
 
 function closeImageModal() {
     const modal = document.getElementById('imageModal');
-    
     if (!modal) return;
-    
     modal.style.display = 'none';
     document.body.style.overflow = 'auto';
 }
 
 function initializeModalListeners() {
     const modal = document.getElementById('imageModal');
-    
     if (!modal) return;
 
     modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeImageModal();
-        }
+        if (e.target === modal) closeImageModal();
     });
 
     const closeBtn = document.querySelector('.modal-close');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', closeImageModal);
-    }
+    if (closeBtn) closeBtn.addEventListener('click', closeImageModal);
 
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.style.display === 'flex') {
-            closeImageModal();
-        }
+        if (e.key === 'Escape' && modal.style.display === 'flex') closeImageModal();
     });
 }
 
@@ -137,7 +123,23 @@ function getAvatarColor(initials) {
 }
 
 function getStatusClass(status) {
-    return status === 'Completed' ? 'status-completed' : 'status-unresolved';
+    const map = {
+        'not_reviewed' : 'status-unresolved',
+        'in_process'   : 'status-unresolved',
+        'communicated' : 'status-unresolved',
+        'resolved'     : 'status-completed',
+    };
+    return map[status] ?? 'status-unresolved';
+}
+
+function getStatusLabel(status) {
+    const map = {
+        'not_reviewed' : 'Belum Ditinjau',
+        'in_process'   : 'Sedang Diproses',
+        'communicated' : 'Dikomunikasikan',
+        'resolved'     : 'Selesai',
+    };
+    return map[status] ?? status;
 }
 
 // ============================================
@@ -157,20 +159,18 @@ async function handleVote(postId, voteType) {
             return;
         }
 
-        // Ambil ulang data vote terbaru dari API lalu update UI
-        const voteRes = await fetch(`../api/votes.php?post_id=${postId}`);
+        // Ambil ulang hitungan vote terbaru
+        const voteRes  = await fetch(`../api/votes.php?post_id=${postId}`);
         const voteData = await voteRes.json();
 
         if (voteData.success) {
-            const upEl   = document.querySelector(`.vote-count-up-${postId}`);
-            const downEl = document.querySelector(`.vote-count-down-${postId}`);
-            const upBtn  = document.querySelector(`.vote-up[data-post-id="${postId}"]`);
+            const upEl    = document.querySelector(`.vote-count-up-${postId}`);
+            const downEl  = document.querySelector(`.vote-count-down-${postId}`);
+            const upBtn   = document.querySelector(`.vote-up[data-post-id="${postId}"]`);
             const downBtn = document.querySelector(`.vote-down[data-post-id="${postId}"]`);
 
             if (upEl)   upEl.textContent   = voteData.upvotes;
             if (downEl) downEl.textContent = voteData.downvotes;
-
-            // Highlight tombol yang aktif
             if (upBtn)   upBtn.classList.toggle('active', voteData.my_vote === 'upvote');
             if (downBtn) downBtn.classList.toggle('active', voteData.my_vote === 'downvote');
         }
@@ -180,30 +180,19 @@ async function handleVote(postId, voteType) {
 }
 
 // ============================================
-// EVENT LISTENERS - VOTES & MODAL
+// EVENT LISTENERS — VOTES & MODAL
 // ============================================
 function attachEventListeners() {
-    // Vote buttons
     document.querySelectorAll('.vote-up').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const postId = btn.dataset.postId;
-            handleVote(postId, 'up');
-        });
+        btn.addEventListener('click', () => handleVote(btn.dataset.postId, 'upvote'));
     });
 
     document.querySelectorAll('.vote-down').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const postId = btn.dataset.postId;
-            handleVote(postId, 'down');
-        });
+        btn.addEventListener('click', () => handleVote(btn.dataset.postId, 'downvote'));
     });
 
-    // Image modal
     document.querySelectorAll('.post-image-clickable').forEach(img => {
-        img.addEventListener('click', () => {
-            const imageUrl = img.dataset.imageUrl;
-            openImageModal(imageUrl);
-        });
+        img.addEventListener('click', () => openImageModal(img.dataset.imageUrl));
     });
 }
 
@@ -211,30 +200,38 @@ function attachEventListeners() {
 // POST RENDERING
 // ============================================
 function createPostHTML(post) {
+    // API mengembalikan field: username, time_ago, initials, status,
+    // title, description, image_url, upvotes, downvotes, comments_count, my_vote
+    const author   = post.username      ?? 'Anonim';
+    const initials = post.initials      ?? 'A';
+    const content  = post.description   ?? '';
+    const comments = post.comments_count ?? 0;
+
     return `
         <div class="post-card">
             <div class="post-header-container">
                 <div class="post-header">
                     <div class="post-user-info">
-                        <div class="avatar ${getAvatarColor(post.initials)}">
-                            ${post.initials}
+                        <div class="avatar ${getAvatarColor(initials)}">
+                            ${initials}
                         </div>
                         <div class="post-user-details">
-                            <h4>${post.author}</h4>
-                            <small>${post.timestamp}</small>
+                            <h4>${author}</h4>
+                            <small>${post.time_ago ?? ''}</small>
                         </div>
                     </div>
                     <div class="post-actions-top">
                         <span class="status-badge ${getStatusClass(post.status)}">
-                            ${post.status}
+                            ${getStatusLabel(post.status)}
                         </span>
                         <button class="post-menu">⋯</button>
                     </div>
                 </div>
-                <div class="post-content">${post.content}</div>
-                ${post.hasImage ? `
-                    <div class="post-image post-image-clickable" data-image-url="${post.imageUrl}">
-                        <img src="${post.imageUrl}" alt="Post image" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;">
+                <h3 style="margin: 0.5rem 0 0.25rem; font-size: 1rem;">${post.title ?? ''}</h3>
+                <div class="post-content">${content}</div>
+                ${post.image_url ? `
+                    <div class="post-image post-image-clickable" data-image-url="${post.image_url}">
+                        <img src="${post.image_url}" alt="Post image" style="width:100%;height:100%;object-fit:cover;cursor:pointer;">
                     </div>
                 ` : ''}
             </div>
@@ -243,16 +240,16 @@ function createPostHTML(post) {
                 <div class="post-interactions">
                     <div class="interaction-item">
                         <button class="interaction-btn vote-up ${post.my_vote === 'upvote' ? 'active' : ''}" data-post-id="${post.id}">⬆</button>
-                        <span class="vote-count-up-${post.id}">${post.upvotes}</span>
+                        <span class="vote-count-up-${post.id}">${post.upvotes ?? 0}</span>
                         <button class="interaction-btn vote-down ${post.my_vote === 'downvote' ? 'active' : ''}" data-post-id="${post.id}">⬇</button>
-                        <span class="vote-count-down-${post.id}">${post.downvotes}</span>
+                        <span class="vote-count-down-${post.id}">${post.downvotes ?? 0}</span>
                     </div>
                     <div class="interaction-item">
                         <span>💬</span>
-                        <span>${post.comments}</span>
+                        <span>${comments}</span>
                     </div>
                 </div>
-                <button class="share-btn">🔗</button>
+                <button class="share-btn" onclick="navigator.clipboard.writeText(window.location.origin + window.location.pathname + '?post=${post.id}').then(() => alert('Link disalin!'))">🔗</button>
             </div>
         </div>
     `;
@@ -265,10 +262,8 @@ async function fetchAndRenderPosts() {
     const container = document.getElementById('feedContainer');
     if (!container) return;
 
-    // Tampilkan loading dulu
     container.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--gray-500)">Memuat...</p>';
 
-    // Bangun query params
     const params = new URLSearchParams();
     if (currentCategory !== 'All') params.set('category', currentCategory);
     if (currentSort === 'Popular')    params.set('sort', 'popular');
@@ -296,12 +291,12 @@ async function fetchAndRenderPosts() {
 
     } catch (err) {
         console.error('Fetch posts error:', err);
-        container.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--gray-500)">Terjadi kesalahan.</p>';
+        container.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--gray-500)">Terjadi kesalahan saat memuat.</p>';
     }
 }
 
 // ============================================
-// EVENT LISTENERS - FILTER & SORT
+// EVENT LISTENERS — FILTER & SORT
 // ============================================
 function initializeFiltersAndSort() {
     const filterNav   = document.getElementById('filterNav');
@@ -331,7 +326,6 @@ function initializeFiltersAndSort() {
     }
 
     if (searchInput) {
-        // Pakai debounce supaya tidak fetch tiap ketik 1 huruf
         let debounceTimer;
         searchInput.addEventListener('input', () => {
             clearTimeout(debounceTimer);
@@ -349,59 +343,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeProfileDropdown();
     initializeModalListeners();
     initializeFiltersAndSort();
-
-    // Fetch dari API, bukan data dummy
     fetchAndRenderPosts();
-});
-
-// ============================================
-// EVENT LISTENERS - FILTER & SORT
-// ============================================
-function initializeFiltersAndSort() {
-    const filterNav = document.getElementById('filterNav');
-    const sortNav = document.getElementById('sortNav');
-    const searchInput = document.getElementById('searchInput');
-
-    if (filterNav) {
-        filterNav.addEventListener('click', (e) => {
-            if (e.target.classList.contains('filter-btn')) {
-                document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-                e.target.classList.add('active');
-                currentCategory = e.target.dataset.category;
-                filterAndSortPosts();
-            }
-        });
-    }
-
-    if (sortNav) {
-        sortNav.addEventListener('click', (e) => {
-            if (e.target.classList.contains('sort-btn')) {
-                document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
-                e.target.classList.add('active');
-                currentSort = e.target.dataset.sort;
-                filterAndSortPosts();
-            }
-        });
-    }
-
-    if (searchInput) {
-        searchInput.addEventListener('input', filterAndSortPosts);
-    }
-}
-
-// ============================================
-// INITIALIZE ON DOM READY
-// ============================================
-document.addEventListener('DOMContentLoaded', () => {
-    // Theme setup FIRST (before rendering)
-    applySavedTheme();
-    initializeThemeToggle();
-
-    // Then initialize other features
-    initializeProfileDropdown();
-    initializeModalListeners();
-    initializeFiltersAndSort();
-
-    // Finally render posts
-    filterAndSortPosts();
 });
