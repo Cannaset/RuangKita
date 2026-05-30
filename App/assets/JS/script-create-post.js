@@ -1,90 +1,74 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener('DOMContentLoaded', function () {
+
     // ============================================
     // ELEMENTS
     // ============================================
-    const form = document.querySelector("#createPostForm");
-    const titleInput = document.querySelector("#title");
-    const contentInput = document.querySelector("#content");
-    const categorySelect = document.querySelector("#category");
-    const fileUploadArea = document.querySelector("#fileUploadArea");
-    const fileInput = document.querySelector("#image");
-    const filePreview = document.querySelector("#filePreview");
-    const previewImg = document.querySelector("#previewImg");
-    const titleCount = document.querySelector("#titleCount");
-    const contentCount = document.querySelector("#contentCount");
-    const themeToggle = document.querySelector("#themeToggle");
-    const themeIcon = document.querySelector("#themeIcon");
+    const form          = document.querySelector('#createPostForm');
+    const titleInput    = document.querySelector('#title');
+    const contentInput  = document.querySelector('#content');
+    const categorySelect = document.querySelector('#category');
+    const fileUploadArea = document.querySelector('#fileUploadArea');
+    const fileInput     = document.querySelector('#image');
+    const filePreview   = document.querySelector('#filePreview');
+    const previewImg    = document.querySelector('#previewImg');
+    const titleCount    = document.querySelector('#titleCount');
+    const contentCount  = document.querySelector('#contentCount');
+    const themeToggle   = document.querySelector('#themeToggle');
+    const themeIcon     = document.querySelector('#themeIcon');
+    const submitBtn     = document.querySelector('#submitBtn');
+    const formMessage   = document.querySelector('#formMessage');
 
     // ============================================
-    // THEME FUNCTIONS
+    // THEME
     // ============================================
     function applySavedTheme() {
-        const savedTheme = localStorage.getItem("ruangkita-theme");
-        const isDark = savedTheme === "dark";
-        document.body.classList.toggle("dark-theme", isDark);
-        updateThemeIcon(isDark);
+        const isDark = localStorage.getItem('ruangkita-theme') === 'dark';
+        document.body.classList.toggle('dark-theme', isDark);
+        if (themeIcon) themeIcon.textContent = isDark ? 'Light' : 'Dark';
     }
 
-    function updateThemeIcon(isDark) {
-        if (themeIcon) {
-            themeIcon.textContent = isDark ? "Light" : "Dark";
-        }
-    }
-
-    function toggleTheme() {
-        const isDark = document.body.classList.toggle("dark-theme");
-        localStorage.setItem("ruangkita-theme", isDark ? "dark" : "light");
-        updateThemeIcon(isDark);
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            const isDark = document.body.classList.toggle('dark-theme');
+            localStorage.setItem('ruangkita-theme', isDark ? 'dark' : 'light');
+            if (themeIcon) themeIcon.textContent = isDark ? 'Light' : 'Dark';
+        });
     }
 
     // ============================================
     // CHARACTER COUNTER
     // ============================================
     if (titleInput && titleCount) {
-        titleInput.addEventListener("input", () => {
+        titleInput.addEventListener('input', () => {
             titleCount.textContent = titleInput.value.length;
         });
-        // Initialize on load
-        titleCount.textContent = titleInput.value.length;
     }
 
     if (contentInput && contentCount) {
-        contentInput.addEventListener("input", () => {
+        contentInput.addEventListener('input', () => {
             contentCount.textContent = contentInput.value.length;
         });
-        // Initialize on load
-        contentCount.textContent = contentInput.value.length;
     }
 
     // ============================================
-    // FILE UPLOAD HANDLING
+    // FILE UPLOAD
     // ============================================
     if (fileUploadArea && fileInput) {
-        // Click to upload
-        fileUploadArea.addEventListener("click", () => {
-            fileInput.click();
-        });
+        fileUploadArea.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFileSelect);
 
-        // File selected from input
-        fileInput.addEventListener("change", handleFileSelect);
-
-        // Drag and drop
-        fileUploadArea.addEventListener("dragover", (e) => {
+        fileUploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
-            fileUploadArea.classList.add("drag-over");
+            fileUploadArea.classList.add('drag-over');
         });
-
-        fileUploadArea.addEventListener("dragleave", () => {
-            fileUploadArea.classList.remove("drag-over");
+        fileUploadArea.addEventListener('dragleave', () => {
+            fileUploadArea.classList.remove('drag-over');
         });
-
-        fileUploadArea.addEventListener("drop", (e) => {
+        fileUploadArea.addEventListener('drop', (e) => {
             e.preventDefault();
-            fileUploadArea.classList.remove("drag-over");
-            
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                fileInput.files = files;
+            fileUploadArea.classList.remove('drag-over');
+            if (e.dataTransfer.files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
                 handleFileSelect();
             }
         });
@@ -92,102 +76,113 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function handleFileSelect() {
         const file = fileInput.files[0];
-        
-        if (!file) {
-            filePreview.style.display = "none";
+        if (!file) { filePreview.style.display = 'none'; return; }
+
+        if (file.size > 10 * 1024 * 1024) {
+            showMessage('File terlalu besar. Maksimal 10MB.', 'error');
+            fileInput.value = '';
+            filePreview.style.display = 'none';
             return;
         }
 
-        // File size validation (10MB)
-        const maxSize = 10 * 1024 * 1024;
-        if (file.size > maxSize) {
-            alert("File terlalu besar. Maksimal 10MB.");
-            fileInput.value = "";
-            filePreview.style.display = "none";
-            return;
-        }
-
-        // File type validation
-        const validTypes = ["image/jpeg", "image/png", "image/gif", "video/mp4"];
+        const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4'];
         if (!validTypes.includes(file.type)) {
-            alert("Tipe file tidak didukung. Gunakan JPG, PNG, GIF, atau MP4.");
-            fileInput.value = "";
-            filePreview.style.display = "none";
+            showMessage('Tipe file tidak didukung. Gunakan JPG, PNG, GIF, atau MP4.', 'error');
+            fileInput.value = '';
+            filePreview.style.display = 'none';
             return;
         }
 
-        // Preview
         const reader = new FileReader();
         reader.onload = (e) => {
             previewImg.src = e.target.result;
-            filePreview.style.display = "block";
+            filePreview.style.display = 'block';
         };
         reader.readAsDataURL(file);
     }
 
     // ============================================
-    // FORM SUBMISSION
+    // SHOW MESSAGE HELPER
+    // ============================================
+    function showMessage(text, type) {
+        if (!formMessage) return;
+        formMessage.textContent = text;
+        formMessage.style.display = 'block';
+        formMessage.style.background = type === 'error' ? '#fee2e2' : '#dcfce7';
+        formMessage.style.color      = type === 'error' ? '#991b1b' : '#166534';
+        formMessage.style.border     = type === 'error' ? '1px solid #fca5a5' : '1px solid #86efac';
+    }
+
+    // ============================================
+    // FORM SUBMISSION — kirim ke posts.php
     // ============================================
     if (form) {
-        form.addEventListener("submit", function (e) {
+        form.addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            const title = titleInput ? titleInput.value.trim() : "";
-            const content = contentInput ? contentInput.value.trim() : "";
-            const category = categorySelect ? categorySelect.value : "";
+            const title    = titleInput?.value.trim()    ?? '';
+            const content  = contentInput?.value.trim()  ?? '';
+            const category = categorySelect?.value        ?? '';
 
-            // Basic validation
-            if (!title) {
-                alert("Judul tidak boleh kosong");
-                return;
+            if (!title)    { showMessage('Judul tidak boleh kosong.', 'error');    return; }
+            if (!content)  { showMessage('Deskripsi tidak boleh kosong.', 'error'); return; }
+            if (!category) { showMessage('Pilih kategori terlebih dahulu.', 'error'); return; }
+
+            // Disable tombol supaya tidak double-submit
+            submitBtn.disabled    = true;
+            submitBtn.textContent = 'Mengirim...';
+
+            try {
+                const formData = new FormData(form);
+
+                const res  = await fetch('../api/posts.php', {
+                    method: 'POST',
+                    body: formData,
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    showMessage('✓ Aspirasi berhasil dikirim! Mengalihkan ke feed...', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'feed.php';
+                    }, 1500);
+                } else {
+                    showMessage('✕ ' + (data.message ?? 'Gagal mengirim aspirasi.'), 'error');
+                    submitBtn.disabled    = false;
+                    submitBtn.textContent = 'Kirim Aspirasi';
+                }
+
+            } catch (err) {
+                console.error('Submit error:', err);
+                showMessage('✕ Terjadi kesalahan. Coba lagi.', 'error');
+                submitBtn.disabled    = false;
+                submitBtn.textContent = 'Kirim Aspirasi';
             }
-
-            if (!content) {
-                alert("Deskripsi tidak boleh kosong");
-                return;
-            }
-
-            if (!category) {
-                alert("Pilih kategori");
-                return;
-            }
-
-            // TODO: Ganti dengan API call saat backend siap
-            // Untuk sekarang, submit form ke server
-            form.submit();
         });
     }
 
     // ============================================
-    // PROFILE DROPDOWN (sama seperti feed)
+    // PROFILE DROPDOWN
     // ============================================
-    const profileMenu = document.querySelector(".profile-menu");
-    const profileTrigger = document.querySelector("#profileTrigger");
+    const profileMenu    = document.querySelector('.profile-menu');
+    const profileTrigger = document.querySelector('#profileTrigger');
 
     if (profileTrigger && profileMenu) {
-        profileTrigger.addEventListener("click", (e) => {
+        profileTrigger.addEventListener('click', (e) => {
             e.stopPropagation();
-            const isOpen = profileMenu.classList.toggle("open");
-            profileTrigger.setAttribute("aria-expanded", isOpen ? "true" : "false");
+            const isOpen = profileMenu.classList.toggle('open');
+            profileTrigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
         });
-
-        document.addEventListener("click", (e) => {
+        document.addEventListener('click', (e) => {
             if (!profileMenu.contains(e.target)) {
-                profileMenu.classList.remove("open");
-                profileTrigger.setAttribute("aria-expanded", "false");
+                profileMenu.classList.remove('open');
+                profileTrigger.setAttribute('aria-expanded', 'false');
             }
         });
     }
 
     // ============================================
-    // THEME TOGGLE
-    // ============================================
-    if (themeToggle) {
-        themeToggle.addEventListener("click", toggleTheme);
-    }
-
-    // ============================================
-    // INITIALIZE ON PAGE LOAD
+    // INIT
     // ============================================
     applySavedTheme();
 });
