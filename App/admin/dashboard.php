@@ -14,25 +14,34 @@ ensureAdminSchema($conn);
 $statusOptions = [
     'not_reviewed' => 'Pending',
     'in_process' => 'In Progress',
+    'communicated' => 'Communicated',
     'resolved' => 'Completed',
     'rejected' => 'Rejected',
 ];
 
 // Handle AJAX forms / POST requests
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Only handle JSON / XHR requests here; ignore browser form reloads
+    $isAjax = ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest';
+    if (!$isAjax) {
+        respondJson(400, ['success' => false, 'message' => 'Permintaan tidak valid.']);
+    }
+
     $action = $_POST['action'] ?? '';
 
     if ($action === 'update_status') {
-        $postId = (int) ($_POST['post_id'] ?? 0);
+        $postId    = (int) ($_POST['post_id'] ?? 0);
         $newStatus = trim($_POST['status'] ?? '');
-        $adminId = (int) $admin['id'];
+        $adminId   = (int) $admin['id'];
         require __DIR__ . '/queries/update_status.php';
+        exit; // update_status.php calls respondJson+exit, but be explicit
     }
 
     if ($action === 'add_response') {
-        $postId = (int) ($_POST['post_id'] ?? 0);
+        $postId   = (int) ($_POST['post_id'] ?? 0);
         $response = trim($_POST['response'] ?? '');
         require __DIR__ . '/queries/submit_admin_response.php';
+        exit;
     }
 
     respondJson(400, ['success' => false, 'message' => 'Aksi tidak dikenali.']);

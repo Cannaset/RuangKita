@@ -170,7 +170,8 @@ function respondJson(int $code, array $data): void
 function statusMeta(string $status): array
 {
     return match ($status) {
-        'in_process', 'communicated' => ['label' => 'In Progress', 'class' => 'status-in-progress'],
+        'in_process' => ['label' => 'In Progress', 'class' => 'status-in-progress'],
+        'communicated' => ['label' => 'Communicated', 'class' => 'status-communicated'],
         'resolved' => ['label' => 'Completed', 'class' => 'status-completed'],
         'rejected' => ['label' => 'Rejected', 'class' => 'status-rejected'],
         default => ['label' => 'Pending', 'class' => 'status-pending'],
@@ -180,7 +181,8 @@ function statusMeta(string $status): array
 function normalizeStatusFilter(string $status): array
 {
     return match ($status) {
-        'in_process' => ['in_process', 'communicated'],
+        'in_process' => ['in_process'],
+        'communicated' => ['communicated'],
         'resolved' => ['resolved'],
         'rejected' => ['rejected'],
         'not_reviewed' => ['not_reviewed'],

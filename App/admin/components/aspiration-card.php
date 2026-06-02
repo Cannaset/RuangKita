@@ -81,7 +81,7 @@ $modalData = [
             <label for="status-<?= (int) $post['id']; ?>">Status</label>
             <select id="status-<?= (int) $post['id']; ?>" name="status">
                 <?php foreach ($statusOptions as $value => $label): ?>
-                    <?php $selected = ($post['status'] === $value || ($post['status'] === 'communicated' && $value === 'in_process')); ?>
+                    <?php $selected = ($post['status'] === $value); ?>
                     <option value="<?= e($value); ?>" <?= $selected ? 'selected' : ''; ?>>
                         <?= e($label); ?>
                     </option>

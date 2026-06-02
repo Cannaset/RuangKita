@@ -187,14 +187,14 @@ function attachEventListeners() {
     document.querySelectorAll('.vote-up').forEach(btn => {
         btn.addEventListener('click', () => {
             const postId = btn.dataset.postId;
-            handleVote(postId, 'up');
+            handleVote(postId, 'upvote');
         });
     });
 
     document.querySelectorAll('.vote-down').forEach(btn => {
         btn.addEventListener('click', () => {
             const postId = btn.dataset.postId;
-            handleVote(postId, 'down');
+            handleVote(postId, 'downvote');
         });
     });
 
@@ -212,7 +212,7 @@ function attachEventListeners() {
 // ============================================
 function createPostHTML(post) {
     return `
-        <div class="post-card">
+        <div class="post-card" data-post-id="${post.id}" data-is-owner="${post.is_owner || false}">
             <div class="post-header-container">
                 <div class="post-header">
                     <div class="post-user-info">

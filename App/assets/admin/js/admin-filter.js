@@ -83,7 +83,9 @@ window.renderResponses = function(responses) {
 };
 
 window.postForm = async function(form) {
-    const response = await fetch(window.location.href, {
+    // Use only the path (no query string) so PHP doesn't run filter/export
+    // logic while handling the AJAX POST action.
+    const response = await fetch(window.location.pathname, {
         method: "POST",
         body: new FormData(form),
         headers: {

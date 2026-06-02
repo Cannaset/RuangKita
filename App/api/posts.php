@@ -54,6 +54,45 @@ $method = $_SERVER['REQUEST_METHOD'];
 // ============================================================
 if ($method === 'GET') {
 
+    // ============================================================
+    // GET ?action=comments&post_id=X → Ambil semua komentar sebuah post
+    // Boleh diakses tanpa login (guest bisa baca komentar)
+    // ============================================================
+    if (!empty($_GET['action']) && $_GET['action'] === 'comments') {
+        $post_id = (int) ($_GET['post_id'] ?? 0);
+
+        if ($post_id <= 0) {
+            respond(400, ['success' => false, 'message' => 'post_id tidak valid.']);
+        }
+
+        $stmt = $conn->prepare("
+            SELECT
+                c.id,
+                c.content,
+                c.created_at,
+                s.username
+            FROM comments c
+            LEFT JOIN students s ON s.id = c.student_id
+            WHERE c.post_id = ?
+            ORDER BY c.created_at ASC
+        ");
+        $stmt->bind_param('i', $post_id);
+        $stmt->execute();
+        $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+        $comments = array_map(function ($c) {
+            return [
+                'id'       => (int) $c['id'],
+                'author'   => $c['username'] ?? 'Anonim',
+                'initials' => getInitials($c['username'] ?? 'Anonim'),
+                'content'  => $c['content'],
+                'time_ago' => timeAgo($c['created_at']),
+            ];
+        }, $rows);
+
+        respond(200, ['success' => true, 'comments' => $comments]);
+    }
+
     // --- Ambil 1 post by ID ---
     if (!empty($_GET['id'])) {
         $post_id = (int) $_GET['id'];
@@ -262,6 +301,64 @@ if ($method === 'GET') {
 //   image       (opsional, file gambar/video)
 // ============================================================
 if ($method === 'POST') {
+
+    // ============================================================
+    // POST {action: "comment", post_id: X, content: "..."}
+    // → Kirim komentar baru pada sebuah post
+    // Membaca JSON body terlebih dahulu untuk mendeteksi action
+    // ============================================================
+    $raw_body = file_get_contents('php://input');
+    $json_body = json_decode($raw_body, true);
+
+    if (!empty($json_body['action']) && $json_body['action'] === 'comment') {
+        // Wajib login untuk berkomentar
+        $student = $_SESSION['student'] ?? null;
+        if (!$student) {
+            respond(401, ['success' => false, 'message' => 'Kamu harus login dulu.']);
+        }
+
+        $student_id = (int) $student['id'];
+        $post_id    = isset($json_body['post_id']) ? (int) $json_body['post_id'] : 0;
+        $content    = trim($json_body['content'] ?? '');
+
+        if ($post_id <= 0) {
+            respond(400, ['success' => false, 'message' => 'post_id tidak valid.']);
+        }
+        if ($content === '') {
+            respond(400, ['success' => false, 'message' => 'Komentar tidak boleh kosong.']);
+        }
+        if (mb_strlen($content) > 1000) {
+            respond(400, ['success' => false, 'message' => 'Komentar maksimal 1000 karakter.']);
+        }
+
+        // Pastikan post ada
+        $chk = $conn->prepare("SELECT id FROM posts WHERE id = ?");
+        $chk->bind_param('i', $post_id);
+        $chk->execute();
+        if ($chk->get_result()->num_rows === 0) {
+            respond(404, ['success' => false, 'message' => 'Post tidak ditemukan.']);
+        }
+
+        // Simpan komentar
+        $ins = $conn->prepare("
+            INSERT INTO comments (post_id, student_id, content)
+            VALUES (?, ?, ?)
+        ");
+        $ins->bind_param('iis', $post_id, $student_id, $content);
+        if (!$ins->execute()) {
+            respond(500, ['success' => false, 'message' => 'Gagal menyimpan komentar.']);
+        }
+
+        respond(201, [
+            'success'    => true,
+            'message'    => 'Komentar berhasil dikirim.',
+            'comment_id' => $conn->insert_id,
+        ]);
+    }
+
+    // ============================================================
+    // POST (multipart/form-data) — Buat post baru
+    // ============================================================
 
     // Harus login dulu
     $student = $_SESSION['student'] ?? null;
