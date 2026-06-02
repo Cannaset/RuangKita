@@ -3,7 +3,8 @@ session_start();
 require_once __DIR__ . '/../config/database.php';
 
 // --- Helper: kirim response JSON dan stop ---
-function respond(int $code, array $data): void {
+function respond(int $code, array $data): void
+{
     http_response_code($code);
     header('Content-Type: application/json');
     echo json_encode($data);
@@ -11,23 +12,30 @@ function respond(int $code, array $data): void {
 }
 
 // --- Helper: hitung waktu relatif (misal "2 jam yang lalu") ---
-function timeAgo(string $datetime): string {
-    $now  = new DateTime();
+function timeAgo(string $datetime): string
+{
+    $now = new DateTime();
     $past = new DateTime($datetime);
     $diff = $now->diff($past);
 
-    if ($diff->y > 0) return $diff->y . ' tahun yang lalu';
-    if ($diff->m > 0) return $diff->m . ' bulan yang lalu';
-    if ($diff->d > 0) return $diff->d . ' hari yang lalu';
-    if ($diff->h > 0) return $diff->h . ' jam yang lalu';
-    if ($diff->i > 0) return $diff->i . ' menit yang lalu';
+    if ($diff->y > 0)
+        return $diff->y . ' tahun yang lalu';
+    if ($diff->m > 0)
+        return $diff->m . ' bulan yang lalu';
+    if ($diff->d > 0)
+        return $diff->d . ' hari yang lalu';
+    if ($diff->h > 0)
+        return $diff->h . ' jam yang lalu';
+    if ($diff->i > 0)
+        return $diff->i . ' menit yang lalu';
     return 'Baru saja';
 }
 
 // --- Helper: ambil inisial dari nama ---
-function getInitials(string $name): string {
-    $parts  = preg_split('/\s+/', trim($name));
-    $first  = $parts[0][0] ?? 'U';
+function getInitials(string $name): string
+{
+    $parts = preg_split('/\s+/', trim($name));
+    $first = $parts[0][0] ?? 'U';
     $second = isset($parts[1]) ? $parts[1][0] : '';
     return strtoupper($first . $second);
 }
@@ -48,7 +56,7 @@ if ($method === 'GET') {
 
     // --- Ambil 1 post by ID ---
     if (!empty($_GET['id'])) {
-        $post_id    = (int) $_GET['id'];
+        $post_id = (int) $_GET['id'];
         $student_id = (int) ($_SESSION['student']['id'] ?? 0);
 
         $stmt = $conn->prepare("
@@ -95,11 +103,11 @@ if ($method === 'GET') {
         // Sembunyikan identitas kalau anonim
         if ($post['is_anonymous']) {
             $post['username'] = 'Anonim';
-            $post['nim']      = null;
+            $post['nim'] = null;
         }
 
-        $post['initials']  = getInitials($post['username']);
-        $post['time_ago']  = timeAgo($post['created_at']);
+        $post['initials'] = getInitials($post['username']);
+        $post['time_ago'] = timeAgo($post['created_at']);
 
         respond(200, ['success' => true, 'data' => $post]);
     }
@@ -109,57 +117,59 @@ if ($method === 'GET') {
 
     // Ambil query params
     $category = trim($_GET['category'] ?? '');
-    $sort     = trim($_GET['sort']     ?? 'newest');
-    $search   = trim($_GET['search']   ?? '');
-    $page     = max(1, (int) ($_GET['page'] ?? 1));
+    $sort = trim($_GET['sort'] ?? 'newest');
+    $search = trim($_GET['search'] ?? '');
+    $page = max(1, (int) ($_GET['page'] ?? 1));
     $per_page = 10;
-    $offset   = ($page - 1) * $per_page;
+    $offset = ($page - 1) * $per_page;
 
     // Bangun WHERE clause
-    $where  = ["p.status != 'rejected'"]; // post yang rejected tidak muncul di feed
-    $types  = '';
+    $where = ["p.status != 'rejected'"]; // post yang rejected tidak muncul di feed
+    $types = '';
     $params = [];
 
     if ($category !== '' && $category !== 'All') {
-        $where[]  = 'p.category = ?';
-        $types   .= 's';
+        $where[] = 'p.category = ?';
+        $types .= 's';
         $params[] = $category;
     }
 
     if ($search !== '') {
-        $like     = '%' . $search . '%';
-        $where[]  = '(p.title LIKE ? OR p.description LIKE ?)';
-        $types   .= 'ss';
+        $like = '%' . $search . '%';
+        $where[] = '(p.title LIKE ? OR p.description LIKE ?)';
+        $types .= 'ss';
         $params[] = $like;
         $params[] = $like;
     }
 
     // Filter status "unresolved"
     if ($sort === 'unresolved') {
-        $where[]  = "p.status NOT IN ('resolved', 'rejected')";
+        $where[] = "p.status NOT IN ('resolved', 'rejected')";
     }
 
     $where_sql = 'WHERE ' . implode(' AND ', $where);
 
     // ORDER BY
     $order_sql = match ($sort) {
-        'popular'    => 'COALESCE(vt.upvotes, 0) DESC, p.created_at DESC',
+        'popular' => 'COALESCE(vt.upvotes, 0) DESC, p.created_at DESC',
         'unresolved' => 'p.created_at DESC',
-        default      => 'p.created_at DESC', // newest
+        default => 'p.created_at DESC', // newest
     };
 
     // Hitung total untuk pagination
-    $count_types  = $types;
+    $count_types = $types;
     $count_params = $params;
-    $count_sql    = "SELECT COUNT(*) AS total FROM posts p $where_sql";
-    $count_stmt   = $conn->prepare($count_sql);
+    $count_sql = "SELECT COUNT(*) AS total FROM posts p $where_sql";
+    $count_stmt = $conn->prepare($count_sql);
     if ($count_types !== '') {
         $refs = [&$count_types];
-        foreach ($count_params as &$val) { $refs[] = &$val; }
+        foreach ($count_params as &$val) {
+            $refs[] = &$val;
+        }
         call_user_func_array([$count_stmt, 'bind_param'], $refs);
     }
     $count_stmt->execute();
-    $total_rows  = (int) ($count_stmt->get_result()->fetch_assoc()['total'] ?? 0);
+    $total_rows = (int) ($count_stmt->get_result()->fetch_assoc()['total'] ?? 0);
     $total_pages = max(1, (int) ceil($total_rows / $per_page));
 
     // Query utama
@@ -197,12 +207,14 @@ if ($method === 'GET') {
         LIMIT ? OFFSET ?
     ";
 
-    $list_stmt   = $conn->prepare($list_sql);
-    $list_types  = 'i' . $types . 'ii';
+    $list_stmt = $conn->prepare($list_sql);
+    $list_types = 'i' . $types . 'ii';
     $list_params = array_merge([$student_id], $params, [$per_page, $offset]);
 
     $refs = [&$list_types];
-    foreach ($list_params as &$val) { $refs[] = &$val; }
+    foreach ($list_params as &$val) {
+        $refs[] = &$val;
+    }
     call_user_func_array([$list_stmt, 'bind_param'], $refs);
 
     $list_stmt->execute();
@@ -213,17 +225,26 @@ if ($method === 'GET') {
         if ($post['is_anonymous']) {
             $post['username'] = 'Anonim';
         }
+
         $post['initials'] = getInitials($post['username']);
         $post['time_ago'] = timeAgo($post['created_at']);
+
+        // mapping untuk frontend
+        $post['author'] = $post['username'];
+        $post['timestamp'] = $post['time_ago'];
+        $post['content'] = $post['description'];
+        $post['comments'] = $post['comments_count'];
+        $post['imageUrl'] = $post['image_url'];
+        $post['hasImage'] = !empty($post['image_url']);
     }
 
     respond(200, [
-        'success'     => true,
-        'data'        => $posts,
-        'pagination'  => [
-            'page'        => $page,
-            'per_page'    => $per_page,
-            'total_rows'  => $total_rows,
+        'success' => true,
+        'data' => $posts,
+        'pagination' => [
+            'page' => $page,
+            'per_page' => $per_page,
+            'total_rows' => $total_rows,
             'total_pages' => $total_pages,
         ],
     ]);
@@ -251,10 +272,10 @@ if ($method === 'POST') {
     $student_id = (int) $student['id'];
 
     // Ambil dan validasi input
-    $title       = trim($_POST['title']    ?? '');
-    $description = trim($_POST['content']  ?? ''); // nama field di form adalah "content"
-    $category    = trim($_POST['category'] ?? '');
-    $anonymous   = !empty($_POST['anonymous']) ? 1 : 0;
+    $title = trim($_POST['title'] ?? '');
+    $description = trim($_POST['content'] ?? ''); // nama field di form adalah "content"
+    $category = trim($_POST['category'] ?? '');
+    $anonymous = !empty($_POST['anonymous']) ? 1 : 0;
 
     $valid_categories = ['Facilities', 'Academic', 'Cleanliness', 'Other'];
 
@@ -278,16 +299,16 @@ if ($method === 'POST') {
     $image_url = null;
 
     if (!empty($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        $file      = $_FILES['image'];
-        $max_size  = 10 * 1024 * 1024; // 10MB
-        $allowed   = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4'];
+        $file = $_FILES['image'];
+        $max_size = 10 * 1024 * 1024; // 10MB
+        $allowed = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4'];
 
         if ($file['size'] > $max_size) {
             respond(400, ['success' => false, 'message' => 'File terlalu besar. Maksimal 10MB.']);
         }
 
         // Validasi tipe file dari konten aslinya (bukan hanya ekstensi)
-        $finfo     = finfo_open(FILEINFO_MIME_TYPE);
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mime_type = finfo_file($finfo, $file['tmp_name']);
         finfo_close($finfo);
 
@@ -296,8 +317,8 @@ if ($method === 'POST') {
         }
 
         // Simpan ke folder uploads
-        $ext        = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $filename   = 'post_' . $student_id . '_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+        $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $filename = 'post_' . $student_id . '_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
         $upload_dir = __DIR__ . '/../image/uploads/';
 
         // Buat folder kalau belum ada
@@ -330,11 +351,11 @@ if ($method === 'POST') {
     respond(201, [
         'success' => true,
         'message' => 'Aspirasi berhasil dikirim!',
-        'data'    => [
-            'id'       => $new_post_id,
-            'title'    => $title,
+        'data' => [
+            'id' => $new_post_id,
+            'title' => $title,
             'category' => $category,
-            'status'   => 'not_reviewed',
+            'status' => 'not_reviewed',
         ],
     ]);
 }
