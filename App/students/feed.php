@@ -2,6 +2,9 @@
 session_start();
 
 $student = $_SESSION['student'] ?? null;
+$admin = $_SESSION['admin'] ?? null;
+
+$user = $student ?? $admin;
 
 function e(string $value): string
 {
@@ -41,36 +44,46 @@ function getInitials(string $name): string
                 <span id="themeIcon">Dark</span>
             </button>
             <button class="notification-btn" type="button" aria-label="Notifikasi">
-                <img
-                    id="notificationIcon"
-                    src="../image/Notification_Dark.png"
-                    data-light-src="../image/Notification_Dark.png"
-                    data-dark-src="../image/Notification_Dark.png"
-                    alt="Notifikasi"
-                >
+                <img id="notificationIcon" src="../image/Notification_Dark.png"
+                    data-light-src="../image/Notification_Dark.png" data-dark-src="../image/Notification_Dark.png"
+                    alt="Notifikasi">
             </button>
 
-            <?php if ($student): ?>
-                <a href="create-post.php" class="create-post-btn" title="Buat Aspirasi Baru">
-                    <span>+</span>
-                </a>
-                
+            <?php if ($user): ?>
+                <?php if ($student): ?>
+                    <a href="create-post.php" class="create-post-btn" title="Buat Aspirasi Baru">
+                        <span>+</span>
+                    </a>
+                <?php endif; ?>
+
+                <?php if ($admin): ?>
+                    <a href="../admin/dashboard.php" class="create-post-btn" title="Ke Dashboard Admin"
+                        style="font-size:.75rem;padding:.4rem .75rem;width:auto;border-radius:.5rem;">
+                        Dashboard
+                    </a>
+                <?php endif; ?>
+
                 <div class="profile-menu">
-                    <button class="profile-trigger" id="profileTrigger" type="button" aria-label="Menu profil" aria-expanded="false">
-                        <?php if (!empty($student['profile_picture'])): ?>
-                            <img class="profile-avatar profile-image" src="<?= e($student['profile_picture']); ?>" alt="<?= e($student['username']); ?>">
+                    <button class="profile-trigger" id="profileTrigger" type="button" aria-expanded="false">
+                        <?php if (!empty($user['profile_picture'])): ?>
+                            <img class="profile-avatar profile-image" src="<?= e($user['profile_picture']) ?>"
+                                alt="<?= e($user['username']) ?>">
                         <?php else: ?>
-                            <span class="profile-avatar" title="<?= e($student['username']); ?>">
-                                <?= e(getInitials($student['username'])); ?>
+                            <span class="profile-avatar" title="<?= e($user['username']) ?>">
+                                <?= e(getInitials($user['username'])) ?>
                             </span>
                         <?php endif; ?>
                     </button>
-
                     <div class="profile-dropdown" id="profileDropdown">
-                        <a href="#">Profil</a>
+                        <a href="../students/profile.php">Profil</a>
+                        <a href="feed.php">Beranda</a>
+                        <?php if ($admin): ?>
+                            <a href="../admin/dashboard.php">Dashboard Admin</a>
+                        <?php endif; ?>
                         <a href="../auth/logout.php">Log out</a>
                     </div>
                 </div>
+
             <?php else: ?>
                 <div class="auth-links">
                     <a href="../auth/index.php">Login</a>

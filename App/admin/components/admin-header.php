@@ -17,9 +17,11 @@
         </button>
 
         <div class="profile-menu">
-            <button class="profile-trigger" id="profileTrigger" type="button" aria-label="Menu admin" aria-expanded="false">
+            <button class="profile-trigger" id="profileTrigger" type="button" aria-label="Menu admin"
+                aria-expanded="false">
                 <?php if (!empty($admin['profile_picture'])): ?>
-                    <img class="profile-avatar profile-image" src="<?= e($admin['profile_picture']); ?>" alt="<?= e($admin['username'] ?? 'Admin'); ?>">
+                    <img class="profile-avatar profile-image" src="<?= e($admin['profile_picture']); ?>"
+                        alt="<?= e($admin['username'] ?? 'Admin'); ?>">
                 <?php else: ?>
                     <span class="profile-avatar" title="<?= e($admin['username'] ?? 'Admin'); ?>">
                         <?= e(getInitials($admin['username'] ?? 'Admin')); ?>
@@ -28,8 +30,8 @@
             </button>
 
             <div class="profile-dropdown" id="profileDropdown">
+                <a href="../students/profile.php">Profil</a>
                 <a href="dashboard.php">Dashboard</a>
-                <a href="../students/feed.php">Student Feed</a>
                 <a href="../auth/logout.php">Log out</a>
             </div>
         </div>

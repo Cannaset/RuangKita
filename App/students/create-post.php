@@ -33,25 +33,6 @@ $categories = [
 $submitSuccess = false;
 $errorMessage = '';
 
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = trim($_POST['title'] ?? '');
-    $content = trim($_POST['content'] ?? '');
-    $category = trim($_POST['category'] ?? '');
-    
-    // Validation
-    if (empty($title)) {
-        $errorMessage = 'Judul tidak boleh kosong';
-    } elseif (empty($content)) {
-        $errorMessage = 'Deskripsi tidak boleh kosong';
-    } elseif (empty($category) || !array_key_exists($category, $categories)) {
-        $errorMessage = 'Kategori tidak valid';
-    } else {
-        header('Location: feed.php');
-        exit;
-        $submitSuccess = true;
-    }
-}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -69,7 +50,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- HEADER -->
     <header class="header">
         <div class="logo">
-            <a href="feed.php" style="text-decoration: none; color: white; display: flex; align-items: center; gap: 0.5rem;">
+            <a href="feed.php"
+                style="text-decoration: none; color: white; display: flex; align-items: center; gap: 0.5rem;">
                 <img src="../image/RuangKita_Logo6.png" alt="RuangKita" style="height: 40px; width: auto;">
             </a>
         </div>
@@ -81,14 +63,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <?php if ($student): ?>
                 <div class="profile-menu">
-                    <button class="profile-trigger" id="profileTrigger" type="button" aria-label="Menu profil" aria-expanded="false">
+                    <button class="profile-trigger" id="profileTrigger" type="button" aria-label="Menu profil"
+                        aria-expanded="false">
                         <span class="profile-avatar" title="<?= e($student['username']); ?>">
                             <?= e(getInitials($student['username'])); ?>
                         </span>
                     </button>
 
                     <div class="profile-dropdown" id="profileDropdown">
-                        <a href="#">Profil</a>
+                        <a href="../students/profile.php">Profil</a>
+                        <a href="feed.php">Beranda</a>
                         <a href="../auth/logout.php">Log out</a>
                     </div>
                 </div>
@@ -99,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- MAIN CONTAINER -->
     <div class="container">
         <div class="create-post-wrapper">
-            
+
             <!-- BACK BUTTON -->
             <a href="feed.php" class="back-button">← Kembali ke Feed</a>
 
@@ -116,19 +100,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <a href="feed.php" class="btn btn-primary">Kembali ke Feed</a>
                     </div>
                 <?php else: ?>
-                    <form id="createPostForm" method="POST" action="create-post.php" novalidate enctype="multipart/form-data">
+                    <form id="createPostForm" novalidate enctype="multipart/form-data">
 
                         <!-- TITLE -->
                         <div class="form-group">
                             <label for="title">Judul Aspirasi <span class="required">*</span></label>
-                            <input 
-                                type="text" 
-                                id="title" 
-                                name="title" 
-                                placeholder="Ringkas masalah yang ingin disampaikan"
-                                value="<?= e($_POST['title'] ?? ''); ?>"
-                                maxlength="200"
-                            >
+                            <input type="text" id="title" name="title" placeholder="Ringkas masalah yang ingin disampaikan"
+                                value="<?= e($_POST['title'] ?? ''); ?>" maxlength="200">
                             <small class="char-count"><span id="titleCount">0</span>/200</small>
                         </div>
 
@@ -148,13 +126,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <!-- CONTENT -->
                         <div class="form-group">
                             <label for="content">Deskripsi Detail <span class="required">*</span></label>
-                            <textarea 
-                                id="content" 
-                                name="content" 
-                                placeholder="Jelaskan masalah secara detail. Semakin detail semakin membantu kami."
-                                rows="8"
-                                maxlength="2000"
-                            ><?= e($_POST['content'] ?? ''); ?></textarea>
+                            <textarea id="content" name="content"
+                                placeholder="Jelaskan masalah secara detail. Semakin detail semakin membantu kami." rows="8"
+                                maxlength="2000"><?= e($_POST['content'] ?? ''); ?></textarea>
                             <small class="char-count"><span id="contentCount">0</span>/2000</small>
                         </div>
 
@@ -162,13 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="form-group">
                             <label for="image">Lampirkan Foto/Video (Opsional)</label>
                             <div class="file-upload-area" id="fileUploadArea">
-                                <input 
-                                    type="file" 
-                                    id="image" 
-                                    name="image" 
-                                    accept="image/*,video/*"
-                                    style="display: none;"
-                                >
+                                <input type="file" id="image" name="image" accept="image/*,video/*" style="display: none;">
                                 <div class="upload-placeholder">
                                     <span class="upload-icon">📎</span>
                                     <p>Klik atau drag file ke sini</p>
@@ -176,7 +144,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </div>
                             <div id="filePreview" style="margin-top: 1rem; display: none;">
-                                <img id="previewImg" src="" alt="Preview" style="max-width: 100%; max-height: 300px; border-radius: 0.5rem;">
+                                <img id="previewImg" src="" alt="Preview"
+                                    style="max-width: 100%; max-height: 300px; border-radius: 0.5rem;">
                             </div>
                         </div>
 
@@ -205,7 +174,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
-    <script src="../assets/JS/script-create-post.js?v=7"></script>
+    <script src="../assets/JS/script-create-post.js?v=8"></script>
 </body>
 
 </html>

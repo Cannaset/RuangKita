@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fileUploadArea.addEventListener("drop", (e) => {
             e.preventDefault();
             fileUploadArea.classList.remove("drag-over");
-            
+
             const files = e.dataTransfer.files;
             if (files.length > 0) {
                 fileInput.files = files;
@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function handleFileSelect() {
         const file = fileInput.files[0];
-        
+
         if (!file) {
             filePreview.style.display = "none";
             return;
@@ -129,32 +129,38 @@ document.addEventListener("DOMContentLoaded", function () {
     // FORM SUBMISSION
     // ============================================
     if (form) {
-        form.addEventListener("submit", function (e) {
+        form.addEventListener("submit", async function (e) {
             e.preventDefault();
 
-            const title = titleInput ? titleInput.value.trim() : "";
-            const content = contentInput ? contentInput.value.trim() : "";
-            const category = categorySelect ? categorySelect.value : "";
+            const title = titleInput?.value.trim() ?? '';
+            const content = contentInput?.value.trim() ?? '';
+            const category = categorySelect?.value ?? '';
 
-            // Basic validation
-            if (!title) {
-                alert("Judul tidak boleh kosong");
-                return;
+            if (!title) { alert("Judul tidak boleh kosong"); return; }
+            if (!content) { alert("Deskripsi tidak boleh kosong"); return; }
+            if (!category) { alert("Pilih kategori"); return; }
+
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Mengirim...';
+
+            try {
+                const fd = new FormData(form);
+                const res = await fetch('../api/posts.php', { method: 'POST', body: fd });
+                const data = await res.json();
+
+                if (data.success) {
+                    window.location.href = 'feed.php';
+                } else {
+                    alert(data.message || 'Gagal mengirim aspirasi.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Kirim Aspirasi';
+                }
+            } catch {
+                alert('Gagal menghubungi server.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Kirim Aspirasi';
             }
-
-            if (!content) {
-                alert("Deskripsi tidak boleh kosong");
-                return;
-            }
-
-            if (!category) {
-                alert("Pilih kategori");
-                return;
-            }
-
-            // TODO: Ganti dengan API call saat backend siap
-            // Untuk sekarang, submit form ke server
-            form.submit();
         });
     }
 
