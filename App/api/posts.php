@@ -163,7 +163,7 @@ if ($method === 'GET') {
     $offset = ($page - 1) * $per_page;
 
     // Bangun WHERE clause
-    $where = ["p.status != 'rejected'"]; // post yang rejected tidak muncul di feed
+    $where = ["p.status NOT IN ('not_reviewed', 'rejected')"]; // post pending/rejected tidak muncul di feed
     $types = '';
     $params = [];
 
@@ -183,7 +183,7 @@ if ($method === 'GET') {
 
     // Filter status "unresolved"
     if ($sort === 'unresolved') {
-        $where[] = "p.status NOT IN ('resolved', 'rejected')";
+        $where[] = "p.status NOT IN ('not_reviewed', 'resolved', 'rejected')";
     }
 
     $where_sql = 'WHERE ' . implode(' AND ', $where);

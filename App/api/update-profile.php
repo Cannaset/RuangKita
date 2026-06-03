@@ -103,7 +103,8 @@ if ($action === 'change_password') {
     if ($newPw !== $confPw)
         jsonOut(false, 'Konfirmasi password tidak cocok.');
 
-    // Fetch current hash
+    // Student accounts still use hashing. Admin and department accounts use
+    // plain text to match manually inserted database records.
     $stmt = $conn->prepare("SELECT password FROM {$table} WHERE id=? LIMIT 1");
     $stmt->bind_param('i', $userId);
     $stmt->execute();
@@ -113,16 +114,20 @@ if ($action === 'change_password') {
         jsonOut(false, 'User tidak ditemukan.');
 
     $stored = $row['password'];
-    $valid = password_verify($oldPw, $stored) || hash_equals($stored, $oldPw);
+    $valid = ($userType === 'student')
+        ? password_verify($oldPw, $stored)
+        : $oldPw === $stored;
 
     if (!$valid)
         jsonOut(false, 'Password lama tidak sesuai.');
     if ($oldPw === $newPw)
         jsonOut(false, 'Password baru tidak boleh sama dengan password lama.');
 
-    $hash = password_hash($newPw, PASSWORD_BCRYPT);
+    $passwordToSave = ($userType === 'student')
+        ? password_hash($newPw, PASSWORD_BCRYPT)
+        : $newPw;
     $stmt = $conn->prepare("UPDATE {$table} SET password=? WHERE id=?");
-    $stmt->bind_param('si', $hash, $userId);
+    $stmt->bind_param('si', $passwordToSave, $userId);
 
     if (!$stmt->execute())
         jsonOut(false, 'Gagal memperbarui password.');

@@ -1,6 +1,6 @@
 /* ============================================================
  * RuangKita - Admin Dashboard Base CSS
- * File: App/admin/assets/css/admin-dashboard.css
+ * Uses the same simple visual language as the department dashboard.
  * ============================================================ */
 
 html {
@@ -13,6 +13,7 @@ body.admin-page {
     overflow-x: hidden;
     background: var(--gray-100);
     color: var(--gray-900);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     transition: background-color 0.25s, color 0.25s;
 }
 
@@ -53,8 +54,8 @@ body.admin-page.dark-theme .admin-shell {
 }
 
 .admin-kicker {
-    margin-bottom: 0.35rem;
-    color: var(--secondary);
+    margin: 0 0 0.35rem;
+    color: #008891;
     font-size: 0.78rem;
     font-weight: 800;
     letter-spacing: 0.08em;
@@ -63,15 +64,15 @@ body.admin-page.dark-theme .admin-shell {
 
 .admin-titlebar h1 {
     margin: 0;
-    color: var(--primary);
+    color: #111827;
     font-size: clamp(1.65rem, 4vw, 2.5rem);
     line-height: 1.1;
 }
 
 .admin-subtitle {
     max-width: 650px;
-    margin-top: 0.65rem;
-    color: var(--gray-500);
+    margin: 0.65rem 0 0;
+    color: #6b7280;
     line-height: 1.65;
 }
 
@@ -83,33 +84,34 @@ body.admin-page.dark-theme .admin-shell {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    min-height: 2.45rem;
+    padding: 0 1rem;
     border: 0;
     border-radius: 0.5rem;
-    background: linear-gradient(135deg, #0f3057 0%, #008891 100%);
+    background: #008891 !important;
+    background-image: none !important;
     color: #ffffff;
     cursor: pointer;
-    font-weight: 800;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1;
     text-decoration: none;
-    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
-}
-
-.export-link {
-    min-height: 2.6rem;
-    padding: 0 1rem;
     white-space: nowrap;
+    transition: background 0.2s, opacity 0.2s, transform 0.2s;
 }
 
 .export-link:hover,
 .filter-submit:hover,
 .response-form button:hover,
 .detail-button:hover {
+    background: #00747b !important;
+    background-image: none !important;
     transform: translateY(-1px);
-    box-shadow: 0 12px 24px rgba(0, 136, 145, 0.24);
 }
 
-/* Dark theme globals */
 body.admin-page.dark-theme .admin-titlebar h1 {
-    color: #e2e8f0;
+    color: #f8fafc;
 }
 
 body.admin-page.dark-theme .admin-subtitle {

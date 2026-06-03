@@ -1,14 +1,14 @@
 /* ============================================================
  * RuangKita - Admin Components CSS
- * File: App/admin/assets/css/admin-components.css
+ * Department dashboard style adapted for admin-only components.
  * ============================================================ */
 
 /* --- Statistics Summary Cards --- */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 1rem;
-    margin-bottom: 1.25rem;
+    margin-bottom: 2rem;
 }
 
 .stat-card {
@@ -16,72 +16,44 @@
     align-items: center;
     gap: 0.85rem;
     min-height: 7rem;
-    padding: 1rem;
-    border: 1px solid var(--gray-200);
+    padding: 1.25rem 1.5rem;
+    border: 1px solid #e5e7eb;
     border-radius: 0.75rem;
     background: #ffffff;
-    box-shadow: 0 8px 22px rgba(15, 45, 82, 0.06);
-    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-}
-
-.stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 16px 34px rgba(15, 45, 82, 0.12);
-}
-
-.stat-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 2.7rem;
-    width: 2.7rem;
-    height: 2.7rem;
-    border-radius: 0.7rem;
-    overflow: hidden; /* penting */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .stat-icon-img {
-    width: 60px !important;
-    height: 60px !important;
+    width: 46px;
+    height: 46px;
     object-fit: contain;
-    display: block;
     flex-shrink: 0;
 }
 
 .stat-card p {
-    color: var(--gray-500);
-    font-size: 0.82rem;
-    font-weight: 800;
-    margin: 0;
+    margin: 0 0 0.5rem;
+    color: #6b7280;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
 .stat-card strong {
     display: block;
-    margin-top: 0.25rem;
-    color: var(--gray-900);
-    font-size: 1.75rem;
+    margin: 0;
+    color: #008891;
+    font-size: 2rem;
+    font-weight: 800;
     line-height: 1;
 }
 
-.stat-total .stat-icon { background: #0f3057; }
-.stat-pending .stat-icon { background: #eab308; }
-.stat-progress .stat-icon { background: #008891; }
-.stat-completed .stat-icon { background: #16a34a; }
-.stat-rejected .stat-icon { background: #ef4444; }
-
-
 /* --- Admin Filters Bar --- */
 .admin-filters {
-    display: grid;
-    grid-template-columns: minmax(220px, 2fr) repeat(3, minmax(150px, 1fr)) auto;
-    align-items: end;
-    gap: 0.85rem;
-    margin-bottom: 1.25rem;
-    padding: 1rem;
-    border: 1px solid var(--gray-200);
-    border-radius: 0.75rem;
-    background: #ffffff;
-    box-shadow: 0 8px 22px rgba(15, 45, 82, 0.06);
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
 }
 
 .filter-field {
@@ -89,12 +61,16 @@
     gap: 0.4rem;
 }
 
+.search-field {
+    flex: 1 1 220px;
+}
+
 .filter-field label,
 .status-form label,
 .response-form label {
-    color: var(--gray-700);
+    color: #374151;
     font-size: 0.78rem;
-    font-weight: 800;
+    font-weight: 700;
 }
 
 .filter-field input,
@@ -102,10 +78,10 @@
 .status-form select,
 .response-form textarea {
     width: 100%;
-    border: 1px solid var(--gray-300);
+    border: 1px solid #d1d5db;
     border-radius: 0.5rem;
     background: #ffffff;
-    color: var(--gray-900);
+    color: #111827;
     font: inherit;
     transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
 }
@@ -113,8 +89,8 @@
 .filter-field input,
 .filter-field select,
 .status-form select {
-    min-height: 2.65rem;
-    padding: 0 0.75rem;
+    min-height: 2.6rem;
+    padding: 0 0.9rem;
 }
 
 .response-form textarea {
@@ -128,15 +104,15 @@
 .status-form select:focus,
 .response-form textarea:focus {
     outline: none;
-    border-color: var(--secondary);
+    border-color: #0f3057;
     box-shadow: 0 0 0 3px rgba(0, 136, 145, 0.12);
 }
 
 .filter-submit {
-    min-height: 2.65rem;
-    padding: 0 1rem;
+    align-self: end;
+    min-height: 2.6rem;
+    padding-inline: 1.5rem;
 }
-
 
 /* --- Aspiration Post Card & Feed --- */
 .admin-feed {
@@ -148,18 +124,11 @@
     position: relative;
     display: grid;
     gap: 1rem;
-    padding: 1.1rem;
-    border: 1px solid var(--gray-200);
+    padding: 1.25rem 1.5rem;
+    border: 1px solid #e5e7eb;
     border-radius: 0.75rem;
     background: #ffffff;
-    box-shadow: 0 8px 22px rgba(15, 45, 82, 0.06);
-    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-}
-
-.admin-post-card:hover {
-    transform: translateY(-2px);
-    border-color: rgba(0, 136, 145, 0.34);
-    box-shadow: 0 16px 34px rgba(15, 45, 82, 0.12);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .card-open {
@@ -185,6 +154,7 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 1rem;
+    flex-wrap: wrap;
 }
 
 .author-cluster {
@@ -198,47 +168,46 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    flex: 0 0 2.75rem;
-    width: 2.75rem;
-    height: 2.75rem;
+    flex: 0 0 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
     border-radius: 50%;
-    background: linear-gradient(135deg, #0f3057, #008891);
+    background: #2dd4bf;
     color: #ffffff;
-    font-size: 0.88rem;
-    font-weight: 900;
+    font-size: 0.82rem;
+    font-weight: 700;
 }
 
 .author-cluster h2 {
-    margin: 0;
-    color: var(--gray-900);
-    font-size: 1.08rem;
+    margin: 0 0 0.5rem;
+    color: #111827;
+    font-size: 1rem;
+    font-weight: 700;
     line-height: 1.35;
 }
 
 .author-cluster p {
-    margin-top: 0.25rem;
-    color: var(--gray-500);
-    font-size: 0.86rem;
+    margin: 0;
+    color: #9ca3af;
+    font-size: 0.75rem;
     font-weight: 700;
-    margin-bottom: 0;
 }
 
 .post-excerpt {
     position: relative;
     z-index: 1;
-    color: var(--gray-700);
-    line-height: 1.65;
     margin: 0;
+    color: #374151;
+    line-height: 1.6;
 }
 
 .post-meta-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.55rem;
+    gap: 0.75rem;
     align-items: center;
-    color: var(--gray-500);
-    font-size: 0.82rem;
-    font-weight: 700;
+    color: #6b7280;
+    font-size: 0.8rem;
 }
 
 .admin-status-badge,
@@ -246,24 +215,24 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 1.75rem;
-    padding: 0 0.75rem;
+    min-height: 1.5rem;
+    padding: 0.2rem 0.7rem;
     border-radius: 999px;
     color: #ffffff;
-    font-size: 0.76rem;
-    font-weight: 900;
+    font-size: 0.7rem;
+    font-weight: 700;
     white-space: nowrap;
 }
 
-.status-pending { background: #eab308; }
-.status-in-progress { background: #008891; }
+.status-pending { background: #f59e0b; }
+.status-in-progress { background: #3b82f6; }
 .status-communicated { background: #8b5cf6; }
-.status-completed { background: #16a34a; }
+.status-completed { background: #22c55e; }
 .status-rejected { background: #ef4444; }
 
 .priority-pill {
-    color: var(--gray-700);
-    background: var(--gray-100);
+    color: #6b7280;
+    background: #f3f4f6;
 }
 
 .priority-high {
@@ -281,7 +250,7 @@
     max-height: 13rem;
     overflow: hidden;
     border-radius: 0.65rem;
-    background: var(--gray-100);
+    background: #f3f4f6;
 }
 
 .attachment-preview img,
@@ -298,7 +267,6 @@
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 0.85rem;
     align-items: end;
-    padding-top: 0.25rem;
 }
 
 .status-form {
@@ -308,7 +276,7 @@
 
 .latest-response {
     padding: 0.85rem;
-    border-left: 4px solid var(--secondary);
+    border-left: 4px solid #008891;
     border-radius: 0.55rem;
     background: rgba(0, 136, 145, 0.08);
 }
@@ -316,14 +284,14 @@
 .latest-response strong {
     display: block;
     margin-bottom: 0.35rem;
-    color: var(--primary);
+    color: #008891;
     font-size: 0.82rem;
 }
 
 .latest-response p {
-    color: var(--gray-700);
-    line-height: 1.6;
     margin: 0;
+    color: #374151;
+    line-height: 1.6;
 }
 
 .response-form {
@@ -333,35 +301,53 @@
 
 .response-form button {
     justify-self: start;
-    min-height: 2.45rem;
-    padding: 0 0.95rem;
+    min-height: 2rem;
+    padding: 0 1.2rem;
+}
+
+.detail-button {
+    min-height: 1.5rem;
+    padding: 0 1.5rem;
+    background: transparent !important;
+    background-image: none !important;
+    color: #008891 !important;
+    border: 0;
+    box-shadow: none !important;
+}
+
+.detail-button:hover {
+    background: transparent !important;
+    background-image: none !important;
+    color: #00747b !important;
+    transform: none;
+    text-decoration: underline;
 }
 
 .empty-state {
-    padding: 2rem;
-    border: 1px dashed var(--gray-300);
+    padding: 3rem;
+    border: 1px solid #e5e7eb;
     border-radius: 0.75rem;
     background: #ffffff;
+    color: #9ca3af;
     text-align: center;
 }
 
 .empty-state h2 {
-    color: var(--primary);
-    font-size: 1.2rem;
+    margin: 0 0 0.5rem;
+    color: #111827;
+    font-size: 1.1rem;
 }
 
 .empty-state p {
-    margin-top: 0.5rem;
-    color: var(--gray-500);
+    margin: 0;
 }
-
 
 /* --- Pagination --- */
 .pagination {
     display: flex;
-    align-items: center;
     justify-content: center;
-    gap: 0.85rem;
+    gap: 0.5rem;
+    flex-wrap: wrap;
     margin-top: 1.5rem;
 }
 
@@ -370,83 +356,68 @@
     display: inline-flex;
     align-items: center;
     min-height: 2.35rem;
-    padding: 0 0.85rem;
-    border-radius: 0.5rem;
-    font-weight: 800;
-}
-
-.pagination a {
-    background: #ffffff;
-    color: var(--secondary);
+    padding: 0 0.9rem;
+    border-radius: 0.4rem;
+    border: 1px solid #d1d5db;
+    color: #374151;
+    font-size: 0.85rem;
+    font-weight: 600;
     text-decoration: none;
-    border: 1px solid var(--gray-200);
 }
 
-.pagination span {
-    color: var(--gray-500);
+.pagination a:hover {
+    border-color: #008891;
+    color: #008891;
 }
-
 
 /* --- Toasts --- */
 .toast {
     position: fixed;
-    right: 1rem;
-    bottom: 1rem;
+    right: 1.5rem;
+    bottom: 1.5rem;
     z-index: 1900;
     display: none;
     max-width: min(360px, calc(100% - 2rem));
-    padding: 0.85rem 1rem;
-    border-radius: 0.65rem;
-    background: #0f3057;
+    padding: 0.85rem 1.25rem;
+    border-radius: 0.6rem;
+    background: #22c55e;
     color: #ffffff;
-    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
-    font-weight: 800;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    font-size: 0.9rem;
+    font-weight: 600;
 }
 
 .toast.show {
     display: block;
-    animation: toast-in 0.22s ease-out;
 }
 
 .toast.error {
-    background: #991b1b;
+    background: #ef4444;
 }
-
-@keyframes toast-in {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 
 /* ============================================================
- * Dark Theme styling for components
+ * Dark Theme
  * ============================================================ */
 
+body.admin-page.dark-theme .admin-titlebar h1,
 body.admin-page.dark-theme .author-cluster h2,
-body.admin-page.dark-theme .empty-state h2,
-body.admin-page.dark-theme .latest-response strong {
-    color: #e2e8f0;
+body.admin-page.dark-theme .empty-state h2 {
+    color: #f8fafc;
 }
 
+body.admin-page.dark-theme .admin-subtitle,
 body.admin-page.dark-theme .stat-card p,
 body.admin-page.dark-theme .author-cluster p,
 body.admin-page.dark-theme .post-meta-row,
-body.admin-page.dark-theme .empty-state p,
-body.admin-page.dark-theme .pagination span {
+body.admin-page.dark-theme .empty-state {
     color: #cbd5e1;
 }
 
 body.admin-page.dark-theme .stat-card,
-body.admin-page.dark-theme .admin-filters,
 body.admin-page.dark-theme .admin-post-card,
 body.admin-page.dark-theme .empty-state,
-body.admin-page.dark-theme .pagination a {
+body.admin-page.dark-theme .pagination a,
+body.admin-page.dark-theme .pagination span {
     background: #0f172a;
     border-color: #334155;
     box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
@@ -502,52 +473,13 @@ body.admin-page.dark-theme .priority-medium {
     background: rgba(20, 184, 166, 0.16);
 }
 
-
-/* ============================================================
- * Responsive adjustments for components
- * ============================================================ */
-
-@media (max-width: 980px) {
-    .stats-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .admin-filters {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .search-field,
-    .filter-submit {
-        grid-column: 1 / -1;
-    }
-}
-
 @media (max-width: 680px) {
-    .post-card-top,
-    .admin-card-actions {
-        align-items: stretch;
-        flex-direction: column;
-    }
-
-    .stats-grid,
-    .admin-filters,
     .admin-card-actions {
         grid-template-columns: 1fr;
     }
 
+    .admin-post-card,
     .stat-card {
-        min-height: 5.75rem;
-    }
-
-    .admin-post-card {
-        padding: 0.95rem;
-    }
-
-    .post-card-top {
-        display: grid;
-    }
-
-    .admin-status-badge {
-        justify-self: start;
+        padding: 1rem;
     }
 }

@@ -1,103 +1,104 @@
 // ============================================================
-// RuangKita - JS Filters, Formats & Helpers
-// File: App/admin/assets/js/admin-filter.js
+// RuangKita - Admin Status & Response Actions
+// File: App/assets/admin/js/admin-status.js
 // ============================================================
 
-window.showToast = function(message, isError = false) {
-    const toast = document.getElementById("toast");
-    if (!toast) return;
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".status-form select").forEach((select) => {
+        select.dataset.previousValue = select.value;
 
-    toast.textContent = message;
-    toast.classList.toggle("error", isError);
-    toast.classList.add("show");
+        select.addEventListener("change", async () => {
+            const form = select.closest(".status-form");
+            const postId = form?.dataset.postId;
+            const badge = document.querySelector(`[data-status-badge="${postId}"]`);
+            const previousValue = select.dataset.previousValue || select.defaultValue;
 
-    window.clearTimeout(window.showToast.timeout);
-    window.showToast.timeout = window.setTimeout(() => {
-        toast.classList.remove("show");
-    }, 3200);
-};
+            if (!form) return;
 
-window.escapeHtml = function(value) {
-    return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-};
+            select.disabled = true;
 
-window.formatDate = function(value) {
-    if (!value) return "-";
-    const date = new Date(String(value).replace(" ", "T"));
+            try {
+                const formData = new FormData();
+                formData.set("action", "update_status");
+                formData.set("post_id", form.querySelector('[name="post_id"]')?.value || postId || "");
+                formData.set("status", select.value);
 
-    if (Number.isNaN(date.getTime())) {
-        return value;
-    }
+                const data = await window.postForm(formData);
 
-    return date.toLocaleString("id-ID", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-    });
-};
+                if (badge) {
+                    badge.className = `admin-status-badge ${data.status_class}`;
+                    badge.textContent = data.status_label;
+                }
 
-window.renderMedia = function(imageUrl) {
-    if (!imageUrl) return "";
+                const card = form.closest(".admin-post-card");
+                const postData = card?.dataset.post ? JSON.parse(card.dataset.post) : null;
 
-    const safeUrl = window.escapeHtml(imageUrl);
-    const lowerUrl = imageUrl.toLowerCase();
+                if (postData) {
+                    postData.status = data.status;
+                    postData.statusLabel = data.status_label;
+                    postData.statusClass = data.status_class;
+                    postData.updatedAt = data.updated_at;
+                    card.dataset.post = JSON.stringify(postData);
+                }
 
-    if (lowerUrl.endsWith(".mp4") || lowerUrl.endsWith(".webm") || lowerUrl.endsWith(".ogg")) {
-        return `
-            <div class="modal-media">
-                <video controls src="${safeUrl}"></video>
-            </div>
-        `;
-    }
-
-    return `
-        <div class="modal-media">
-            <img src="${safeUrl}" alt="Lampiran aspirasi">
-        </div>
-    `;
-};
-
-window.renderResponses = function(responses) {
-    if (!responses || responses.length === 0) {
-        return `<p class="modal-description">Belum ada tanggapan resmi untuk aspirasi ini.</p>`;
-    }
-
-    return `
-        <div class="response-list">
-            ${responses.map((response) => `
-                <article class="response-item">
-                    <strong>${window.escapeHtml(response.admin_name || "Admin")}</strong>
-                    <small>${window.escapeHtml(window.formatDate(response.created_at))}</small>
-                    <p>${window.escapeHtml(response.response)}</p>
-                </article>
-            `).join("")}
-        </div>
-    `;
-};
-
-window.postForm = async function(form) {
-    // Use only the path (no query string) so PHP doesn't run filter/export
-    // logic while handling the AJAX POST action.
-    const response = await fetch(window.location.pathname, {
-        method: "POST",
-        body: new FormData(form),
-        headers: {
-            "X-Requested-With": "XMLHttpRequest",
-        },
+                select.dataset.previousValue = data.status;
+                window.showToast(data.message);
+            } catch (error) {
+                select.value = previousValue;
+                window.showToast(error.message, true);
+            } finally {
+                select.disabled = false;
+            }
+        });
     });
 
-    const data = await response.json();
+    document.querySelectorAll(".response-form").forEach((form) => {
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
 
-    if (!response.ok || !data.success) {
-        throw new Error(data.message || "Terjadi kesalahan.");
-    }
+            const textarea = form.querySelector("textarea");
+            const button = form.querySelector("button");
 
-    return data;
-};
+            if (!textarea || textarea.value.trim() === "") {
+                window.showToast("Tanggapan tidak boleh kosong.", true);
+                return;
+            }
+
+            button.disabled = true;
+
+            try {
+                const data = await window.postForm(form);
+                const card = form.closest(".admin-post-card");
+                const postData = card?.dataset.post ? JSON.parse(card.dataset.post) : null;
+
+                if (postData) {
+                    postData.responses = postData.responses || [];
+                    postData.responses.push(data.response);
+                    card.dataset.post = JSON.stringify(postData);
+                }
+
+                let latest = card?.querySelector(".latest-response");
+
+                if (!latest && card) {
+                    latest = document.createElement("div");
+                    latest.className = "latest-response";
+                    form.before(latest);
+                }
+
+                if (latest) {
+                    latest.innerHTML = `
+                        <strong>Respons terbaru</strong>
+                        <p>${window.escapeHtml(data.response.response)}</p>
+                    `;
+                }
+
+                textarea.value = "";
+                window.showToast(data.message);
+            } catch (error) {
+                window.showToast(error.message, true);
+            } finally {
+                button.disabled = false;
+            }
+        });
+    });
+});

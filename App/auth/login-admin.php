@@ -30,8 +30,7 @@ function adminTableName(mysqli $conn): string
 
 function verifyAdminPassword(string $inputPassword, string $storedPassword): bool
 {
-    return password_verify($inputPassword, $storedPassword)
-        || hash_equals($storedPassword, $inputPassword);
+    return $inputPassword === $storedPassword;
 }
 
 // Kalau sudah login sebagai admin, langsung ke dashboard

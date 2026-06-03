@@ -87,7 +87,7 @@ window.postForm = async function(form) {
     // logic while handling the AJAX POST action.
     const response = await fetch(window.location.pathname, {
         method: "POST",
-        body: new FormData(form),
+        body: form instanceof FormData ? form : new FormData(form),
         headers: {
             "X-Requested-With": "XMLHttpRequest",
         },

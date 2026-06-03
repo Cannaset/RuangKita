@@ -4,8 +4,28 @@
 // File: App/admin/queries/update_status.php
 // ============================================================
 
-if ($postId <= 0 || !array_key_exists($newStatus, $statusOptions)) {
-    respondJson(400, ['success' => false, 'message' => 'Data status tidak valid.']);
+$statusAliases = [
+    'pending' => 'not_reviewed',
+    'approved' => 'resolved',
+    'completed' => 'resolved',
+    'in_progress' => 'in_process',
+];
+
+$newStatus = $statusAliases[$newStatus] ?? $newStatus;
+
+if ($postId <= 0) {
+    respondJson(400, [
+        'success' => false,
+        'message' => 'Data status tidak valid: post_id kosong atau tidak valid.',
+    ]);
+}
+
+if (!array_key_exists($newStatus, $statusOptions)) {
+    respondJson(400, [
+        'success' => false,
+        'message' => 'Data status tidak valid: status "' . $newStatus . '" tidak dikenali.',
+        'valid_statuses' => array_keys($statusOptions),
+    ]);
 }
 
 $stmt = $conn->prepare('SELECT id, status FROM posts WHERE id = ? LIMIT 1');
@@ -44,6 +64,7 @@ try {
         'success' => true,
         'message' => 'Status aspirasi berhasil diperbarui.',
         'post_id' => $postId,
+        'old_status' => $oldStatus,
         'status' => $newStatus,
         'status_label' => $meta['label'],
         'status_class' => $meta['class'],

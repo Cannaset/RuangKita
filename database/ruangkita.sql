@@ -31,13 +31,34 @@ CREATE TABLE IF NOT EXISTS admins (
 -- ============================================================
 CREATE TABLE IF NOT EXISTS departments (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(150) NOT NULL,         -- nama departemen, misal "Bagian Akademik"
-    username VARCHAR(100) NOT NULL,
+    name VARCHAR(150) NOT NULL,  
+    username VARCHAR(150) NOT NULL,       -- nama departemen, misal "Bagian Akademik"
     email VARCHAR(120) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     profile_picture VARCHAR(255) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- ============================================================
+-- CONTOH AKUN MANUAL
+-- Admin dan department pada sistem ini login dengan password plain text.
+-- Password contoh admin: admin123
+-- Password contoh department: department123
+-- ============================================================
+INSERT INTO admins (username, email, password)
+VALUES
+    ('Admin RuangKita', 'admin@ruangkita.local', 'admin123')
+ON DUPLICATE KEY UPDATE
+    username = VALUES(username),
+    password = VALUES(password);
+
+INSERT INTO departments (name, username, email, password)
+VALUES
+    ('Bagian Akademik', 'Bagian Akademik', 'akademik@ruangkita.local', 'department123')
+ON DUPLICATE KEY UPDATE
+    name = VALUES(name),
+    username = VALUES(username),
+    password = VALUES(password);
 
 -- ============================================================
 -- 3. POSTS

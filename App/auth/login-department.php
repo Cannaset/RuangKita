@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute();
         $dept = $stmt->get_result()->fetch_assoc();
 
-        if (!$dept || !password_verify($password, $dept['password'])) {
+        if (!$dept || $password !== $dept['password']) {
             $message = 'Email atau Password salah.';
         } else {
             // Set session department — inilah yang dibaca oleh status.php

@@ -119,11 +119,10 @@ if ($method === 'PATCH') {
     if ($post_id <= 0) {
         respond(400, ['success' => false, 'message' => 'post_id tidak valid.']);
     }
-    if (!in_array($new_status, $valid_statuses)) {
+    if (!in_array($new_status, $valid_statuses, true)) {
         respond(400, [
             'success' => false,
-            // 'message' => 'new_status tidak valid. Pilihan: not_reviewed, in_process, communicated, resolved, rejected.',
-            'message' => 'new_status tidak valid. Pilihan: not_reviewed, in_progress, resolved, rejected.'
+            'message' => 'new_status tidak valid. Pilihan: not_reviewed, in_process, communicated, resolved, rejected.'
         ]);
     }
 

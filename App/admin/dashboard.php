@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
     if ($action === 'update_status') {
-        $postId    = (int) ($_POST['post_id'] ?? 0);
+        $postId    = (int) ($_POST['post_id'] ?? $_POST['id'] ?? 0);
         $newStatus = trim($_POST['status'] ?? '');
         $adminId   = (int) $admin['id'];
         require __DIR__ . '/queries/update_status.php';
