@@ -4,44 +4,17 @@
 // File: App/admin/components/statistics-card.php
 // ============================================================
 ?>
-<section class="stats-grid" aria-label="Ringkasan aspirasi">
-    <article class="stat-card stat-total">
-        <img src="../image/total.png" alt="Total" class="stat-icon-img">
-        <div>
-            <p>Total Aspirasi</p>
-            <strong><?= $stats['total']; ?></strong>
-        </div>
-    </article>
-
-    <article class="stat-card stat-pending">
-        <img src="../image/pending.png" alt="Pending" class="stat-icon-img">
-        <div>
-            <p>Pending</p>
-            <strong><?= $stats['pending']; ?></strong>
-        </div>
-    </article>
-
-    <article class="stat-card stat-progress">
-        <img src="../image/progress.png" alt="In Progress" class="stat-icon-img">
-        <div>
-            <p>In Progress</p>
-            <strong><?= $stats['in_progress']; ?></strong>
-        </div>
-    </article>
-
-    <article class="stat-card stat-completed">
-        <img src="../image/completed.png" alt="Completed" class="stat-icon-img">
-        <div>
-            <p>Completed</p>
-            <strong><?= $stats['completed']; ?></strong>
-        </div>
-    </article>
-
-    <article class="stat-card stat-rejected">
-        <img src="../image/rejected.png" alt="Rejected" class="stat-icon-img">
-        <div>
-            <p>Rejected</p>
-            <strong><?= $stats['rejected']; ?></strong>
-        </div>
-    </article>
-</section>
+<div class="stats-row" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem;">
+    <?php foreach ([
+        ['label' => 'Total Aspirasi', 'value' => $stats['total'],       'color' => '#008891'],
+        ['label' => 'Pending',        'value' => $stats['pending'],      'color' => '#f59e0b'],
+        ['label' => 'In Progress',    'value' => $stats['in_progress'],  'color' => '#3b82f6'],
+        ['label' => 'Completed',      'value' => $stats['completed'],    'color' => '#22c55e'],
+        ['label' => 'Rejected',       'value' => $stats['rejected'],     'color' => '#ef4444'],
+    ] as $stat): ?>
+    <div style="background:white;border-radius:.75rem;padding:1.25rem 1.5rem;border:1px solid #e5e7eb;box-shadow:0 2px 8px rgba(0,0,0,.05);">
+        <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;margin:0 0 .5rem;"><?= $stat['label'] ?></p>
+        <p style="font-size:2rem;font-weight:800;color:<?= $stat['color'] ?>;margin:0;"><?= $stat['value'] ?></p>
+    </div>
+    <?php endforeach; ?>
+</div>

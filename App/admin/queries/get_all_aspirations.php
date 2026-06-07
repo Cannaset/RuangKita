@@ -119,35 +119,16 @@ $posts = $listStmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
 $responsesByPost = [];
 if ($posts) {
-    $postIds = array_map(fn ($post) => (int) $post['id'], $posts);
+    $postIds = array_map(fn($post) => (int) $post['id'], $posts);
     $placeholders = implode(',', array_fill(0, count($postIds), '?'));
     $responseTypes = str_repeat('i', count($postIds));
     $responseSql = "
-        SELECT ar.id, ar.post_id, ar.response, ar.created_at, COALESCE(a.username, ad.username, 'Admin') AS admin_name
-        FROM admin_responses ar
-        LEFT JOIN admin a ON a.id = ar.admin_id
-        LEFT JOIN admins ad ON ad.id = ar.admin_id
-        WHERE ar.post_id IN ($placeholders)
-        ORDER BY ar.created_at ASC
-    ";
-
-    if (!tableExists($conn, 'admin')) {
-        $responseSql = "
-            SELECT ar.id, ar.post_id, ar.response, ar.created_at, COALESCE(ad.username, 'Admin') AS admin_name
-            FROM admin_responses ar
-            LEFT JOIN admins ad ON ad.id = ar.admin_id
-            WHERE ar.post_id IN ($placeholders)
-            ORDER BY ar.created_at ASC
-        ";
-    } elseif (!tableExists($conn, 'admins')) {
-        $responseSql = "
-            SELECT ar.id, ar.post_id, ar.response, ar.created_at, COALESCE(a.username, 'Admin') AS admin_name
-            FROM admin_responses ar
-            LEFT JOIN admin a ON a.id = ar.admin_id
-            WHERE ar.post_id IN ($placeholders)
-            ORDER BY ar.created_at ASC
-        ";
-    }
+    SELECT ar.id, ar.post_id, ar.response, ar.created_at, COALESCE(ad.username, 'Admin') AS admin_name
+    FROM admin_responses ar
+    LEFT JOIN admins ad ON ad.id = ar.admin_id
+    WHERE ar.post_id IN ($placeholders)
+    ORDER BY ar.created_at ASC
+";
 
     $responseStmt = $conn->prepare($responseSql);
     $responseParams = $postIds;
