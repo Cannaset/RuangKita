@@ -82,10 +82,10 @@ if ($method === 'GET') {
 
         $comments = array_map(function ($c) {
             return [
-                'id'       => (int) $c['id'],
-                'author'   => $c['username'] ?? 'Anonim',
+                'id' => (int) $c['id'],
+                'author' => $c['username'] ?? 'Anonim',
                 'initials' => getInitials($c['username'] ?? 'Anonim'),
-                'content'  => $c['content'],
+                'content' => $c['content'],
                 'time_ago' => timeAgo($c['created_at']),
             ];
         }, $rows);
@@ -318,8 +318,8 @@ if ($method === 'POST') {
         }
 
         $student_id = (int) $student['id'];
-        $post_id    = isset($json_body['post_id']) ? (int) $json_body['post_id'] : 0;
-        $content    = trim($json_body['content'] ?? '');
+        $post_id = isset($json_body['post_id']) ? (int) $json_body['post_id'] : 0;
+        $content = trim($json_body['content'] ?? '');
 
         if ($post_id <= 0) {
             respond(400, ['success' => false, 'message' => 'post_id tidak valid.']);
@@ -341,18 +341,36 @@ if ($method === 'POST') {
 
         // Simpan komentar
         $ins = $conn->prepare("
-            INSERT INTO comments (post_id, student_id, content)
-            VALUES (?, ?, ?)
-        ");
+    INSERT INTO comments (post_id, student_id, content)
+    VALUES (?, ?, ?)
+");
         $ins->bind_param('iis', $post_id, $student_id, $content);
         if (!$ins->execute()) {
             respond(500, ['success' => false, 'message' => 'Gagal menyimpan komentar.']);
         }
 
+        $comment_id = $conn->insert_id;
+
+        // Trigger notifikasi ke student pembuat post (kalau bukan dia sendiri yang komen)
+        $stmtOwner = $conn->prepare('SELECT student_id, title FROM posts WHERE id = ? LIMIT 1');
+        $stmtOwner->bind_param('i', $post_id);
+        $stmtOwner->execute();
+        $owner = $stmtOwner->get_result()->fetch_assoc();
+
+        if ($owner && (int) $owner['student_id'] !== $student_id) {
+            $notifMsg = "Ada komentar baru di aspirasi kamu: \"{$owner['title']}\".";
+            $stmtNotif = $conn->prepare('
+        INSERT INTO notifications (student_id, post_id, type, message)
+        VALUES (?, ?, "comment", ?)
+    ');
+            $stmtNotif->bind_param('iis', $owner['student_id'], $post_id, $notifMsg);
+            $stmtNotif->execute();
+        }
+
         respond(201, [
-            'success'    => true,
-            'message'    => 'Komentar berhasil dikirim.',
-            'comment_id' => $conn->insert_id,
+            'success' => true,
+            'message' => 'Komentar berhasil dikirim.',
+            'comment_id' => $comment_id,
         ]);
     }
 

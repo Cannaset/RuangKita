@@ -24,6 +24,22 @@ if (!$stmt->execute()) {
     respondJson(500, ['success' => false, 'message' => 'Gagal menyimpan tanggapan.']);
 }
 
+// Trigger notifikasi ke student pembuat post
+$stmtOwner = $conn->prepare('SELECT student_id FROM posts WHERE id = ? LIMIT 1');
+$stmtOwner->bind_param('i', $postId);
+$stmtOwner->execute();
+$owner = $stmtOwner->get_result()->fetch_assoc();
+
+if ($owner) {
+    $notifMsg = "Aspirasi kamu mendapat tanggapan resmi dari admin.";
+    $stmtNotif = $conn->prepare('
+        INSERT INTO notifications (student_id, post_id, type, message)
+        VALUES (?, ?, "admin_response", ?)
+    ');
+    $stmtNotif->bind_param('iis', $owner['student_id'], $postId, $notifMsg);
+    $stmtNotif->execute();
+}
+
 respondJson(201, [
     'success' => true,
     'message' => 'Tanggapan resmi berhasil dikirim.',

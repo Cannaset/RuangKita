@@ -378,52 +378,133 @@ function initNotificationButton() {
     const btn = document.querySelector('.notification-btn');
     if (!btn) return;
 
-    // Buat panel notifikasi
+    // Badge unread
+    const badge = document.createElement('span');
+    badge.id = 'notifBadge';
+    badge.style.cssText = `
+        position:absolute; top:-4px; right:-4px;
+        background:#ef4444; color:white;
+        font-size:.65rem; font-weight:700;
+        border-radius:999px; padding:1px 5px;
+        display:none;
+    `;
+    btn.style.position = 'relative';
+    btn.appendChild(badge);
+
+    // Panel
     const panel = document.createElement('div');
     panel.id = 'notifPanel';
     panel.style.cssText = `
-        position: fixed;
-        top: 70px;
-        right: 1rem;
-        width: 320px;
-        background: white;
-        border-radius: .75rem;
-        box-shadow: 0 12px 40px rgba(0,0,0,.2);
-        border: 1px solid #e5e7eb;
-        z-index: 1500;
-        display: none;
-        overflow: hidden;
-        animation: slideDown .2s ease;
+        position:fixed; top:70px; right:1rem;
+        width:320px; background:white;
+        border-radius:.75rem;
+        box-shadow:0 12px 40px rgba(0,0,0,.2);
+        border:1px solid #e5e7eb;
+        z-index:1500; display:none; overflow:hidden;
     `;
     panel.innerHTML = `
         <div style="padding:.9rem 1.1rem;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center;">
             <span style="font-size:.95rem;font-weight:700;color:#111827">Notifikasi</span>
-            <button id="notifClose" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:#6b7280">✕</button>
-        </div>
-        <div id="notifList" style="max-height:320px;overflow-y:auto;padding:.5rem 0;">
-            <div style="padding:2rem 1rem;text-align:center;color:#9ca3af;font-size:.875rem;">
-                🔔 Belum ada notifikasi
+            <div style="display:flex;gap:.5rem;align-items:center;">
+                <button id="notifMarkAll" style="background:none;border:none;cursor:pointer;font-size:.75rem;color:#008891;font-weight:700;">Tandai semua dibaca</button>
+                <button id="notifClose" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:#6b7280;">✕</button>
             </div>
+        </div>
+        <div id="notifList" style="max-height:360px;overflow-y:auto;padding:.5rem 0;">
+            <div style="padding:2rem 1rem;text-align:center;color:#9ca3af;font-size:.875rem;">Memuat...</div>
         </div>
     `;
     document.body.appendChild(panel);
 
-    // Inject dark mode style for panel
+    // Dark mode styles
     const style = document.createElement('style');
     style.textContent = `
-        @keyframes slideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
-        body.dark-theme #notifPanel { background:#0f172a; border-color:#334155; }
-        body.dark-theme #notifPanel span { color:#f8fafc !important; }
-        body.dark-theme #notifPanel > div:first-child { border-color:#334155 !important; }
-        body.dark-theme #notifClose { color:#94a3b8 !important; }
-        body.feed-page.dark-theme #notifPanel { background:#0f172a; border-color:#334155; }
+        @keyframes slideDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+        body.dark-theme #notifPanel { background:#0f172a !important; border-color:#334155 !important; }
+        body.dark-theme #notifPanel span, body.dark-theme #notifPanel p { color:#f8fafc !important; }
     `;
     document.head.appendChild(style);
 
+    // Fetch notifikasi
+    async function loadNotifications() {
+        try {
+            const res  = await fetch('../api/notifications.php');
+            const data = await res.json();
+
+            if (!data.success) return;
+
+            // Update badge
+            if (data.unread > 0) {
+                badge.textContent = data.unread > 9 ? '9+' : data.unread;
+                badge.style.display = 'block';
+            } else {
+                badge.style.display = 'none';
+            }
+
+            const list = document.getElementById('notifList');
+            if (!list) return;
+
+            if (!data.data?.length) {
+                list.innerHTML = '<div style="padding:2rem 1rem;text-align:center;color:#9ca3af;font-size:.875rem;">🔔 Belum ada notifikasi</div>';
+                return;
+            }
+
+            list.innerHTML = data.data.map(n => `
+                <div class="notif-item" data-id="${n.id}" style="
+                    padding:.75rem 1.1rem;
+                    border-bottom:1px solid #f3f4f6;
+                    cursor:pointer;
+                    background:${n.is_read ? 'transparent' : '#f0fdfa'};
+                    display:flex; gap:.75rem; align-items:flex-start;
+                ">
+                    <div style="
+                        width:8px;height:8px;border-radius:50%;
+                        background:${n.is_read ? 'transparent' : '#008891'};
+                        margin-top:.35rem; flex-shrink:0;
+                    "></div>
+                    <div style="flex:1;min-width:0;">
+                        <p style="margin:0;font-size:.85rem;color:#111827;line-height:1.4;">${escHtml(n.message)}</p>
+                        <small style="color:#9ca3af;font-size:.75rem;">${timeAgoClient(n.created_at)}</small>
+                    </div>
+                </div>
+            `).join('');
+
+            // Klik notif → mark read
+            list.querySelectorAll('.notif-item').forEach(item => {
+                item.addEventListener('click', async () => {
+                    const id = item.dataset.id;
+                    await fetch('../api/notifications.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'mark_read', id: parseInt(id) })
+                    });
+                    item.style.background = 'transparent';
+                    item.querySelector('div').style.background = 'transparent';
+                    loadNotifications();
+                });
+            });
+
+        } catch (err) {
+            console.error('Notif error:', err);
+        }
+    }
+
+    // Mark all read
+    document.getElementById('notifMarkAll')?.addEventListener('click', async () => {
+        await fetch('../api/notifications.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'mark_read' })
+        });
+        loadNotifications();
+    });
+
+    // Toggle panel
     btn.addEventListener('click', e => {
         e.stopPropagation();
         const isOpen = panel.style.display === 'block';
         panel.style.display = isOpen ? 'none' : 'block';
+        if (!isOpen) loadNotifications();
     });
 
     document.getElementById('notifClose')?.addEventListener('click', () => {
@@ -435,6 +516,21 @@ function initNotificationButton() {
             panel.style.display = 'none';
         }
     });
+
+    // Poll setiap 30 detik untuk update badge
+    loadNotifications();
+    setInterval(loadNotifications, 30000);
+}
+
+function timeAgoClient(datetime) {
+    const now  = new Date();
+    const past = new Date(datetime.replace(' ', 'T'));
+    const diff = Math.floor((now - past) / 1000);
+
+    if (diff < 60)   return 'Baru saja';
+    if (diff < 3600) return Math.floor(diff / 60) + ' menit yang lalu';
+    if (diff < 86400) return Math.floor(diff / 3600) + ' jam yang lalu';
+    return Math.floor(diff / 86400) + ' hari yang lalu';
 }
 
 // ── 3. POST MENU (⋯) → Dropdown dengan opsi ───────────────

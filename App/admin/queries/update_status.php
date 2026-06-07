@@ -50,11 +50,36 @@ try {
 
         $role = 'admin';
         $stmt = $conn->prepare("
-            INSERT INTO post_status_logs (post_id, changed_by_role, changed_by_id, old_status, new_status, note)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ");
+    INSERT INTO post_status_logs (post_id, changed_by_role, changed_by_id, old_status, new_status, note)
+    VALUES (?, ?, ?, ?, ?, ?)
+");
         $stmt->bind_param('isisss', $postId, $role, $adminId, $oldStatus, $newStatus, $note);
         $stmt->execute();
+
+        // Trigger notifikasi ke student pembuat post
+        $statusLabels = [
+            'not_reviewed' => 'Belum Ditinjau',
+            'in_process' => 'Sedang Diproses',
+            'communicated' => 'Dikomunikasikan',
+            'resolved' => 'Selesai',
+            'rejected' => 'Ditolak',
+        ];
+        $statusLabel = $statusLabels[$newStatus] ?? $newStatus;
+        $notifMsg = "Status aspirasi kamu telah diubah menjadi \"$statusLabel\".";
+
+        $stmtOwner = $conn->prepare('SELECT student_id FROM posts WHERE id = ? LIMIT 1');
+        $stmtOwner->bind_param('i', $postId);
+        $stmtOwner->execute();
+        $owner = $stmtOwner->get_result()->fetch_assoc();
+
+        if ($owner) {
+            $stmtNotif = $conn->prepare('
+        INSERT INTO notifications (student_id, post_id, type, message)
+        VALUES (?, ?, "status_change", ?)
+    ');
+            $stmtNotif->bind_param('iis', $owner['student_id'], $postId, $notifMsg);
+            $stmtNotif->execute();
+        }
     }
 
     $conn->commit();
