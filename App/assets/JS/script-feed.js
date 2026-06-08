@@ -44,7 +44,7 @@ function initializeThemeToggle() {
     themeToggle.addEventListener('click', () => {
         const isDark = document.body.classList.toggle('dark-theme');
         localStorage.setItem('ruangkita-theme', isDark ? 'dark' : 'light');
-        
+
         const themeIcon = document.getElementById('themeIcon');
         if (themeIcon) {
             themeIcon.textContent = isDark ? 'Light' : 'Dark';
@@ -88,9 +88,9 @@ function initializeProfileDropdown() {
 function openImageModal(imageUrl) {
     const modal = document.getElementById('imageModal');
     const modalImage = document.getElementById('modalImage');
-    
+
     if (!modal || !modalImage) return;
-    
+
     modalImage.src = imageUrl;
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
@@ -98,16 +98,16 @@ function openImageModal(imageUrl) {
 
 function closeImageModal() {
     const modal = document.getElementById('imageModal');
-    
+
     if (!modal) return;
-    
+
     modal.style.display = 'none';
     document.body.style.overflow = 'auto';
 }
 
 function initializeModalListeners() {
     const modal = document.getElementById('imageModal');
-    
+
     if (!modal) return;
 
     modal.addEventListener('click', (e) => {
@@ -162,16 +162,16 @@ async function handleVote(postId, voteType) {
         const voteData = await voteRes.json();
 
         if (voteData.success) {
-            const upEl   = document.querySelector(`.vote-count-up-${postId}`);
+            const upEl = document.querySelector(`.vote-count-up-${postId}`);
             const downEl = document.querySelector(`.vote-count-down-${postId}`);
-            const upBtn  = document.querySelector(`.vote-up[data-post-id="${postId}"]`);
+            const upBtn = document.querySelector(`.vote-up[data-post-id="${postId}"]`);
             const downBtn = document.querySelector(`.vote-down[data-post-id="${postId}"]`);
 
-            if (upEl)   upEl.textContent   = voteData.upvotes;
+            if (upEl) upEl.textContent = voteData.upvotes;
             if (downEl) downEl.textContent = voteData.downvotes;
 
             // Highlight tombol yang aktif
-            if (upBtn)   upBtn.classList.toggle('active', voteData.my_vote === 'upvote');
+            if (upBtn) upBtn.classList.toggle('active', voteData.my_vote === 'upvote');
             if (downBtn) downBtn.classList.toggle('active', voteData.my_vote === 'downvote');
         }
     } catch (err) {
@@ -271,14 +271,14 @@ async function fetchAndRenderPosts() {
     // Bangun query params
     const params = new URLSearchParams();
     if (currentCategory !== 'All') params.set('category', currentCategory);
-    if (currentSort === 'Popular')    params.set('sort', 'popular');
+    if (currentSort === 'Popular') params.set('sort', 'popular');
     if (currentSort === 'Unresolved') params.set('sort', 'unresolved');
 
     const searchTerm = document.getElementById('searchInput')?.value.trim();
     if (searchTerm) params.set('search', searchTerm);
 
     try {
-        const res  = await fetch(`../api/posts.php?${params.toString()}`);
+        const res = await fetch(`../api/posts.php?${params.toString()}`);
         const data = await res.json();
 
         if (!data.success) {
@@ -304,8 +304,8 @@ async function fetchAndRenderPosts() {
 // EVENT LISTENERS - FILTER & SORT
 // ============================================
 function initializeFiltersAndSort() {
-    const filterNav   = document.getElementById('filterNav');
-    const sortNav     = document.getElementById('sortNav');
+    const filterNav = document.getElementById('filterNav');
+    const sortNav = document.getElementById('sortNav');
     const searchInput = document.getElementById('searchInput');
 
     if (filterNav) {
@@ -353,7 +353,7 @@ function initShareButtons() {
         if (!btn) return;
 
         const postCard = btn.closest('.post-card');
-        const postId   = postCard?.dataset.postId;
+        const postId = postCard?.dataset.postId;
         const shareUrl = postId
             ? `${location.origin}${location.pathname}?post=${postId}`
             : location.href;
@@ -428,7 +428,7 @@ function initNotificationButton() {
     // Fetch notifikasi
     async function loadNotifications() {
         try {
-            const res  = await fetch('../api/notifications.php');
+            const res = await fetch('../api/notifications.php');
             const data = await res.json();
 
             if (!data.success) return;
@@ -450,37 +450,40 @@ function initNotificationButton() {
             }
 
             list.innerHTML = data.data.map(n => `
-                <div class="notif-item" data-id="${n.id}" style="
-                    padding:.75rem 1.1rem;
-                    border-bottom:1px solid #f3f4f6;
-                    cursor:pointer;
-                    background:${n.is_read ? 'transparent' : '#f0fdfa'};
-                    display:flex; gap:.75rem; align-items:flex-start;
-                ">
-                    <div style="
-                        width:8px;height:8px;border-radius:50%;
-                        background:${n.is_read ? 'transparent' : '#008891'};
-                        margin-top:.35rem; flex-shrink:0;
-                    "></div>
-                    <div style="flex:1;min-width:0;">
-                        <p style="margin:0;font-size:.85rem;color:#111827;line-height:1.4;">${escHtml(n.message)}</p>
-                        <small style="color:#9ca3af;font-size:.75rem;">${timeAgoClient(n.created_at)}</small>
-                    </div>
-                </div>
-            `).join('');
+    <div class="notif-item" data-id="${n.id}" data-post-id="${n.post_id}" style="
+        padding:.75rem 1.1rem;
+        border-bottom:1px solid #f3f4f6;
+        cursor:pointer;
+        background:${n.is_read ? 'transparent' : '#f0fdfa'};
+        display:flex; gap:.75rem; align-items:flex-start;
+        transition: background .2s;
+    ">
+        <div style="font-size:1.1rem;margin-top:.1rem;flex-shrink:0;">
+            ${{ status_change: '🔄', admin_response: '📣', comment: '💬' }[n.type] ?? '🔔'}
+        </div>
+        <div style="flex:1;min-width:0;">
+            <p style="margin:0;font-size:.85rem;color:#111827;line-height:1.4;">${escHtml(n.message)}</p>
+            <small style="color:#9ca3af;font-size:.75rem;">${timeAgoClient(n.created_at)}</small>
+        </div>
+        ${!n.is_read ? `<div style="width:8px;height:8px;border-radius:50%;background:#008891;margin-top:.35rem;flex-shrink:0;"></div>` : ''}
+    </div>
+`).join('');
 
             // Klik notif → mark read
             list.querySelectorAll('.notif-item').forEach(item => {
                 item.addEventListener('click', async () => {
                     const id = item.dataset.id;
+                    const postId = item.dataset.postId;
+
                     await fetch('../api/notifications.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ action: 'mark_read', id: parseInt(id) })
                     });
-                    item.style.background = 'transparent';
-                    item.querySelector('div').style.background = 'transparent';
+
+                    panel.style.display = 'none';
                     loadNotifications();
+                    scrollToPost(postId);
                 });
             });
 
@@ -523,14 +526,52 @@ function initNotificationButton() {
 }
 
 function timeAgoClient(datetime) {
-    const now  = new Date();
+    const now = new Date();
     const past = new Date(datetime.replace(' ', 'T'));
     const diff = Math.floor((now - past) / 1000);
 
-    if (diff < 60)   return 'Baru saja';
+    if (diff < 60) return 'Baru saja';
     if (diff < 3600) return Math.floor(diff / 60) + ' menit yang lalu';
     if (diff < 86400) return Math.floor(diff / 3600) + ' jam yang lalu';
     return Math.floor(diff / 86400) + ' hari yang lalu';
+}
+
+async function scrollToPost(postId) {
+    if (!postId) return;
+
+    // Cek apakah post sudah ada di feed
+    let card = document.querySelector(`.post-card[data-post-id="${postId}"]`);
+
+    if (!card) {
+        // Reset filter dulu biar semua post muncul
+        currentCategory = 'All';
+        currentSort = 'Newest';
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector('.filter-btn[data-category="All"]')?.classList.add('active');
+        document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector('.sort-btn[data-sort="Newest"]')?.classList.add('active');
+
+        await fetchAndRenderPosts();
+        card = document.querySelector(`.post-card[data-post-id="${postId}"]`);
+    }
+
+    if (!card) {
+        showFeedToast('Post ini belum tersedia di beranda.', 'error');
+        return;
+    }
+
+    // Scroll ke post
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    // Highlight effect
+    card.style.transition = 'box-shadow .3s, outline .3s';
+    card.style.outline = '2px solid #008891';
+    card.style.boxShadow = '0 0 0 4px rgba(0,136,145,.15)';
+
+    setTimeout(() => {
+        card.style.outline = '';
+        card.style.boxShadow = '';
+    }, 2500);
 }
 
 // ── 3. POST MENU (⋯) → Dropdown dengan opsi ───────────────
@@ -550,9 +591,9 @@ function initPostMenus() {
         e.stopPropagation();
         closeAllMenus();
 
-        const postCard  = btn.closest('.post-card');
-        const postId    = postCard?.dataset.postId ?? '0';
-        const isOwner   = postCard?.dataset.isOwner === 'true';
+        const postCard = btn.closest('.post-card');
+        const postId = postCard?.dataset.postId ?? '0';
+        const isOwner = postCard?.dataset.isOwner === 'true';
 
         const dropdown = document.createElement('div');
         dropdown.className = 'post-menu-dropdown';
@@ -613,7 +654,7 @@ function initPostMenus() {
             if (!actionBtn) return;
 
             const action = actionBtn.dataset.action;
-            const pid    = actionBtn.dataset.postId;
+            const pid = actionBtn.dataset.postId;
             closeAllMenus();
 
             if (action === 'copy') {
@@ -655,7 +696,7 @@ function initPostMenus() {
 
 async function handleDeletePost(postId) {
     try {
-        const res  = await fetch('../api/posts.php', {
+        const res = await fetch('../api/posts.php', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ post_id: parseInt(postId) })
@@ -666,8 +707,8 @@ async function handleDeletePost(postId) {
             const card = document.querySelector(`.post-card[data-post-id="${postId}"]`);
             if (card) {
                 card.style.transition = 'opacity .3s, transform .3s';
-                card.style.opacity    = '0';
-                card.style.transform  = 'translateY(-8px)';
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(-8px)';
                 setTimeout(() => card.remove(), 300);
             }
             showFeedToast('Aspirasi berhasil dihapus.', 'success');
@@ -702,7 +743,7 @@ function initCommentButtons() {
         if (!commentItem.querySelector('span')?.textContent.includes('💬')) return;
 
         const postCard = commentItem.closest('.post-card');
-        const postId   = postCard?.dataset.postId;
+        const postId = postCard?.dataset.postId;
 
         if (!postId) return;
 
@@ -767,7 +808,7 @@ function initCommentButtons() {
 
         // Submit handler
         commentSection.querySelector('.comment-submit-btn')?.addEventListener('click', () => {
-            const input   = commentSection.querySelector('.comment-input');
+            const input = commentSection.querySelector('.comment-input');
             const content = input?.value.trim();
             if (!content) return;
             submitComment(postId, content, input, commentSection.querySelector(`#comments-${postId}`));
@@ -787,7 +828,7 @@ async function fetchComments(postId) {
     if (!list) return;
 
     try {
-        const res  = await fetch(`../api/posts.php?action=comments&post_id=${postId}`);
+        const res = await fetch(`../api/posts.php?action=comments&post_id=${postId}`);
         const data = await res.json();
 
         if (!data.success || !data.comments?.length) {
@@ -819,7 +860,7 @@ async function submitComment(postId, content, inputEl, listEl) {
     if (btn) { btn.disabled = true; btn.textContent = '...'; }
 
     try {
-        const res  = await fetch('../api/posts.php', {
+        const res = await fetch('../api/posts.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'comment', post_id: parseInt(postId), content })
@@ -831,8 +872,8 @@ async function submitComment(postId, content, inputEl, listEl) {
             fetchComments(postId);
 
             // Update comment count badge
-            const card       = document.querySelector(`.post-card[data-post-id="${postId}"]`);
-            const countEl    = card?.querySelector('.comment-count');
+            const card = document.querySelector(`.post-card[data-post-id="${postId}"]`);
+            const countEl = card?.querySelector('.comment-count');
             if (countEl) countEl.textContent = parseInt(countEl.textContent || '0') + 1;
         } else {
             showFeedToast(data.message || 'Gagal mengirim komentar.', 'error');
@@ -848,14 +889,14 @@ function applyDarkToCommentSection(section) {
     section.style.borderColor = '#334155';
     const input = section.querySelector('.comment-input');
     if (input) {
-        input.style.background   = '#1e293b';
-        input.style.borderColor  = '#334155';
-        input.style.color        = '#f8fafc';
+        input.style.background = '#1e293b';
+        input.style.borderColor = '#334155';
+        input.style.color = '#f8fafc';
     }
 }
 
 function escHtml(str) {
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 // ── 5. TOAST ──────────────────────────────────────────────
@@ -887,7 +928,7 @@ function showFeedToast(msg, type = 'success') {
 
     document.body.appendChild(toast);
     setTimeout(() => {
-        toast.style.opacity   = '0';
+        toast.style.opacity = '0';
         toast.style.transform = 'translateY(1rem)';
         toast.style.transition = 'opacity .3s, transform .3s';
         setTimeout(() => toast.remove(), 300);

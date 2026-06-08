@@ -23,18 +23,18 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
     $stmt = $conn->prepare('
-        SELECT id, post_id, message, is_read, created_at
-        FROM notifications
-        WHERE student_id = ?
-        ORDER BY created_at DESC
-        LIMIT 20
-    ');
+    SELECT id, post_id, type, message, is_read, created_at
+    FROM notifications
+    WHERE student_id = ?
+    ORDER BY created_at DESC
+    LIMIT 20
+');
     $stmt->bind_param('i', $student_id);
     $stmt->execute();
     $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
     foreach ($rows as &$row) {
-        $row['id']      = (int) $row['id'];
+        $row['id'] = (int) $row['id'];
         $row['post_id'] = (int) $row['post_id'];
         $row['is_read'] = (bool) $row['is_read'];
     }
@@ -45,7 +45,7 @@ if ($method === 'GET') {
 }
 
 if ($method === 'POST') {
-    $body   = json_decode(file_get_contents('php://input'), true);
+    $body = json_decode(file_get_contents('php://input'), true);
     $action = $body['action'] ?? '';
 
     if ($action === 'mark_read') {

@@ -31,7 +31,7 @@ $stmtOwner->execute();
 $owner = $stmtOwner->get_result()->fetch_assoc();
 
 if ($owner) {
-    $notifMsg = "Aspirasi kamu mendapat tanggapan resmi dari admin.";
+    $notifMsg = "Tanggapan resmi: \"$response\"";
     $stmtNotif = $conn->prepare('
         INSERT INTO notifications (student_id, post_id, type, message)
         VALUES (?, ?, "admin_response", ?)
