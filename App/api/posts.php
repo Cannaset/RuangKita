@@ -213,16 +213,17 @@ if ($method === 'GET') {
 
     // Query utama
     $list_sql = "
-        SELECT
-            p.id,
-            p.title,
-            p.description,
-            p.category,
-            p.image_url,
-            p.is_anonymous,
-            p.status,
-            p.created_at,
-            s.username,
+    SELECT
+        p.id,
+        p.student_id,
+        p.title,
+        p.description,
+        p.category,
+        p.image_url,
+        p.is_anonymous,
+        p.status,
+        p.created_at,
+        s.username,
             COALESCE(vt.upvotes,   0) AS upvotes,
             COALESCE(vt.downvotes, 0) AS downvotes,
             COALESCE(ct.total,     0) AS comments_count,
@@ -275,7 +276,9 @@ if ($method === 'GET') {
         $post['comments'] = $post['comments_count'];
         $post['imageUrl'] = $post['image_url'];
         $post['hasImage'] = !empty($post['image_url']);
+        $post['is_owner'] = ($student_id > 0 && (int) $post['student_id'] === $student_id);
     }
+
 
     respond(200, [
         'success' => true,
@@ -475,5 +478,57 @@ if ($method === 'POST') {
     ]);
 }
 
+// ============================================================
+// DELETE - Hapus post
+// Bisa dilakukan oleh owner (student) atau admin
+// ============================================================
+if ($method === 'DELETE') {
+    $body = json_decode(file_get_contents('php://input'), true);
+    $post_id = (int) ($body['post_id'] ?? 0);
+
+    if ($post_id <= 0) {
+        respond(400, ['success' => false, 'message' => 'post_id tidak valid.']);
+    }
+
+    $student = $_SESSION['student'] ?? null;
+    $admin = $_SESSION['admin'] ?? null;
+
+    if (!$student && !$admin) {
+        respond(401, ['success' => false, 'message' => 'Kamu harus login dulu.']);
+    }
+
+    // Ambil data post
+    $stmt = $conn->prepare('SELECT id, student_id, image_url FROM posts WHERE id = ? LIMIT 1');
+    $stmt->bind_param('i', $post_id);
+    $stmt->execute();
+    $post = $stmt->get_result()->fetch_assoc();
+
+    if (!$post) {
+        respond(404, ['success' => false, 'message' => 'Post tidak ditemukan.']);
+    }
+
+    // Cek izin — hanya owner atau admin
+    if ($student && (int) $post['student_id'] !== (int) $student['id']) {
+        respond(403, ['success' => false, 'message' => 'Kamu tidak punya izin menghapus post ini.']);
+    }
+
+    // Hapus file gambar kalau ada
+    if (!empty($post['image_url'])) {
+        $filePath = __DIR__ . '/../' . ltrim($post['image_url'], '../');
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+    }
+
+    // Hapus post — cascade akan hapus votes, comments, notif otomatis
+    $del = $conn->prepare('DELETE FROM posts WHERE id = ?');
+    $del->bind_param('i', $post_id);
+
+    if (!$del->execute()) {
+        respond(500, ['success' => false, 'message' => 'Gagal menghapus post.']);
+    }
+
+    respond(200, ['success' => true, 'message' => 'Post berhasil dihapus.']);
+}
 // Kalau method selain GET/POST
 respond(405, ['success' => false, 'message' => 'Method tidak diizinkan.']);

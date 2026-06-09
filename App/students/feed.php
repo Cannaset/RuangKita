@@ -130,7 +130,7 @@ function getInitials(string $name): string
         </div>
     </div>
 
-    <script src="../assets/JS/script-feed.js?v=8"></script>
+    <script src="../assets/JS/script-feed.js?v=9"></script>
 </body>
 
 </html>

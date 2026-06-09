@@ -212,7 +212,7 @@ function attachEventListeners() {
 // ============================================
 function createPostHTML(post) {
     return `
-        <div class="post-card" data-post-id="${post.id}" data-is-owner="${post.is_owner || false}">
+        <div class="post-card" data-post-id="${post.id}" data-is-owner="${post.is_owner === true ? 'true' : 'false'}">
             <div class="post-header-container">
                 <div class="post-header">
                     <div class="post-user-info">
@@ -701,7 +701,8 @@ async function handleDeletePost(postId) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ post_id: parseInt(postId) })
         });
-        const data = await res.json();
+        const text = await res.text();
+        const data = JSON.parse(text);
 
         if (data.success) {
             const card = document.querySelector(`.post-card[data-post-id="${postId}"]`);
@@ -715,7 +716,10 @@ async function handleDeletePost(postId) {
         } else {
             showFeedToast(data.message || 'Gagal menghapus.', 'error');
         }
-    } catch {
+    } catch (err) {
+        console.error('Delete error:', err);
+        console.error('Error message:', err.message);
+        console.error('Error stack:', err.stack);
         showFeedToast('Gagal menghubungi server.', 'error');
     }
 }
