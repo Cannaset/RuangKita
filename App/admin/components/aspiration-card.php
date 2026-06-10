@@ -33,7 +33,7 @@ $modalData = [
     'downvotes' => (int) $post['downvotes'],
     'comments' => (int) $post['comments_count'],
     'imageUrl' => $attachmentUrl,
-    'responses' => array_map(fn ($response) => [
+    'responses' => array_map(fn($response) => [
         'admin_name' => $response['admin_name'],
         'response' => $response['response'],
         'created_at' => $response['created_at'],
@@ -90,6 +90,8 @@ $modalData = [
         </form>
 
         <button class="detail-button" type="button">Detail</button>
+        <button class="delete-post-button" type="button" data-post-id="<?= (int) $post['id']; ?>"
+            style="padding:.5rem 1rem;background:#ef4444;color:white;border:none;border-radius:.5rem;font-size:.8rem;font-weight:700;cursor:pointer;">Hapus</button>
     </div>
 
     <?php if (!empty($post['latest_response'])): ?>
@@ -103,7 +105,8 @@ $modalData = [
         <input type="hidden" name="action" value="add_response">
         <input type="hidden" name="post_id" value="<?= (int) $post['id']; ?>">
         <label for="response-<?= (int) $post['id']; ?>">Tanggapan resmi</label>
-        <textarea id="response-<?= (int) $post['id']; ?>" name="response" rows="3" placeholder="Tulis tanggapan resmi untuk aspirasi ini"></textarea>
+        <textarea id="response-<?= (int) $post['id']; ?>" name="response" rows="3"
+            placeholder="Tulis tanggapan resmi untuk aspirasi ini"></textarea>
         <button type="submit">Kirim Tanggapan</button>
     </form>
 </article>

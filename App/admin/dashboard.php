@@ -30,18 +30,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
     if ($action === 'update_status') {
-        $postId    = (int) ($_POST['post_id'] ?? $_POST['id'] ?? 0);
+        $postId = (int) ($_POST['post_id'] ?? $_POST['id'] ?? 0);
         $newStatus = trim($_POST['status'] ?? '');
-        $adminId   = (int) $admin['id'];
+        $adminId = (int) $admin['id'];
         require __DIR__ . '/queries/update_status.php';
         exit; // update_status.php calls respondJson+exit, but be explicit
     }
 
     if ($action === 'add_response') {
-        $postId   = (int) ($_POST['post_id'] ?? 0);
+        $postId = (int) ($_POST['post_id'] ?? 0);
         $response = trim($_POST['response'] ?? '');
         require __DIR__ . '/queries/submit_admin_response.php';
         exit;
+    }
+
+    if ($action === 'delete_post') {
+        $postId = (int) ($_POST['post_id'] ?? 0);
+        if ($postId <= 0) {
+            respondJson(400, ['success' => false, 'message' => 'post_id tidak valid.']);
+        }
+
+        $stmt = $conn->prepare('SELECT image_url FROM posts WHERE id = ? LIMIT 1');
+        $stmt->bind_param('i', $postId);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+
+        if (!$row) {
+            respondJson(404, ['success' => false, 'message' => 'Post tidak ditemukan.']);
+        }
+
+        if (!empty($row['image_url'])) {
+            $imageUrl = str_replace('../', '', $row['image_url']);
+            $filePath = __DIR__ . '/../../' . $imageUrl;
+            if (file_exists($filePath))
+                unlink($filePath);
+        }
+
+        $del = $conn->prepare('DELETE FROM posts WHERE id = ?');
+        $del->bind_param('i', $postId);
+
+        if (!$del->execute()) {
+            respondJson(500, ['success' => false, 'message' => 'Gagal menghapus post.']);
+        }
+
+        respondJson(200, ['success' => true, 'message' => 'Aspirasi berhasil dihapus.']);
     }
 
     respondJson(400, ['success' => false, 'message' => 'Aksi tidak dikenali.']);
@@ -144,9 +176,11 @@ if (($_GET['export'] ?? '') === 'csv') {
             <div>
                 <p class="admin-kicker">Admin Dashboard</p>
                 <h1>Kelola Aspirasi Mahasiswa</h1>
-                <p class="admin-subtitle">Pantau laporan, prioritaskan aspirasi, dan berikan tanggapan resmi dari satu halaman.</p>
+                <p class="admin-subtitle">Pantau laporan, prioritaskan aspirasi, dan berikan tanggapan resmi dari satu
+                    halaman.</p>
             </div>
-            <a class="export-link" href="?<?= e(http_build_query(array_merge($_GET, ['export' => 'csv']))); ?>">Export Data</a>
+            <a class="export-link" href="?<?= e(http_build_query(array_merge($_GET, ['export' => 'csv']))); ?>">Export
+                Data</a>
         </section>
 
         <!-- Component Statistics -->

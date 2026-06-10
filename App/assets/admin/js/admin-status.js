@@ -101,4 +101,46 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     });
+    document.querySelectorAll(".delete-post-button").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+            const postId = btn.dataset.postId;
+            if (!confirm("Yakin ingin menghapus aspirasi ini? Tindakan ini tidak bisa dibatalkan.")) return;
+
+            btn.disabled = true;
+            btn.textContent = "Menghapus...";
+
+            try {
+                const res = await fetch(window.location.pathname, {
+                    method: "POST",
+                    headers: { "X-Requested-With": "XMLHttpRequest" },
+                    body: (() => {
+                        const fd = new FormData();
+                        fd.set("action", "delete_post");
+                        fd.set("post_id", postId);
+                        return fd;
+                    })(),
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    const card = btn.closest(".admin-post-card");
+                    if (card) {
+                        card.style.transition = "opacity .3s, transform .3s";
+                        card.style.opacity = "0";
+                        card.style.transform = "translateY(-8px)";
+                        setTimeout(() => card.remove(), 300);
+                    }
+                    window.showToast("Aspirasi berhasil dihapus.");
+                } else {
+                    window.showToast(data.message || "Gagal menghapus.", true);
+                    btn.disabled = false;
+                    btn.textContent = "Hapus";
+                }
+            } catch (err) {
+                window.showToast("Gagal menghubungi server.", true);
+                btn.disabled = false;
+                btn.textContent = "Hapus";
+            }
+        });
+    });
 });
