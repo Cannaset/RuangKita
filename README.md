@@ -177,3 +177,6 @@ Main relationships:
 | **Kanaya Salsabila Humaira** | F1D02410061 | Project Manager and Database Integration | Project planning, task distribution, timeline and progress monitoring, team coordination, database schema and relationships, frontend-backend integration, testing, feature validation, and documentation. |
 | **Abdurrahman Karim** | F1D02410031 | Frontend and UI Developer | Figma slicing, authentication UI, student feed, create-post page, responsive layouts, design consistency, frontend integration, user experience, and cross-device compatibility. |
 | **Septania Sybil Shofiyah** | F1D02410094 | Backend and API Developer | Authentication, post CRUD, voting, comments, notifications, status APIs, database connectivity, business logic, server-side validation, security, and data communication. |
+
+## Author Notes
+This project was developed as part of the final project requirement for the Web Programming course. It presents the implementation of RuangKita, a web-based information system designed to manage student aspirations, feedback, and responses in a transparent and structured manner, improving communication between students and university stakeholders.
