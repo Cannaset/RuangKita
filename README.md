@@ -45,43 +45,52 @@ and tracked until it is resolved.
 | Actor | Responsibilities |
 |---|---|
 | **Student** | Registers and logs in, manages a profile, submits an aspiration, posts anonymously when needed, views the feed, votes, comments, receives notifications, and tracks progress. |
-| **Admin / BEM** | Reviews pending submissions, accepts or rejects posts, assigns or forwards approved aspirations, provides official responses, updates statuses, monitors statistics, and exports aspiration data. |
+| **Admin / HMIF** | Reviews pending submissions, accepts or rejects posts, assigns or forwards approved aspirations, provides official responses, updates statuses, monitors statistics, and exports aspiration data. |
 | **Department** | Views aspirations that have passed moderation, follows up on assigned or approved issues, adds notes, and updates progress to `In Process`, `Communicated`, or `Resolved`. |
 
 ## DFD and System Flow
 
 <div align="center">
-  <img src="readme_assets/Level1_dfd.png" alt="RuangKita moderation data flow diagram" width="100%">
+  <img src="readme_assets/Level1_dfd.png" alt="RuangKita Level 1 data flow diagram" width="100%">
 </div>
 
-The supplied DFD describes the moderation process and the interaction between
-the **Admin**, post data, category data, department data, and notification data.
+The Level 1 DFD shows how the three external actors, **Student**, **Admin**, and
+**Department**, interact with the five main processes and the system's data
+stores.
 
-1. **View pending posts**  
-   The admin opens the moderation page. The system reads pending submissions
-   from the post data store and displays the post list.
+1. **Manage Authentication (1.0)**  
+   Students submit registration or login data, while admins and departments
+   submit login data. The system validates the information using the relevant
+   student, admin, or department data store and returns the authentication
+   result to each actor.
 
-2. **Review a post**  
-   The admin selects a submission. The system retrieves its complete details
-   and reads the relevant category information to support the review.
+2. **Manage Aspiration Post (2.0)**  
+   Students can create aspirations, request the feed, view post details, search
+   and filter posts, or share them. The process reads and writes post data and
+   uses category data to organize the aspirations before returning post, feed,
+   and search results to students.
 
-3. **Moderate the post**  
-   The admin decides whether the aspiration should be accepted or rejected.
-   The result updates the moderation status in the post data store.
+3. **Manage Interaction (3.0)**  
+   Students send comment and vote requests for an aspiration. The system reads
+   the related post, stores or retrieves comment and vote data, and returns the
+   interaction result to the student.
 
-4. **Assign an accepted post**  
-   For an accepted aspiration, the admin reads the available department data
-   and selects the responsible department. The assignment is recorded and a
-   notification is created.
+4. **Manage Moderation (4.0)**  
+   Admins request the list of posts awaiting review and submit moderation
+   decisions. The process reads post and category data, updates the moderated
+   post, reads department information, and records which department will handle
+   an approved aspiration.
 
-5. **Department follow-up**  
-   The department views approved aspirations and updates their progress. Each
-   change updates the post status and is recorded in the status log.
+5. **Manage Status and Notification (5.0)**  
+   Departments request assigned posts and submit status updates as the
+   aspiration is handled. The process updates the post status, stores assignment
+   or status notifications, and sends status or notification information to the
+   student. Students can also request their latest post status and
+   notifications.
 
-6. **Student tracking**  
-   Approved posts become visible in the student feed. Students can vote,
-   comment, and monitor updates until the aspiration is resolved. Relevant
-   activities generate notifications for the post owner.
+The main data stores used in this flow are **Student Data (D1)**, **Admin Data
+(D2)**, **Department Data (D3)**, **Post Data (D4)**, **Category Data (D5)**,
+**Comment Data (D6)**, **Vote Data (D7)**, and **Notification Data (D8)**.
 
 ## Folder Structure
 
@@ -122,7 +131,6 @@ RuangKita/
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 ![XAMPP](https://img.shields.io/badge/XAMPP-FB7A24?style=for-the-badge&logo=xampp&logoColor=white)
 ![Figma](https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)
-![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)
 
 </div>
 
@@ -134,7 +142,6 @@ RuangKita/
 | Local Server | Apache through XAMPP |
 | Database Access | PHP MySQLi with prepared statements |
 | UI/UX Design | Figma |
-| API Testing | Postman |
 
 ## Database Management System
 
@@ -145,7 +152,7 @@ PHP through **MySQLi**, while the database definition is available in
 | Table | Purpose |
 |---|---|
 | `students` | Stores student accounts, NIM, email, password, and profile picture. |
-| `admins` | Stores administrator or BEM accounts. |
+| `admins` | Stores administrator or HMIF accounts. |
 | `departments` | Stores organizational department accounts. |
 | `posts` | Stores aspiration content, category, attachment, anonymity flag, and current status. |
 | `votes` | Stores one upvote or downvote per student for each post. |
@@ -169,4 +176,4 @@ Main relationships:
 |---|---|---|---|
 | **Kanaya Salsabila Humaira** | F1D02410061 | Project Manager and Database Integration | Project planning, task distribution, timeline and progress monitoring, team coordination, database schema and relationships, frontend-backend integration, testing, feature validation, and documentation. |
 | **Abdurrahman Karim** | F1D02410031 | Frontend and UI Developer | Figma slicing, authentication UI, student feed, create-post page, responsive layouts, design consistency, frontend integration, user experience, and cross-device compatibility. |
-| **Septania Sybil Shofiyah** | F1D02410094 | Backend and API Developer | Authentication, post CRUD, voting, comments, notifications, status APIs, database connectivity, business logic, server-side validation, API testing, security, and data communication. |
+| **Septania Sybil Shofiyah** | F1D02410094 | Backend and API Developer | Authentication, post CRUD, voting, comments, notifications, status APIs, database connectivity, business logic, server-side validation, security, and data communication. |
