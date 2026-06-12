@@ -145,7 +145,7 @@ PHP through **MySQLi**, while the database definition is available in
 | Table | Purpose |
 |---|---|
 | `students` | Stores student accounts, NIM, email, password, and profile picture. |
-| `admins` | Stores administrator or BEM accounts. |
+| `admins` | Stores administrator or HMIF accounts. |
 | `departments` | Stores organizational department accounts. |
 | `posts` | Stores aspiration content, category, attachment, anonymity flag, and current status. |
 | `votes` | Stores one upvote or downvote per student for each post. |
