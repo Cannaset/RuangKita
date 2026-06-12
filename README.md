@@ -51,7 +51,7 @@ and tracked until it is resolved.
 ## DFD and System Flow
 
 <div align="center">
-  <img src="readme_assets/Level1_dfd.png" alt="RuangKita Level 1 data flow diagram" width="100%">
+  <img src="readme_assets/level1_dfd.png" alt="RuangKita Level 1 data flow diagram" width="100%">
 </div>
 
 The Level 1 DFD shows how the three external actors, **Student**, **Admin**, and
