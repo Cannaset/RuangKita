@@ -25,26 +25,26 @@ $deptId = (int)$dept['id'];
 // ── Stats ─────────────────────────────────────────────────
 $totalAssigned = $inProcess = $resolved = $communicated = 0;
 
-$r = $conn->query("SELECT COUNT(*) AS c FROM post_status_logs WHERE changed_by_role='department' AND changed_by_id=$deptId");
+$r = $conn->query("SELECT COUNT(*) AS c FROM posts WHERE status IN ('in_process', 'communicated', 'resolved')");
 if ($r) $totalAssigned = (int)($r->fetch_assoc()['c'] ?? 0);
 
-$r = $conn->query("SELECT COUNT(*) AS c FROM post_status_logs WHERE changed_by_role='department' AND changed_by_id=$deptId AND new_status='in_process'");
+$r = $conn->query("SELECT COUNT(*) AS c FROM posts WHERE status='in_process'");
 if ($r) $inProcess = (int)($r->fetch_assoc()['c'] ?? 0);
 
-$r = $conn->query("SELECT COUNT(*) AS c FROM post_status_logs WHERE changed_by_role='department' AND changed_by_id=$deptId AND new_status='communicated'");
+$r = $conn->query("SELECT COUNT(*) AS c FROM posts WHERE status='communicated'");
 if ($r) $communicated = (int)($r->fetch_assoc()['c'] ?? 0);
 
-$r = $conn->query("SELECT COUNT(*) AS c FROM post_status_logs WHERE changed_by_role='department' AND changed_by_id=$deptId AND new_status='resolved'");
+$r = $conn->query("SELECT COUNT(*) AS c FROM posts WHERE status='resolved'");
 if ($r) $resolved = (int)($r->fetch_assoc()['c'] ?? 0);
 
-// ── Posts yang pernah ditangani department ini ─────────────
+// ── Posts yang sudah lolos moderasi admin ──────────────────
 $search   = trim($_GET['search'] ?? '');
 $status   = trim($_GET['status'] ?? '');
 $page     = max(1, (int)($_GET['page'] ?? 1));
 $perPage  = 10;
 $offset   = ($page - 1) * $perPage;
 
-$where  = "WHERE psl.changed_by_role='department' AND psl.changed_by_id=$deptId";
+$where  = "WHERE p.status IN ('in_process', 'communicated', 'resolved')";
 $params = [];
 $types  = '';
 
@@ -60,9 +60,8 @@ if ($status !== '') {
     $types   .= 's';
 }
 
-$countSql = "SELECT COUNT(DISTINCT p.id) AS c
-    FROM post_status_logs psl
-    JOIN posts p ON p.id = psl.post_id
+$countSql = "SELECT COUNT(*) AS c
+    FROM posts p
     $where";
 
 $stmt = $conn->prepare($countSql);
@@ -71,20 +70,26 @@ $stmt->execute();
 $totalPosts = (int)($stmt->get_result()->fetch_assoc()['c'] ?? 0);
 $totalPages = max(1, ceil($totalPosts / $perPage));
 
-$sql = "SELECT DISTINCT p.id, p.title, p.category, p.status, p.created_at,
+$sql = "SELECT p.id, p.title, p.category, p.status, p.created_at,
     CASE WHEN p.is_anonymous=1 THEN 'Anonim' ELSE COALESCE(s.username,'Mahasiswa') END AS author,
     COALESCE(vt.upvotes,0) AS upvotes,
-    psl.new_status AS last_action,
-    psl.changed_at AS last_action_at
-    FROM post_status_logs psl
-    JOIN posts p ON p.id = psl.post_id
+    latest_log.new_status AS last_action,
+    latest_log.changed_at AS last_action_at
+    FROM posts p
     LEFT JOIN students s ON s.id = p.student_id
     LEFT JOIN (
         SELECT post_id, SUM(vote_type='upvote') AS upvotes
         FROM votes GROUP BY post_id
     ) vt ON vt.post_id = p.id
+    LEFT JOIN post_status_logs latest_log ON latest_log.id = (
+        SELECT psl.id
+        FROM post_status_logs psl
+        WHERE psl.post_id = p.id
+        ORDER BY psl.changed_at DESC, psl.id DESC
+        LIMIT 1
+    )
     $where
-    ORDER BY psl.changed_at DESC
+    ORDER BY COALESCE(latest_log.changed_at, p.updated_at, p.created_at) DESC
     LIMIT $perPage OFFSET $offset";
 
 $stmt = $conn->prepare($sql);
@@ -105,17 +110,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         exit;
     }
 
-    $r = $conn->query("SELECT status FROM posts WHERE id=$postId LIMIT 1");
-    $oldStatus = $r ? ($r->fetch_assoc()['status'] ?? '') : '';
+    $conn->begin_transaction();
 
-    $conn->query("UPDATE posts SET status='$newStatus', updated_at=NOW() WHERE id=$postId");
+    try {
+        $stmt = $conn->prepare("SELECT status FROM posts WHERE id = ? LIMIT 1 FOR UPDATE");
+        $stmt->bind_param('i', $postId);
+        $stmt->execute();
+        $post = $stmt->get_result()->fetch_assoc();
 
-    $stmt = $conn->prepare("INSERT INTO post_status_logs (post_id, changed_by_role, changed_by_id, old_status, new_status, note) VALUES (?, 'department', ?, ?, ?, ?)");
-    $stmt->bind_param('iisss', $postId, $deptId, $oldStatus, $newStatus, $note);
-    $stmt->execute();
+        if (!$post) {
+            $conn->rollback();
+            echo json_encode(['success' => false, 'message' => 'Postingan tidak ditemukan.']);
+            exit;
+        }
 
-    echo json_encode(['success' => true, 'message' => 'Status berhasil diperbarui.']);
-    exit;
+        $oldStatus = $post['status'];
+        if (in_array($oldStatus, ['not_reviewed', 'rejected'], true)) {
+            $conn->rollback();
+            echo json_encode([
+                'success' => false,
+                'message' => 'Postingan ini belum disetujui admin atau sudah ditolak.'
+            ]);
+            exit;
+        }
+
+        if ($oldStatus === $newStatus) {
+            $conn->rollback();
+            echo json_encode(['success' => false, 'message' => 'Status postingan tidak berubah.']);
+            exit;
+        }
+
+        $stmt = $conn->prepare("UPDATE posts SET status = ?, updated_at = NOW() WHERE id = ?");
+        $stmt->bind_param('si', $newStatus, $postId);
+        $stmt->execute();
+
+        $stmt = $conn->prepare("INSERT INTO post_status_logs (post_id, changed_by_role, changed_by_id, old_status, new_status, note) VALUES (?, 'department', ?, ?, ?, ?)");
+        $stmt->bind_param('iisss', $postId, $deptId, $oldStatus, $newStatus, $note);
+        $stmt->execute();
+
+        $conn->commit();
+        echo json_encode(['success' => true, 'message' => 'Status berhasil diperbarui.']);
+        exit;
+    } catch (Throwable $error) {
+        $conn->rollback();
+        echo json_encode(['success' => false, 'message' => 'Gagal memperbarui status.']);
+        exit;
+    }
 }
 
 $statusLabels = [
@@ -180,7 +220,7 @@ $statusLabels = [
     <!-- STATS -->
     <div class="stats-row" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem;">
         <?php foreach ([
-            ['label' => 'Total Ditangani', 'value' => $totalAssigned, 'color' => '#008891'],
+            ['label' => 'Total Disetujui', 'value' => $totalAssigned, 'color' => '#008891'],
             ['label' => 'Diproses',        'value' => $inProcess,     'color' => '#3b82f6'],
             ['label' => 'Dikomunikasikan', 'value' => $communicated,  'color' => '#8b5cf6'],
             ['label' => 'Selesai',         'value' => $resolved,      'color' => '#22c55e'],
@@ -198,7 +238,7 @@ $statusLabels = [
             style="flex:1;min-width:200px;padding:.6rem 1rem;border:1px solid #d1d5db;border-radius:.5rem;font-size:.9rem;">
         <select name="status" style="padding:.6rem 1rem;border:1px solid #d1d5db;border-radius:.5rem;font-size:.9rem;">
             <option value="">Semua Status</option>
-            <?php foreach ($statusLabels as $key => $s): ?>
+            <?php foreach (array_intersect_key($statusLabels, array_flip(['in_process', 'communicated', 'resolved'])) as $key => $s): ?>
                 <option value="<?= $key ?>" <?= $status === $key ? 'selected' : '' ?>><?= $s['label'] ?></option>
             <?php endforeach; ?>
         </select>
@@ -212,7 +252,7 @@ $statusLabels = [
     <section class="admin-feed">
         <?php if (empty($posts)): ?>
             <div class="empty-state" style="text-align:center;padding:3rem;color:#9ca3af;">
-                <p style="font-size:1.1rem;">Belum ada aspirasi yang ditangani.</p>
+                <p style="font-size:1.1rem;">Belum ada aspirasi yang disetujui admin.</p>
             </div>
         <?php endif; ?>
 
