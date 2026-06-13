@@ -28,7 +28,7 @@ function getInitials(string $name): string
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RuangKita - Feed</title>
     <link rel="stylesheet" href="../assets/CSS/style.css">
-    <link rel="stylesheet" href="../assets/CSS/style-feed.css?v=10">
+    <link rel="stylesheet" href="../assets/CSS/style-feed.css?v=11">
 </head>
 
 <body class="feed-page" data-can-vote="<?= $student ? 'true' : 'false' ?>">
@@ -143,7 +143,7 @@ function getInitials(string $name): string
         </div>
     </div>
 
-    <script src="../assets/JS/script-feed.js?v=10"></script>
+    <script src="../assets/JS/script-feed.js?v=11"></script>
     <script>
         document.querySelectorAll('a[href*="logout"]').forEach(link => {
             link.addEventListener('click', e => {

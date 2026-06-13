@@ -174,6 +174,22 @@ function getStatusClass(status) {
     return status === 'Completed' ? 'status-completed' : 'status-unresolved';
 }
 
+function createAvatarHTML(avatarUrl, initials, className = 'avatar') {
+    const safeInitials = escHtml(initials || 'U');
+
+    if (avatarUrl) {
+        return `
+            <img
+                class="${className} feed-avatar-image"
+                src="${escHtml(avatarUrl)}"
+                alt="Foto profil"
+            >
+        `;
+    }
+
+    return `<div class="${className} ${getAvatarColor(initials || 'U')}">${safeInitials}</div>`;
+}
+
 // ============================================
 // VOTE HANDLING
 // ============================================
@@ -259,9 +275,7 @@ function createPostHTML(post) {
             <div class="post-header-container">
                 <div class="post-header">
                     <div class="post-user-info">
-                        <div class="avatar ${getAvatarColor(post.initials)}">
-                            ${post.initials}
-                        </div>
+                        ${createAvatarHTML(post.avatarUrl, post.initials)}
                         <div class="post-user-details">
                             <h4>${post.author}</h4>
                             <small>${post.timestamp}</small>
@@ -885,11 +899,7 @@ async function fetchComments(postId) {
 
         list.innerHTML = data.comments.map(c => `
             <div style="display:flex;gap:.6rem;align-items:flex-start;">
-                <div style="
-                    width:28px;height:28px;border-radius:50%;flex-shrink:0;
-                    background:#008891;color:white;font-size:.7rem;font-weight:700;
-                    display:flex;align-items:center;justify-content:center;
-                ">${(c.author ?? 'U').charAt(0).toUpperCase()}</div>
+                ${createAvatarHTML(c.avatarUrl, c.initials, 'comment-avatar')}
                 <div style="flex:1;min-width:0;">
                     <span style="font-size:.8rem;font-weight:700;color:#374151">${escHtml(c.author ?? 'Anonim')}</span>
                     <span style="font-size:.7rem;color:#9ca3af;margin-left:.4rem">${c.time_ago ?? ''}</span>

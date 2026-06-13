@@ -70,7 +70,8 @@ if ($method === 'GET') {
                 c.id,
                 c.content,
                 c.created_at,
-                s.username
+                s.username,
+                s.profile_picture
             FROM comments c
             LEFT JOIN students s ON s.id = c.student_id
             WHERE c.post_id = ?
@@ -85,6 +86,7 @@ if ($method === 'GET') {
                 'id' => (int) $c['id'],
                 'author' => $c['username'] ?? 'Anonim',
                 'initials' => getInitials($c['username'] ?? 'Anonim'),
+                'avatarUrl' => $c['profile_picture'] ?: null,
                 'content' => $c['content'],
                 'time_ago' => timeAgo($c['created_at']),
             ];
@@ -110,6 +112,7 @@ if ($method === 'GET') {
                 p.created_at,
                 s.username,
                 s.nim,
+                s.profile_picture,
                 COALESCE(vt.upvotes,   0) AS upvotes,
                 COALESCE(vt.downvotes, 0) AS downvotes,
                 COALESCE(ct.total,     0) AS comments_count,
@@ -143,9 +146,11 @@ if ($method === 'GET') {
         if ($post['is_anonymous']) {
             $post['username'] = 'Anonim';
             $post['nim'] = null;
+            $post['profile_picture'] = null;
         }
 
         $post['initials'] = getInitials($post['username']);
+        $post['avatarUrl'] = $post['profile_picture'] ?: null;
         $post['time_ago'] = timeAgo($post['created_at']);
 
         respond(200, ['success' => true, 'data' => $post]);
@@ -224,6 +229,7 @@ if ($method === 'GET') {
         p.status,
         p.created_at,
         s.username,
+            s.profile_picture,
             COALESCE(vt.upvotes,   0) AS upvotes,
             COALESCE(vt.downvotes, 0) AS downvotes,
             COALESCE(ct.total,     0) AS comments_count,
@@ -264,9 +270,11 @@ if ($method === 'GET') {
     foreach ($posts as &$post) {
         if ($post['is_anonymous']) {
             $post['username'] = 'Anonim';
+            $post['profile_picture'] = null;
         }
 
         $post['initials'] = getInitials($post['username']);
+        $post['avatarUrl'] = $post['profile_picture'] ?: null;
         $post['time_ago'] = timeAgo($post['created_at']);
 
         // mapping untuk frontend
