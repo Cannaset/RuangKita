@@ -70,17 +70,26 @@ $stmt->execute();
 $totalPosts = (int)($stmt->get_result()->fetch_assoc()['c'] ?? 0);
 $totalPages = max(1, ceil($totalPosts / $perPage));
 
-$sql = "SELECT p.id, p.title, p.category, p.status, p.created_at,
+$sql = "SELECT p.id, p.title, p.description, p.category, p.status, p.created_at,
+    p.updated_at, p.image_url, p.is_anonymous, s.nim, s.email,
     CASE WHEN p.is_anonymous=1 THEN 'Anonim' ELSE COALESCE(s.username,'Mahasiswa') END AS author,
     COALESCE(vt.upvotes,0) AS upvotes,
+    COALESCE(vt.downvotes,0) AS downvotes,
+    COALESCE(ct.comments_count,0) AS comments_count,
     latest_log.new_status AS last_action,
     latest_log.changed_at AS last_action_at
     FROM posts p
     LEFT JOIN students s ON s.id = p.student_id
     LEFT JOIN (
-        SELECT post_id, SUM(vote_type='upvote') AS upvotes
+        SELECT post_id,
+            SUM(vote_type='upvote') AS upvotes,
+            SUM(vote_type='downvote') AS downvotes
         FROM votes GROUP BY post_id
     ) vt ON vt.post_id = p.id
+    LEFT JOIN (
+        SELECT post_id, COUNT(*) AS comments_count
+        FROM comments GROUP BY post_id
+    ) ct ON ct.post_id = p.id
     LEFT JOIN post_status_logs latest_log ON latest_log.id = (
         SELECT psl.id
         FROM post_status_logs psl
@@ -96,6 +105,25 @@ $stmt = $conn->prepare($sql);
 if ($types) $stmt->bind_param($types, ...$params);
 $stmt->execute();
 $posts = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+$responsesByPost = [];
+if ($posts) {
+    $postIds = array_map(fn($post) => (int)$post['id'], $posts);
+    $postIdList = implode(',', $postIds);
+    $responseSql = "SELECT ar.post_id, ar.response, ar.created_at,
+        COALESCE(ad.username, 'Admin') AS admin_name
+        FROM admin_responses ar
+        LEFT JOIN admins ad ON ad.id = ar.admin_id
+        WHERE ar.post_id IN ($postIdList)
+        ORDER BY ar.created_at ASC";
+    $responseResult = $conn->query($responseSql);
+
+    if ($responseResult) {
+        while ($response = $responseResult->fetch_assoc()) {
+            $responsesByPost[(int)$response['post_id']][] = $response;
+        }
+    }
+}
 
 // ── Handle status update ───────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_status') {
@@ -174,6 +202,8 @@ $statusLabels = [
     <title>RuangKita – Dashboard Departemen</title>
     <link rel="stylesheet" href="../assets/CSS/style.css">
     <link rel="stylesheet" href="../assets/CSS/style-admin-dashboard.css">
+    <link rel="stylesheet" href="../assets/admin/css/admin-components.css">
+    <link rel="stylesheet" href="../assets/admin/css/admin-modal.css">
 </head>
 <body class="admin-page">
 
@@ -250,6 +280,7 @@ $statusLabels = [
 
     <!-- POST LIST -->
     <section class="admin-feed">
+        <?php $departmentPostDetails = []; ?>
         <?php if (empty($posts)): ?>
             <div class="empty-state" style="text-align:center;padding:3rem;color:#9ca3af;">
                 <p style="font-size:1.1rem;">Belum ada aspirasi yang disetujui admin.</p>
@@ -258,24 +289,147 @@ $statusLabels = [
 
         <?php foreach ($posts as $post):
             $sl = $statusLabels[$post['status']] ?? ['label' => $post['status'], 'color' => '#6b7280'];
+            $attachmentUrl = trim((string)($post['image_url'] ?? ''));
+            $attachmentPath = parse_url($attachmentUrl, PHP_URL_PATH) ?: '';
+            $attachmentExtension = strtolower(pathinfo($attachmentPath, PATHINFO_EXTENSION));
+            $isVideoAttachment = in_array($attachmentExtension, ['mp4', 'webm', 'ogg'], true);
+            $description = trim((string)$post['description']);
+            $descriptionLength = function_exists('mb_strlen') ? mb_strlen($description) : strlen($description);
+            $descriptionExcerpt = $descriptionLength > 180
+                ? (function_exists('mb_substr') ? mb_substr($description, 0, 180) : substr($description, 0, 180)) . '...'
+                : $description;
+            $priorityClass = (int)$post['upvotes'] >= 25
+                ? 'priority-high'
+                : ((int)$post['upvotes'] >= 10 ? 'priority-medium' : 'priority-normal');
+            $priorityLabel = (int)$post['upvotes'] >= 25
+                ? 'Trending'
+                : ((int)$post['upvotes'] >= 10 ? 'Prioritas' : 'Normal');
+            $postDetail = [
+                'id' => (int)$post['id'],
+                'title' => $post['title'],
+                'description' => $post['description'],
+                'category' => $post['category'] ?: 'Lainnya',
+                'statusLabel' => $sl['label'],
+                'statusColor' => $sl['color'],
+                'author' => $post['author'],
+                'nim' => (int)$post['is_anonymous'] === 1 ? '-' : ($post['nim'] ?? '-'),
+                'email' => (int)$post['is_anonymous'] === 1 ? '-' : ($post['email'] ?? '-'),
+                'createdAt' => $post['created_at'],
+                'updatedAt' => $post['updated_at'],
+                'upvotes' => (int)$post['upvotes'],
+                'downvotes' => (int)$post['downvotes'],
+                'comments' => (int)$post['comments_count'],
+                'imageUrl' => $attachmentUrl,
+                'responses' => $responsesByPost[(int)$post['id']] ?? [],
+            ];
+            $departmentPostDetails[(int)$post['id']] = $postDetail;
         ?>
-        <div class="aspiration-card" style="background:white;border-radius:.75rem;border:1px solid #e5e7eb;padding:1.25rem 1.5rem;margin-bottom:1rem;box-shadow:0 2px 8px rgba(0,0,0,.04);">
+        <article class="aspiration-card admin-post-card">
+            <div class="post-card-top">
+                <div class="author-cluster">
+                    <span class="admin-avatar"><?= e(getInitials($post['author'])) ?></span>
+                    <div>
+                        <h2><?= e($post['title']) ?></h2>
+                        <p><?= e($post['author']) ?> &middot; <?= e($post['category'] ?: 'Lainnya') ?></p>
+                    </div>
+                </div>
+                <span class="admin-status-badge" style="background:<?= e($sl['color']) ?>;">
+                    <?= e($sl['label']) ?>
+                </span>
+            </div>
+
+            <p class="post-excerpt"><?= e($descriptionExcerpt) ?></p>
+
+            <div class="post-meta-row">
+                <span><?= e(date('d M Y, H:i', strtotime($post['created_at']))) ?></span>
+                <span><?= (int)$post['upvotes'] ?> upvote</span>
+                <span><?= (int)$post['comments_count'] ?> komentar</span>
+                <span class="priority-pill <?= e($priorityClass) ?>"><?= e($priorityLabel) ?></span>
+            </div>
+
+            <?php if ($attachmentUrl !== ''): ?>
+                <div class="attachment-preview">
+                    <?php if ($isVideoAttachment): ?>
+                        <video src="<?= e($attachmentUrl) ?>" controls preload="metadata"></video>
+                    <?php else: ?>
+                        <img src="<?= e($attachmentUrl) ?>" alt="Lampiran aspirasi <?= e($post['title']) ?>" loading="lazy">
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+
+            <div class="admin-card-actions" style="grid-template-columns:minmax(0,1fr) auto;">
+                <?php if (!in_array($post['status'], ['resolved', 'rejected'], true)): ?>
+                    <div class="status-form">
+                        <label for="department-status-<?= (int)$post['id'] ?>">Status</label>
+                        <select id="department-status-<?= (int)$post['id'] ?>" class="status-select"
+                            data-post-id="<?= (int)$post['id'] ?>">
+                            <option value="">-- Ubah Status --</option>
+                            <option value="in_process" <?= $post['status'] === 'in_process' ? 'selected' : '' ?>>Diproses</option>
+                            <option value="communicated" <?= $post['status'] === 'communicated' ? 'selected' : '' ?>>Dikomunikasikan</option>
+                            <option value="resolved" <?= $post['status'] === 'resolved' ? 'selected' : '' ?>>Selesai</option>
+                        </select>
+                        <input type="text" class="note-input" placeholder="Catatan (opsional)"
+                            style="min-height:2.6rem;padding:0 .9rem;border:1px solid #d1d5db;border-radius:.5rem;font:inherit;">
+                        <button class="save-status-btn" data-post-id="<?= (int)$post['id'] ?>"
+                            style="min-height:2.4rem;padding:.5rem 1rem;background:#008891;color:white;border:none;border-radius:.5rem;font-size:.85rem;font-weight:700;cursor:pointer;">
+                            Simpan
+                        </button>
+                    </div>
+                <?php else: ?>
+                    <div class="status-form">
+                        <label>Status</label>
+                        <p style="margin:0;color:#6b7280;font-size:.85rem;">Status aspirasi sudah final.</p>
+                    </div>
+                <?php endif; ?>
+                <button type="button" class="detail-post-btn detail-button"
+                    data-post-id="<?= (int)$post['id'] ?>">Detail</button>
+            </div>
+
+            <?php $postResponses = $responsesByPost[(int)$post['id']] ?? []; ?>
+            <?php if ($postResponses): ?>
+                <?php $latestResponse = $postResponses[count($postResponses) - 1]; ?>
+                <div class="latest-response">
+                    <strong>Tanggapan admin terbaru</strong>
+                    <p><?= e($latestResponse['response']) ?></p>
+                </div>
+            <?php endif; ?>
+        </article>
+
+        <?php if (false): ?>
+        <div class="aspiration-card"
+            data-post="<?= e(json_encode($postDetail, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)) ?>"
+            style="background:white;border-radius:.75rem;border:1px solid #e5e7eb;padding:1.25rem 1.5rem;margin-bottom:1rem;box-shadow:0 2px 8px rgba(0,0,0,.04);">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;">
                 <div style="flex:1;min-width:0;">
                     <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.4rem;flex-wrap:wrap;">
                         <span style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#008891;"><?= e($post['category'] ?? 'Lainnya') ?></span>
+                        <span style="display:inline-block;padding:.2rem .65rem;border-radius:999px;font-size:.68rem;font-weight:700;color:white;background:<?= $sl['color'] ?>;">
+                            <?= e($sl['label']) ?>
+                        </span>
                         <span style="font-size:.7rem;color:#9ca3af;">•</span>
                         <span style="font-size:.7rem;color:#9ca3af;"><?= e($post['author']) ?></span>
                         <span style="font-size:.7rem;color:#9ca3af;">•</span>
                         <span style="font-size:.7rem;color:#9ca3af;"><?= date('d M Y', strtotime($post['created_at'])) ?></span>
                     </div>
                     <h3 style="margin:0 0 .5rem;font-size:1rem;font-weight:700;color:#111827;"><?= e($post['title']) ?></h3>
-                    <div style="display:flex;align-items:center;gap:.75rem;">
-                        <span style="display:inline-block;padding:.2rem .7rem;border-radius:999px;font-size:.7rem;font-weight:700;color:white;background:<?= $sl['color'] ?>;">
-                            <?= $sl['label'] ?>
-                        </span>
+                    <div style="display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;">
+                        <button type="button" class="detail-post-btn"
+                            style="padding:.35rem .85rem;background:#fff;color:#008891;border:1px solid #008891;border-radius:.45rem;font-size:.78rem;font-weight:700;cursor:pointer;">
+                            Detail
+                        </button>
+                        <span style="font-size:.8rem;color:#6b7280;"><?= (int)$post['comments_count'] ?> komentar</span>
+                        <?php if (!empty($responsesByPost[(int)$post['id']])): ?>
+                            <span style="font-size:.8rem;color:#008891;font-weight:600;">
+                                <?= count($responsesByPost[(int)$post['id']]) ?> tanggapan admin
+                            </span>
+                        <?php endif; ?>
                         <span style="font-size:.8rem;color:#6b7280;">⬆ <?= (int)$post['upvotes'] ?></span>
                     </div>
+                    <?php if ($descriptionExcerpt !== ''): ?>
+                        <p style="max-width:720px;margin:.75rem 0 0;padding:.7rem .85rem;border-left:3px solid #008891;border-radius:.25rem;background:#f8fafc;color:#6b7280;font-size:.84rem;line-height:1.55;">
+                            <?= e($descriptionExcerpt) ?>
+                        </p>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Update Status -->
@@ -299,7 +453,20 @@ $statusLabels = [
                 <span style="font-size:.8rem;color:#9ca3af;font-style:italic;">Status final</span>
                 <?php endif; ?>
             </div>
+
+            <?php if ($attachmentUrl !== ''): ?>
+                <div class="attachment-preview" style="margin-top:1rem;">
+                    <?php if ($isVideoAttachment): ?>
+                        <video src="<?= e($attachmentUrl) ?>" controls preload="metadata">
+                            Browser tidak mendukung pemutaran video.
+                        </video>
+                    <?php else: ?>
+                        <img src="<?= e($attachmentUrl) ?>" alt="Lampiran aspirasi <?= e($post['title']) ?>" loading="lazy">
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
         </div>
+        <?php endif; ?>
         <?php endforeach; ?>
     </section>
 
@@ -317,10 +484,136 @@ $statusLabels = [
 
 </main>
 
+<div class="admin-modal" id="departmentPostModal" hidden>
+    <div class="admin-modal-panel" role="dialog" aria-modal="true" aria-labelledby="departmentModalTitle">
+        <button class="modal-close" id="departmentModalClose" type="button" aria-label="Tutup detail">&times;</button>
+        <div class="modal-body" id="departmentModalBody"></div>
+    </div>
+</div>
+
 <!-- Toast -->
 <div id="deptToast" style="position:fixed;bottom:1.5rem;right:1.5rem;padding:.85rem 1.25rem;border-radius:.6rem;font-size:.9rem;font-weight:600;color:white;z-index:9999;display:none;box-shadow:0 8px 24px rgba(0,0,0,.2);"></div>
 
 <script>
+const departmentPosts = <?= json_encode(
+    $departmentPostDetails,
+    JSON_UNESCAPED_UNICODE
+    | JSON_UNESCAPED_SLASHES
+    | JSON_HEX_TAG
+    | JSON_HEX_AMP
+    | JSON_HEX_APOS
+    | JSON_HEX_QUOT
+) ?>;
+
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+}
+
+function formatDate(value) {
+    if (!value) return '-';
+    const date = new Date(String(value).replace(' ', 'T'));
+    if (Number.isNaN(date.getTime())) return escapeHtml(value);
+
+    return escapeHtml(date.toLocaleString('id-ID', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    }));
+}
+
+function renderDetailMedia(url) {
+    if (!url) return '';
+    const safeUrl = escapeHtml(url);
+    const path = String(url).split(/[?#]/)[0].toLowerCase();
+    const isVideo = ['.mp4', '.webm', '.ogg'].some(extension => path.endsWith(extension));
+
+    return `<div class="modal-media">${
+        isVideo
+            ? `<video controls preload="metadata" src="${safeUrl}"></video>`
+            : `<img src="${safeUrl}" alt="Lampiran aspirasi">`
+    }</div>`;
+}
+
+function renderAdminResponses(responses) {
+    if (!Array.isArray(responses) || responses.length === 0) {
+        return '<p class="modal-description">Belum ada tanggapan resmi untuk aspirasi ini.</p>';
+    }
+
+    return `<div class="response-list">${responses.map(response => `
+        <article class="response-item">
+            <strong>${escapeHtml(response.admin_name || 'Admin')}</strong>
+            <small>${formatDate(response.created_at)}</small>
+            <p>${escapeHtml(response.response)}</p>
+        </article>
+    `).join('')}</div>`;
+}
+
+// Detail post
+(function() {
+    const modal = document.getElementById('departmentPostModal');
+    const modalBody = document.getElementById('departmentModalBody');
+    const closeButton = document.getElementById('departmentModalClose');
+
+    function closeModal() {
+        modal.hidden = true;
+        document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.detail-post-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const postId = button.dataset.postId;
+            const post = departmentPosts[postId];
+            if (!post) {
+                showToast('Detail postingan tidak ditemukan.', 'error');
+                return;
+            }
+
+            modalBody.innerHTML = `
+                <h2 class="modal-title" id="departmentModalTitle">${escapeHtml(post.title)}</h2>
+                <div class="modal-meta">
+                    <span>${escapeHtml(post.author)}</span>
+                    <span>${escapeHtml(post.category)}</span>
+                    <span>${formatDate(post.createdAt)}</span>
+                    <span>${Number(post.upvotes || 0)} upvote</span>
+                    <span>${Number(post.downvotes || 0)} downvote</span>
+                    <span>${Number(post.comments || 0)} komentar</span>
+                    <span class="admin-status-badge" style="background:${escapeHtml(post.statusColor)};color:#fff;">
+                        ${escapeHtml(post.statusLabel)}
+                    </span>
+                </div>
+                <p class="modal-description">${escapeHtml(post.description)}</p>
+                ${renderDetailMedia(post.imageUrl)}
+                <h3 class="modal-section-title">Informasi Mahasiswa</h3>
+                <div class="modal-meta">
+                    <span>NIM: ${escapeHtml(post.nim)}</span>
+                    <span>Email: ${escapeHtml(post.email)}</span>
+                    <span>Update terakhir: ${formatDate(post.updatedAt)}</span>
+                </div>
+                <h3 class="modal-section-title">Tanggapan Admin</h3>
+                ${renderAdminResponses(post.responses)}
+            `;
+
+            modal.hidden = false;
+            document.body.style.overflow = 'hidden';
+        });
+    });
+
+    closeButton.addEventListener('click', closeModal);
+    modal.addEventListener('click', event => {
+        if (event.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && !modal.hidden) closeModal();
+    });
+})();
+
 // Theme
 (function() {
     const isDark = localStorage.getItem('ruangkita-theme') === 'dark';

@@ -128,6 +128,40 @@ function initializeModalListeners() {
     });
 }
 
+function openGuestVoteModal() {
+    const modal = document.getElementById('guestVoteModal');
+    if (!modal) return;
+
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    document.querySelector('.guest-vote-login')?.focus();
+}
+
+function closeGuestVoteModal() {
+    const modal = document.getElementById('guestVoteModal');
+    if (!modal) return;
+
+    modal.hidden = true;
+    document.body.style.overflow = '';
+}
+
+function initializeGuestVoteModal() {
+    const modal = document.getElementById('guestVoteModal');
+    const closeButton = document.getElementById('guestVoteClose');
+    const cancelButton = document.getElementById('guestVoteCancel');
+
+    if (!modal) return;
+
+    closeButton?.addEventListener('click', closeGuestVoteModal);
+    cancelButton?.addEventListener('click', closeGuestVoteModal);
+    modal.addEventListener('click', (event) => {
+        if (event.target === modal) closeGuestVoteModal();
+    });
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !modal.hidden) closeGuestVoteModal();
+    });
+}
+
 // ============================================
 // UTILITY FUNCTIONS
 // ============================================
@@ -144,6 +178,11 @@ function getStatusClass(status) {
 // VOTE HANDLING
 // ============================================
 async function handleVote(postId, voteType) {
+    if (document.body.dataset.canVote !== 'true') {
+        openGuestVoteModal();
+        return;
+    }
+
     try {
         const res = await fetch('../api/votes.php', {
             method: 'POST',
@@ -153,6 +192,10 @@ async function handleVote(postId, voteType) {
         const data = await res.json();
 
         if (!data.success) {
+            if (res.status === 401) {
+                openGuestVoteModal();
+                return;
+            }
             console.error('Vote gagal:', data.message);
             return;
         }
@@ -947,6 +990,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeThemeToggle();
     initializeProfileDropdown();
     initializeModalListeners();
+    initializeGuestVoteModal();
     initializeFiltersAndSort();
     fetchAndRenderPosts();
 

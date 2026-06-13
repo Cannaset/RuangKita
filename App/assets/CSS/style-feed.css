@@ -2,6 +2,135 @@ html {
     min-height: 100%;
 }
 
+/* Guest vote login prompt */
+.guest-vote-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(7, 16, 30, 0.72);
+}
+
+.guest-vote-modal[hidden] {
+    display: none;
+}
+
+.guest-vote-dialog {
+    position: relative;
+    width: min(430px, 100%);
+    padding: 2rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 1rem;
+    background: #ffffff;
+    box-shadow: 0 24px 60px rgba(7, 16, 30, 0.3);
+    text-align: center;
+}
+
+.guest-vote-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.85rem;
+    border: 0;
+    background: transparent;
+    color: #6b7280;
+    cursor: pointer;
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+.guest-vote-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    margin-bottom: 1rem;
+    border-radius: 50%;
+    background: rgba(0, 136, 145, 0.12);
+    color: #008891;
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.guest-vote-dialog h2 {
+    margin: 0 0 0.65rem;
+    color: #111827;
+    font-size: 1.3rem;
+}
+
+.guest-vote-dialog p {
+    margin: 0;
+    color: #6b7280;
+    line-height: 1.6;
+}
+
+.guest-vote-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.guest-vote-cancel,
+.guest-vote-login {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.65rem;
+    padding: 0 1.15rem;
+    border-radius: 0.55rem;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.guest-vote-cancel {
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    color: #374151;
+}
+
+.guest-vote-login {
+    border: 1px solid #008891;
+    background: #008891;
+    color: #ffffff;
+}
+
+body.feed-page.dark-theme .guest-vote-dialog {
+    border-color: #334155;
+    background: #0f172a;
+}
+
+body.feed-page.dark-theme .guest-vote-dialog h2 {
+    color: #f8fafc;
+}
+
+body.feed-page.dark-theme .guest-vote-dialog p,
+body.feed-page.dark-theme .guest-vote-close {
+    color: #cbd5e1;
+}
+
+body.feed-page.dark-theme .guest-vote-cancel {
+    border-color: #475569;
+    background: #1e293b;
+    color: #f8fafc;
+}
+
+@media (max-width: 480px) {
+    .guest-vote-dialog {
+        padding: 1.6rem 1.2rem;
+    }
+
+    .guest-vote-actions {
+        flex-direction: column-reverse;
+    }
+}
+
 .header {
     position: sticky;  /* ✅ ini bener */
     top: 0;

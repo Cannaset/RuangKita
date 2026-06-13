@@ -28,10 +28,10 @@ function getInitials(string $name): string
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RuangKita - Feed</title>
     <link rel="stylesheet" href="../assets/CSS/style.css">
-    <link rel="stylesheet" href="../assets/CSS/style-feed.css">
+    <link rel="stylesheet" href="../assets/CSS/style-feed.css?v=10">
 </head>
 
-<body class="feed-page">
+<body class="feed-page" data-can-vote="<?= $student ? 'true' : 'false' ?>">
 
     <!-- HEADER -->
     <header class="header">
@@ -130,7 +130,20 @@ function getInitials(string $name): string
         </div>
     </div>
 
-    <script src="../assets/JS/script-feed.js?v=9"></script>
+    <div id="guestVoteModal" class="guest-vote-modal" hidden>
+        <div class="guest-vote-dialog" role="dialog" aria-modal="true" aria-labelledby="guestVoteTitle">
+            <button id="guestVoteClose" class="guest-vote-close" type="button" aria-label="Tutup">&times;</button>
+            <div class="guest-vote-icon" aria-hidden="true">!</div>
+            <h2 id="guestVoteTitle">Login untuk memberikan vote</h2>
+            <p>Upvote dan downvote hanya tersedia untuk mahasiswa yang sudah login.</p>
+            <div class="guest-vote-actions">
+                <button id="guestVoteCancel" class="guest-vote-cancel" type="button">Nanti saja</button>
+                <a class="guest-vote-login" href="../auth/index.php">Ke halaman login</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/JS/script-feed.js?v=10"></script>
 </body>
 
 </html>
