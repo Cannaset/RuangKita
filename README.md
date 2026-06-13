@@ -100,14 +100,20 @@ RuangKita/
 |   |-- admin/
 |   |   |-- components/       # Reusable admin dashboard UI
 |   |   |-- includes/         # Admin authentication and helpers
-|   |   `-- queries/          # Admin database operations
+|   |   |-- queries/          # Admin database operations
+|   |   `-- dashboard.php     # Admin dashboard controller and page
 |   |-- api/                  # Post, vote, status, profile, and notification APIs
 |   |-- assets/
 |   |   |-- admin/            # Admin-specific CSS and JavaScript
 |   |   |-- CSS/              # Application stylesheets
 |   |   `-- JS/               # Frontend scripts and API client
-|   |-- auth/                 # Login, signup, logout, and department dashboard
+|   |-- auth/                 # Login, signup, and logout pages
 |   |-- config/               # Database configuration
+|   |-- department/
+|   |   |-- components/       # Reusable department dashboard UI
+|   |   |-- includes/         # Department authentication and helpers
+|   |   |-- queries/          # Department database operations
+|   |   `-- dashboard.php     # Department dashboard controller and page
 |   |-- image/                # Logos, UI images, and uploaded post media
 |   |-- students/             # Student feed, profile, and create-post pages
 |   `-- uploads/avatars/      # Uploaded profile pictures
