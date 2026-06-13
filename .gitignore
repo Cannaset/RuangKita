@@ -1,0 +1,92 @@
+# ------------------------------------------------------------
+# Local secrets and environment configuration
+# ------------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+App/config/database.local.php
+App/config/*.local.php
+*.pem
+*.key
+*.p12
+*.pfx
+
+# ------------------------------------------------------------
+# User-generated and runtime uploads
+# Keep the directories available through optional .gitkeep files.
+# ------------------------------------------------------------
+App/image/uploads/*
+!App/image/uploads/.gitkeep
+
+App/uploads/avatars/*
+!App/uploads/avatars/.gitkeep
+
+# ------------------------------------------------------------
+# Logs, sessions, caches, and temporary files
+# ------------------------------------------------------------
+*.log
+*.cache
+*.tmp
+*.temp
+*.pid
+*.session
+cache/
+tmp/
+temp/
+logs/
+
+# ------------------------------------------------------------
+# Database dumps and backups
+# Keep only the canonical project schema.
+# ------------------------------------------------------------
+*.sql
+*.sql.gz
+*.dump
+*.bak
+*.backup
+!database/ruangkita.sql
+
+# ------------------------------------------------------------
+# Dependency directories
+# ------------------------------------------------------------
+vendor/
+node_modules/
+
+# ------------------------------------------------------------
+# Test coverage and build output
+# ------------------------------------------------------------
+coverage/
+build/
+dist/
+.phpunit.cache/
+.phpunit.result.cache
+
+# ------------------------------------------------------------
+# IDE and editor configuration
+# ------------------------------------------------------------
+.idea/
+.vscode/
+*.code-workspace
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# ------------------------------------------------------------
+# Operating-system metadata
+# ------------------------------------------------------------
+.DS_Store
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ------------------------------------------------------------
+# Local archives and generated backups
+# ------------------------------------------------------------
+*.zip
+*.rar
+*.7z
+*.tar
+*.tar.gz

@@ -51,6 +51,11 @@ $valid_statuses = [
     'resolved',
     'rejected'
 ];
+$department_statuses = [
+    'in_process',
+    'communicated',
+    'resolved'
+];
 
 // ============================================================
 // GET - Lihat riwayat status suatu post
@@ -71,6 +76,13 @@ if ($method === 'GET') {
 
     if (!$post) {
         respond(404, ['success' => false, 'message' => 'Post tidak ditemukan.']);
+    }
+
+    if ($changer_role === 'department' && in_array($post['status'], ['not_reviewed', 'rejected'], true)) {
+        respond(403, [
+            'success' => false,
+            'message' => 'Department hanya dapat melihat riwayat postingan yang sudah disetujui admin.'
+        ]);
     }
 
     // Ambil semua riwayat perubahan status dari tabel post_status_logs
@@ -125,6 +137,12 @@ if ($method === 'PATCH') {
             'message' => 'new_status tidak valid. Pilihan: not_reviewed, in_process, communicated, resolved, rejected.'
         ]);
     }
+    if ($changer_role === 'department' && !in_array($new_status, $department_statuses, true)) {
+        respond(403, [
+            'success' => false,
+            'message' => 'Department hanya dapat mengubah status menjadi in_process, communicated, atau resolved.'
+        ]);
+    }
 
     // Ambil status lama dari post
     $stmt = $conn->prepare("SELECT id, title, status FROM posts WHERE id = ?");
@@ -137,6 +155,13 @@ if ($method === 'PATCH') {
     }
 
     $old_status = $post['status'];
+
+    if ($changer_role === 'department' && in_array($old_status, ['not_reviewed', 'rejected'], true)) {
+        respond(403, [
+            'success' => false,
+            'message' => 'Postingan ini belum disetujui admin atau sudah ditolak.'
+        ]);
+    }
 
     // Kalau statusnya sama, tidak perlu diubah
     if ($old_status === $new_status) {

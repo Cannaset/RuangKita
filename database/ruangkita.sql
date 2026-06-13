@@ -162,3 +162,17 @@ CREATE TABLE IF NOT EXISTS admin_responses (
     INDEX idx_admin_responses_post_id (post_id),
     FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 );
+
+CREATE TABLE notifications (
+    id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    student_id INT(10) UNSIGNED NOT NULL,
+    post_id INT(10) UNSIGNED NOT NULL,
+    type ENUM('status_change', 'admin_response', 'comment') NOT NULL,
+    message TEXT NOT NULL,
+    is_read TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (id),
+    KEY student_id (student_id),
+    KEY post_id (post_id)
+);
