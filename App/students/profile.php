@@ -24,7 +24,7 @@ if ($student) {
 } else {
     $user = $department;
     $userType = 'department';
-    $dashboardUrl = '#';
+    $dashboardUrl = '../department/dashboard.php';
 }
 
 function e(string $v): string
@@ -149,7 +149,7 @@ $joinedDate = isset($user['created_at'])
                     <?php if ($userType === 'admin'): ?>
                         <a href="../admin/dashboard.php">Dashboard Admin</a>
                     <?php elseif ($userType === 'department'): ?>
-                        <a href="../auth/dashboard-department.php">Dashboard Departemen</a>
+                        <a href="../department/dashboard.php">Dashboard Departemen</a>
                     <?php endif; ?>
                     <a href="../auth/logout.php">Log out</a>
                 </div>

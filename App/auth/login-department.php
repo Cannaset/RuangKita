@@ -9,7 +9,7 @@ require_once __DIR__ . '/../config/database.php';
 
 // Kalau sudah login sebagai department, langsung ke dashboard
 if (isset($_SESSION['department'])) {
-    header('Location: dashboard-department.php');
+    header('Location: ../department/dashboard.php');
     exit;
 }
 
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'email'           => $dept['email'],
                 'profile_picture' => $dept['profile_picture'],
             ];
-            header('Location: dashboard-department.php');
+            header('Location: ../department/dashboard.php');
             exit;
         }
     }

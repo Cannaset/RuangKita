@@ -196,7 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
             formData.append("note", note);
 
             try {
-                const response = await fetch("dashboard-department.php", {
+                const response = await fetch("dashboard.php", {
                     method: "POST",
                     body: formData,
                 });
