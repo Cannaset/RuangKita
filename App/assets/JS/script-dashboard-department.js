@@ -9,6 +9,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const profileTrigger = document.getElementById("profileTrigger");
     const toast = document.getElementById("deptToast");
 
+    document.querySelectorAll("[data-auto-submit]").forEach((field) => {
+        field.addEventListener("change", () => {
+            const form = field.closest("form");
+            if (!form) return;
+
+            const pageField = form.querySelector('[name="page"]');
+            if (pageField) pageField.remove();
+            form.submit();
+        });
+    });
+
     let departmentPosts = {};
 
     if (postDataElement) {

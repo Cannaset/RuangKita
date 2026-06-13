@@ -50,19 +50,21 @@
 
 /* --- Admin Filters Bar --- */
 .admin-filters {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: minmax(260px, 2fr) repeat(auto-fit, minmax(180px, 1fr));
+    align-items: end;
+    gap: 0.85rem;
     margin-bottom: 1.5rem;
 }
 
 .filter-field {
     display: grid;
     gap: 0.4rem;
+    min-width: 0;
 }
 
 .search-field {
-    flex: 1 1 220px;
+    min-width: 0;
 }
 
 .filter-field label,
@@ -89,8 +91,15 @@
 .filter-field input,
 .filter-field select,
 .status-form select {
-    min-height: 2.6rem;
-    padding: 0 0.9rem;
+    height: 3rem;
+    min-height: 3rem;
+    padding: 0 1rem;
+    line-height: 1.2;
+}
+
+.filter-field select {
+    padding-right: 2.5rem;
+    cursor: pointer;
 }
 
 .response-form textarea {
@@ -108,16 +117,11 @@
     box-shadow: 0 0 0 3px rgba(0, 136, 145, 0.12);
 }
 
-.filter-submit {
-    align-self: end;
-    min-height: 2.6rem;
-    padding-inline: 1.5rem;
-}
-
 /* --- Aspiration Post Card & Feed --- */
 .admin-feed {
     display: grid;
     gap: 1rem;
+    min-height: 12rem;
 }
 
 .admin-post-card {
@@ -324,11 +328,14 @@
 }
 
 .empty-state {
+    display: grid;
+    min-height: 12rem;
     padding: 3rem;
     border: 1px solid #e5e7eb;
     border-radius: 0.75rem;
     background: #ffffff;
     color: #9ca3af;
+    place-content: center;
     text-align: center;
 }
 
@@ -474,6 +481,10 @@ body.admin-page.dark-theme .priority-medium {
 }
 
 @media (max-width: 680px) {
+    .admin-filters {
+        grid-template-columns: 1fr;
+    }
+
     .admin-card-actions {
         grid-template-columns: 1fr;
     }

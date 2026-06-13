@@ -45,6 +45,7 @@ if ($r)
 
 // ── Posts yang sudah lolos moderasi admin ──────────────────
 $search = trim($_GET['search'] ?? '');
+$category = trim($_GET['category'] ?? '');
 $status = trim($_GET['status'] ?? '');
 $page = max(1, (int) ($_GET['page'] ?? 1));
 $perPage = 10;
@@ -60,10 +61,30 @@ if ($search !== '') {
     $params[] = "%$search%";
     $types .= 'ss';
 }
+if ($category !== '') {
+    $where .= " AND p.category = ?";
+    $params[] = $category;
+    $types .= 's';
+}
 if ($status !== '') {
     $where .= " AND p.status = ?";
     $params[] = $status;
     $types .= 's';
+}
+
+$categories = [];
+$categoryResult = $conn->query("
+    SELECT DISTINCT category
+    FROM posts
+    WHERE status IN ('in_process', 'communicated', 'resolved')
+      AND category IS NOT NULL
+      AND category <> ''
+    ORDER BY category ASC
+");
+if ($categoryResult) {
+    while ($row = $categoryResult->fetch_assoc()) {
+        $categories[] = $row['category'];
+    }
 }
 
 $countSql = "SELECT COUNT(*) AS c
@@ -210,8 +231,8 @@ $statusLabels = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RuangKita – Dashboard Departemen</title>
     <link rel="stylesheet" href="../assets/CSS/style.css">
-    <link rel="stylesheet" href="../assets/CSS/style-admin-dashboard.css">
-    <link rel="stylesheet" href="../assets/admin/css/admin-components.css">
+    <link rel="stylesheet" href="../assets/CSS/style-admin-dashboard.css?v=3">
+    <link rel="stylesheet" href="../assets/admin/css/admin-components.css?v=3">
     <link rel="stylesheet" href="../assets/admin/css/admin-modal.css">
 </head>
 
@@ -258,50 +279,58 @@ $statusLabels = [
         </section>
 
         <!-- STATS -->
-        <div class="stats-row"
-            style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem;">
+        <div class="stats-grid">
             <?php foreach ([
                 ['label' => 'Total Disetujui', 'value' => $totalAssigned, 'color' => '#008891'],
                 ['label' => 'Diproses', 'value' => $inProcess, 'color' => '#3b82f6'],
                 ['label' => 'Dikomunikasikan', 'value' => $communicated, 'color' => '#8b5cf6'],
                 ['label' => 'Selesai', 'value' => $resolved, 'color' => '#22c55e'],
             ] as $stat): ?>
-                <div
-                    style="background:white;border-radius:.75rem;padding:1.25rem 1.5rem;border:1px solid #e5e7eb;box-shadow:0 2px 8px rgba(0,0,0,.05);">
-                    <p
-                        style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;margin:0 0 .5rem;">
-                        <?= $stat['label'] ?></p>
-                    <p style="font-size:2rem;font-weight:800;color:<?= $stat['color'] ?>;margin:0;"><?= $stat['value'] ?>
-                    </p>
+                <div class="stat-card">
+                    <div>
+                        <p><?= $stat['label'] ?></p>
+                        <strong style="color:<?= $stat['color'] ?>;"><?= $stat['value'] ?></strong>
+                    </div>
                 </div>
             <?php endforeach; ?>
         </div>
 
         <!-- FILTER -->
-        <form method="GET" style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.5rem;">
-            <input type="text" name="search" value="<?= e($search) ?>" placeholder="Cari judul..."
-                style="flex:1;min-width:200px;padding:.6rem 1rem;border:1px solid #d1d5db;border-radius:.5rem;font-size:.9rem;">
-            <select name="status"
-                style="padding:.6rem 1rem;border:1px solid #d1d5db;border-radius:.5rem;font-size:.9rem;">
-                <option value="">Semua Status</option>
-                <?php foreach (array_intersect_key($statusLabels, array_flip(['in_process', 'communicated', 'resolved'])) as $key => $s): ?>
-                    <option value="<?= $key ?>" <?= $status === $key ? 'selected' : '' ?>><?= $s['label'] ?></option>
-                <?php endforeach; ?>
-            </select>
-            <button type="submit"
-                style="padding:.6rem 1.25rem;background:#008891;color:white;border:none;border-radius:.5rem;font-weight:700;cursor:pointer;">Cari</button>
-            <?php if ($search || $status): ?>
-                <a href="dashboard-department.php"
-                    style="padding:.6rem 1rem;border:1px solid #d1d5db;border-radius:.5rem;font-size:.9rem;text-decoration:none;color:#374151;">Reset</a>
-            <?php endif; ?>
+        <form class="admin-filters" method="GET" action="dashboard-department.php">
+            <div class="filter-field search-field">
+                <label for="department-search">Cari Aspirasi</label>
+                <input type="search" id="department-search" name="search" value="<?= e($search) ?>"
+                    placeholder="Cari judul atau isi aspirasi">
+            </div>
+            <div class="filter-field">
+                <label for="department-category">Kategori</label>
+                <select id="department-category" name="category" data-auto-submit>
+                    <option value="">Semua kategori</option>
+                    <?php foreach ($categories as $categoryOption): ?>
+                        <option value="<?= e($categoryOption) ?>" <?= $category === $categoryOption ? 'selected' : '' ?>>
+                            <?= e($categoryOption) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="filter-field">
+                <label for="department-status">Status</label>
+                <select id="department-status" name="status" data-auto-submit>
+                    <option value="">Semua status</option>
+                    <?php foreach (array_intersect_key($statusLabels, array_flip(['in_process', 'communicated', 'resolved'])) as $key => $s): ?>
+                        <option value="<?= $key ?>" <?= $status === $key ? 'selected' : '' ?>><?= $s['label'] ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
         </form>
 
         <!-- POST LIST -->
         <section class="admin-feed">
             <?php $departmentPostDetails = []; ?>
             <?php if (empty($posts)): ?>
-                <div class="empty-state" style="text-align:center;padding:3rem;color:#9ca3af;">
-                    <p style="font-size:1.1rem;">Belum ada aspirasi yang disetujui admin.</p>
+                <div class="empty-state">
+                    <h2>Tidak ada aspirasi yang cocok</h2>
+                    <p>Coba pilih kategori atau status lainnya.</p>
                 </div>
             <?php endif; ?>
 
@@ -535,7 +564,7 @@ $statusLabels = [
             | JSON_HEX_APOS
             | JSON_HEX_QUOT
         ) ?></script>
-    <script src="../assets/JS/script-dashboard-department.js?v=1"></script>
+    <script src="../assets/JS/script-dashboard-department.js?v=2"></script>
 </body>
 
 </html>

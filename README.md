@@ -36,7 +36,7 @@ and tracked until it is resolved.
   and `Rejected`.
 - Notifications for status changes, official responses, and new comments.
 - Administrative dashboard with statistics, filters, moderation controls,
-  priority indicators, and CSV export.
+  and priority indicators.
 - Department dashboard for monitoring and updating approved aspirations.
 - Status history through an audit log.
 
@@ -45,7 +45,7 @@ and tracked until it is resolved.
 | Actor | Responsibilities |
 |---|---|
 | **Student** | Registers and logs in, manages a profile, submits an aspiration, posts anonymously when needed, views the feed, votes, comments, receives notifications, and tracks progress. |
-| **Admin / HMIF** | Reviews pending submissions, accepts or rejects posts, assigns or forwards approved aspirations, provides official responses, updates statuses, monitors statistics, and exports aspiration data. |
+| **Admin / HMIF** | Reviews pending submissions, accepts or rejects posts, assigns or forwards approved aspirations, provides official responses, updates statuses, and monitors statistics. |
 | **Department** | Views aspirations that have passed moderation, follows up on assigned or approved issues, adds notes, and updates progress to `In Process`, `Communicated`, or `Resolved`. |
 
 ## DFD and System Flow

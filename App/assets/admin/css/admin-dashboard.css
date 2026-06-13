@@ -5,6 +5,8 @@
 
 html {
     min-height: 100%;
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
 }
 
 body.admin-page {
@@ -76,8 +78,6 @@ body.admin-page.dark-theme .admin-shell {
     line-height: 1.65;
 }
 
-.export-link,
-.filter-submit,
 .response-form button,
 .detail-button {
     appearance: none;
@@ -101,8 +101,6 @@ body.admin-page.dark-theme .admin-shell {
     transition: background 0.2s, opacity 0.2s, transform 0.2s;
 }
 
-.export-link:hover,
-.filter-submit:hover,
 .response-form button:hover,
 .detail-button:hover {
     background: #00747b !important;
@@ -130,7 +128,4 @@ body.admin-page.dark-theme .admin-subtitle {
         display: grid;
     }
 
-    .export-link {
-        justify-self: start;
-    }
 }

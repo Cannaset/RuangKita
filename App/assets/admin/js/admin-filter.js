@@ -3,6 +3,19 @@
 // File: App/admin/assets/js/admin-filter.js
 // ============================================================
 
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("[data-auto-submit]").forEach((field) => {
+        field.addEventListener("change", () => {
+            const form = field.closest("form");
+            if (!form) return;
+
+            const pageField = form.querySelector('[name="page"]');
+            if (pageField) pageField.remove();
+            form.submit();
+        });
+    });
+});
+
 window.showToast = function(message, isError = false) {
     const toast = document.getElementById("toast");
     if (!toast) return;
@@ -83,7 +96,7 @@ window.renderResponses = function(responses) {
 };
 
 window.postForm = async function(form) {
-    // Use only the path (no query string) so PHP doesn't run filter/export
+    // Use only the path so PHP doesn't retain the active filters.
     // logic while handling the AJAX POST action.
     const response = await fetch(window.location.pathname, {
         method: "POST",

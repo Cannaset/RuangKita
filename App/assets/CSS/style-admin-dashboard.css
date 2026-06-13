@@ -1,5 +1,7 @@
 html {
     min-height: 100%;
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
 }
 
 body.admin-page {
@@ -70,8 +72,6 @@ body.admin-page.dark-theme .admin-shell {
     line-height: 1.65;
 }
 
-.export-link,
-.filter-submit,
 .response-form button,
 .detail-button {
     appearance: none;
@@ -88,14 +88,6 @@ body.admin-page.dark-theme .admin-shell {
     transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
 }
 
-.export-link {
-    min-height: 2.6rem;
-    padding: 0 1rem;
-    white-space: nowrap;
-}
-
-.export-link:hover,
-.filter-submit:hover,
 .response-form button:hover,
 .detail-button:hover {
     transform: translateY(-1px);
@@ -161,7 +153,7 @@ body.admin-page.dark-theme .admin-shell {
 
 .admin-filters {
     display: grid;
-    grid-template-columns: minmax(220px, 2fr) repeat(3, minmax(150px, 1fr)) auto;
+    grid-template-columns: minmax(260px, 2fr) repeat(auto-fit, minmax(180px, 1fr));
     align-items: end;
     gap: 0.85rem;
     margin-bottom: 1.25rem;
@@ -175,6 +167,7 @@ body.admin-page.dark-theme .admin-shell {
 .filter-field {
     display: grid;
     gap: 0.4rem;
+    min-width: 0;
 }
 
 .filter-field label,
@@ -201,8 +194,15 @@ body.admin-page.dark-theme .admin-shell {
 .filter-field input,
 .filter-field select,
 .status-form select {
-    min-height: 2.65rem;
-    padding: 0 0.75rem;
+    height: 3rem;
+    min-height: 3rem;
+    padding: 0 1rem;
+    line-height: 1.2;
+}
+
+.filter-field select {
+    padding-right: 2.5rem;
+    cursor: pointer;
 }
 
 .response-form textarea {
@@ -220,14 +220,10 @@ body.admin-page.dark-theme .admin-shell {
     box-shadow: 0 0 0 3px rgba(0, 136, 145, 0.12);
 }
 
-.filter-submit {
-    min-height: 2.65rem;
-    padding: 0 1rem;
-}
-
 .admin-feed {
     display: grid;
     gap: 1rem;
+    min-height: 12rem;
 }
 
 .admin-post-card {
@@ -425,10 +421,13 @@ body.admin-page.dark-theme .admin-shell {
 }
 
 .empty-state {
+    display: grid;
+    min-height: 12rem;
     padding: 2rem;
     border: 1px dashed var(--gray-300);
     border-radius: 0.75rem;
     background: #ffffff;
+    place-content: center;
     text-align: center;
 }
 
@@ -722,8 +721,7 @@ body.admin-page.dark-theme .priority-medium {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .search-field,
-    .filter-submit {
+    .search-field {
         grid-column: 1 / -1;
     }
 }
@@ -743,10 +741,6 @@ body.admin-page.dark-theme .priority-medium {
 
     .admin-titlebar {
         display: grid;
-    }
-
-    .export-link {
-        justify-self: start;
     }
 
     .stats-grid,

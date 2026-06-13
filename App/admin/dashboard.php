@@ -95,63 +95,6 @@ require __DIR__ . '/queries/get_statistics.php';
 
 $queryBase = $_GET;
 unset($queryBase['page']);
-
-// Handle CSV exports if requested
-if (($_GET['export'] ?? '') === 'csv') {
-    $exportSql = "
-        SELECT
-            p.id,
-            p.title,
-            p.description,
-            p.category,
-            p.status,
-            p.created_at,
-            p.updated_at,
-            CASE WHEN p.is_anonymous = 1 THEN 'Anonymous' ELSE COALESCE(s.username, 'Mahasiswa') END AS author,
-            COALESCE(vt.upvotes, 0) AS upvotes,
-            COALESCE(vt.downvotes, 0) AS downvotes
-        FROM posts p
-        LEFT JOIN students s ON s.id = p.student_id
-        LEFT JOIN (
-            SELECT post_id,
-                SUM(vote_type = 'upvote') AS upvotes,
-                SUM(vote_type = 'downvote') AS downvotes
-            FROM votes
-            GROUP BY post_id
-        ) vt ON vt.post_id = p.id
-        $whereSql
-        ORDER BY $orderSql
-    ";
-    $exportStmt = $conn->prepare($exportSql);
-    $exportParams = $params;
-    bindParams($exportStmt, $types, $exportParams);
-    $exportStmt->execute();
-    $exportRows = $exportStmt->get_result()->fetch_all(MYSQLI_ASSOC);
-
-    header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename=ruangkita-aspirasi.csv');
-    $output = fopen('php://output', 'w');
-    fputcsv($output, ['ID', 'Author', 'Category', 'Title', 'Description', 'Status', 'Upvotes', 'Downvotes', 'Created At', 'Updated At']);
-
-    foreach ($exportRows as $exportRow) {
-        $meta = statusMeta($exportRow['status']);
-        fputcsv($output, [
-            $exportRow['id'],
-            $exportRow['author'],
-            $exportRow['category'],
-            $exportRow['title'],
-            $exportRow['description'],
-            $meta['label'],
-            $exportRow['upvotes'],
-            $exportRow['downvotes'],
-            $exportRow['created_at'],
-            $exportRow['updated_at'],
-        ]);
-    }
-
-    fclose($output);
-    exit;
-}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -162,8 +105,8 @@ if (($_GET['export'] ?? '') === 'csv') {
     <title>RuangKita - Admin Dashboard</title>
     <!-- Stylesheets -->
     <link rel="stylesheet" href="../assets/CSS/style.css">
-    <link rel="stylesheet" href="../assets/admin/css/admin-dashboard.css">
-    <link rel="stylesheet" href="../assets/admin/css/admin-components.css">
+    <link rel="stylesheet" href="../assets/admin/css/admin-dashboard.css?v=2">
+    <link rel="stylesheet" href="../assets/admin/css/admin-components.css?v=3">
     <link rel="stylesheet" href="../assets/admin/css/admin-modal.css">
 </head>
 
@@ -179,8 +122,6 @@ if (($_GET['export'] ?? '') === 'csv') {
                 <p class="admin-subtitle">Pantau laporan, prioritaskan aspirasi, dan berikan tanggapan resmi dari satu
                     halaman.</p>
             </div>
-            <a class="export-link" href="?<?= e(http_build_query(array_merge($_GET, ['export' => 'csv']))); ?>">Export
-                Data</a>
         </section>
 
         <!-- Component Statistics -->
@@ -214,7 +155,7 @@ if (($_GET['export'] ?? '') === 'csv') {
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <!-- Scripts -->
-    <script src="../assets/admin/js/admin-filter.js"></script>
+    <script src="../assets/admin/js/admin-filter.js?v=2"></script>
     <script src="../assets/admin/js/admin-theme.js"></script>
     <script src="../assets/admin/js/admin-dropdown.js"></script>
     <script src="../assets/admin/js/admin-status.js"></script>
