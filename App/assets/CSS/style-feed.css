@@ -3,7 +3,8 @@ html {
 }
 
 .header {
-    position: sticky;  /* ✅ ini bener */
+    position: sticky;
+    /* ✅ ini bener */
     top: 0;
     z-index: 999;
 }
@@ -46,6 +47,7 @@ body.feed-page::before {
     transition: all 0.2s;
     text-decoration: none;
     line-height: 1;
+    padding-bottom: 2px;
 }
 
 .create-post-btn:hover {

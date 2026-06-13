@@ -32,8 +32,19 @@
             <div class="profile-dropdown" id="profileDropdown">
                 <a href="../students/profile.php">Profil</a>
                 <a href="dashboard.php">Dashboard</a>
+                <a href="../students/feed.php">Beranda</a>
                 <a href="../auth/logout.php">Log out</a>
             </div>
         </div>
     </div>
+    <script>
+        document.querySelectorAll('a[href*="logout"]').forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                if (confirm('Yakin ingin keluar dari RuangKita?')) {
+                    window.location.href = link.href;
+                }
+            });
+        });
+    </script>
 </header>

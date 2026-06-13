@@ -150,6 +150,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const data = await res.json();
 
                 if (data.success) {
+                    alert('Aspirasi kamu berhasil dikirim! 🎉\n\nAspirasimu sedang menunggu persetujuan admin. Kamu bisa memantau statusnya di halaman Profil → Riwayat Aspirasi.');
                     window.location.href = 'feed.php';
                 } else {
                     alert(data.message || 'Gagal mengirim aspirasi.');
@@ -163,6 +164,16 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
+
+    // Konfirmasi logout
+    document.querySelectorAll('a[href*="logout"]').forEach(link => {
+        link.addEventListener('click', e => {
+            e.preventDefault();
+            if (confirm('Yakin ingin keluar dari RuangKita?')) {
+                window.location.href = link.href;
+            }
+        });
+    });
 
     // ============================================
     // PROFILE DROPDOWN (sama seperti feed)

@@ -131,6 +131,16 @@ function getInitials(string $name): string
     </div>
 
     <script src="../assets/JS/script-feed.js?v=9"></script>
+    <script>
+        document.querySelectorAll('a[href*="logout"]').forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                if (confirm('Yakin ingin keluar dari RuangKita?')) {
+                    window.location.href = link.href;
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
