@@ -170,11 +170,11 @@ function respondJson(int $code, array $data): void
 function statusMeta(string $status): array
 {
     return match ($status) {
-        'in_process' => ['label' => 'In Progress', 'class' => 'status-in-progress'],
-        'communicated' => ['label' => 'Communicated', 'class' => 'status-communicated'],
-        'resolved' => ['label' => 'Completed', 'class' => 'status-completed'],
-        'rejected' => ['label' => 'Rejected', 'class' => 'status-rejected'],
-        default => ['label' => 'Pending', 'class' => 'status-pending'],
+        'in_process' => ['label' => 'Diproses', 'class' => 'status-in-progress'],
+        'communicated' => ['label' => 'Dikomunikasikan', 'class' => 'status-communicated'],
+        'resolved' => ['label' => 'Selesai', 'class' => 'status-completed'],
+        'rejected' => ['label' => 'Ditolak', 'class' => 'status-rejected'],
+        default => ['label' => 'Belum Ditinjau', 'class' => 'status-pending'],
     };
 }
 

@@ -171,7 +171,25 @@ function getAvatarColor(initials) {
 }
 
 function getStatusClass(status) {
-    return status === 'Completed' ? 'status-completed' : 'status-unresolved';
+    const map = {
+        'not_reviewed':  'status-pending',
+        'in_process':    'status-in-progress',
+        'communicated':  'status-communicated',
+        'resolved':      'status-completed',
+        'rejected':      'status-rejected',
+    };
+    return map[status] ?? 'status-pending';
+}
+
+function getStatusLabel(status) {
+    const map = {
+        'not_reviewed':  'Belum Ditinjau',
+        'in_process':    'Diproses',
+        'communicated':  'Dikomunikasikan',
+        'resolved':      'Selesai',
+        'rejected':      'Ditolak',
+    };
+    return map[status] ?? status;
 }
 
 function createAvatarHTML(avatarUrl, initials, className = 'avatar') {
@@ -283,7 +301,7 @@ function createPostHTML(post) {
                     </div>
                     <div class="post-actions-top">
                         <span class="status-badge ${getStatusClass(post.status)}">
-                            ${post.status}
+                            ${getStatusLabel(post.status)}
                         </span>
                         <button class="post-menu">⋯</button>
                     </div>

@@ -12,11 +12,11 @@ require_once __DIR__ . '/includes/helper.php';
 ensureAdminSchema($conn);
 
 $statusOptions = [
-    'not_reviewed' => 'Pending',
-    'in_process' => 'In Progress',
-    'communicated' => 'Communicated',
-    'resolved' => 'Completed',
-    'rejected' => 'Rejected',
+    'not_reviewed' => 'Belum Ditinjau',
+    'in_process' => 'Diproses',
+    'communicated' => 'Dikomunikasikan',
+    'resolved' => 'Selesai',
+    'rejected' => 'Ditolak',
 ];
 
 // Handle AJAX forms / POST requests

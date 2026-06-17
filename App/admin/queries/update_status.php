@@ -59,7 +59,7 @@ try {
         // Trigger notifikasi ke student pembuat post
         $statusLabels = [
             'not_reviewed' => 'Belum Ditinjau',
-            'in_process' => 'Sedang Diproses',
+            'in_process' => 'Diproses',
             'communicated' => 'Dikomunikasikan',
             'resolved' => 'Selesai',
             'rejected' => 'Ditolak',

@@ -281,11 +281,23 @@ html, body {
 }
 
 .status-completed {
-    background: var(--success);
+    background: #22c55e;
 }
 
-.status-unresolved {
-    background: var(--warning);
+.status-pending {
+    background: #f59e0b;
+}
+
+.status-in-progress {
+    background: #3b82f6;
+}
+
+.status-communicated {
+    background: #8b5cf6;
+}
+
+.status-rejected {
+    background: #ef4444;
 }
 
 .post-menu {
